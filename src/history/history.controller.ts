@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { CreateHistoryDto } from './dto';
 
@@ -12,7 +21,10 @@ export class HistoryController {
   }
 
   @Get('get-history')
-  findAll(@Query('clientPhone') clientPhone: string, @Query('chatbotNumber') chatbotNumber: string) {
+  findAll(
+    @Query('clientPhone') clientPhone: string,
+    @Query('chatbotNumber') chatbotNumber: string,
+  ) {
     return this.historyService.findAll(clientPhone, chatbotNumber);
   }
 
@@ -20,6 +32,4 @@ export class HistoryController {
   parseHistory(@Body() arrayHistory: any[]) {
     return this.historyService.parseHistory(arrayHistory);
   }
-
-
 }

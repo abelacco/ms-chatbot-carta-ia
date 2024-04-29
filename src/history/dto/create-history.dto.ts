@@ -1,18 +1,18 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreateHistoryDto {
-    @IsString()
-    clientPhone: string;
+  @IsString()
+  clientPhone: string;
 
-    @IsString()
-    content: string;
+  @IsString()
+  content: string;
 
-    @IsString()
-    type: string;
+  @IsString()
+  type: string;
 
-    @IsString()
-    chatbotNumber: string;
+  @IsString()
+  chatbotNumber: string;
 
-    @IsString()
-    role: string;
+  @IsString()
+  role: string;
 }

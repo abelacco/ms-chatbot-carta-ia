@@ -1,4 +1,5 @@
-import { InteractiveListSection } from "src/builder-templates/interface";
+export * from './utils';
+/* import { InteractiveListSection } from "src/builder-templates/interface";
 import { MODALITY, PACK, PACK_ID, PLAN } from "./constants";
 const moment = require('moment-timezone');
 require('moment/locale/es'); // Importar la localización de español
@@ -277,14 +278,14 @@ export class Utilities {
             return "OK";
         }
     }
-    /**
+    
     * Parsea una cadena de fecha y hora en formato español a un objeto moment en una zona horaria específica.
     * 
     * @param dateStr Cadena de fecha y hora en formato 'D de MMMM hh:mm a', p. ej., '12 de abril 12:00 pm'.
     * @param year El año en el que ocurre el evento.
     * @param timezone La zona horaria en la que se debe interpretar la fecha y hora.
     * @returns Un objeto moment representando la fecha y hora en la zona horaria especificada.
-    */
+    
    static parseSpanishDateTimeToMoment(dateStr: string, year: number = 2024, timezone: string = 'America/Lima') {
      // Añade el año al input para completar la fecha
      const dateInputWithYear = `${dateStr} ${year}`;
@@ -295,13 +296,13 @@ export class Utilities {
      return dateMoment;
    }
 
-       /**
+       
      * Convierte una fecha y hora en español a un objeto moment.
      * @param {string} dateStr - Fecha en formato "DD de MMMM HH:mm a", ejemplo: "12 de abril 12:00 pm".
      * @param {number} year - Año para completar la fecha.
      * @param {string} timeZone - Zona horaria para la fecha.
      * @returns {moment.Moment} Objeto moment representando la fecha y hora.
-     */
+     
        static convertDate(dateStr: string, year: number = new Date().getFullYear(), timeZone: string = 'America/Lima'): moment.Moment {
         const spanishMonthNames = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
         const [day, monthName, time, meridiem] = dateStr.split(/ de | /);
@@ -310,22 +311,22 @@ export class Utilities {
         return moment.tz(formattedDateStr, "YYYY-M-D hh:mm a", timeZone);
     }
 
-    /**
+    
      * Añade minutos a un objeto moment y devuelve el nuevo objeto moment.
      * @param {moment.Moment} momentObj - Objeto moment a modificar.
      * @param {number} minutes - Minutos a añadir.
      * @returns {moment.Moment} Nuevo objeto moment después de añadir los minutos.
-     */
+     
     static addMinutes(momentObj: moment.Moment, minutes: number): moment.Moment {
         return momentObj.clone().add(minutes, 'minutes');
     }
 
-     /**
+  
    * Convierte una cadena de texto con fecha y hora en un objeto listo para usar con Google Calendar.
    * @param dateStr La cadena de texto con la fecha y hora, p. ej., "12 de abril 12:00 pm".
    * @param duration La duración del evento en minutos.
    * @returns Un objeto con las propiedades `start` y `end` en formato ISO para Google Calendar.
-   */
+   
   static parseForGoogleCalendar(dateStr: string, duration: number) {
     // Supongamos que la fecha está en un formato como "12 de abril 12:00 pm"
     // y que deseas usar la zona horaria de Lima para todas las conversiones.
@@ -348,4 +349,4 @@ export class Utilities {
 
 }
 
-
+ */

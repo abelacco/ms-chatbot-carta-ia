@@ -2,20 +2,17 @@ export interface TemplateTextParameter {
   type: 'text';
   text: string;
 }
-export 
-interface TemplateHeaderImageParameter {
+export interface TemplateHeaderImageParameter {
   type: 'image';
   image: {
     link: string;
   };
 }
-export 
-interface TemplateComponent {
+export interface TemplateComponent {
   type: 'header' | 'body';
   parameters: TemplateTextParameter[] | TemplateHeaderImageParameter[];
 }
-export 
-interface TemplateMessage {
+export interface TemplateMessage {
   messaging_product: 'whatsapp';
   recipient_type: 'individual';
   to: string;

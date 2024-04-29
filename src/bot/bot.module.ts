@@ -10,14 +10,14 @@ import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module'
 
 @Module({
   controllers: [BotController],
-  providers: [BotService,AiValidator ],
+  providers: [BotService, AiValidator],
   imports: [
     CtxModule,
     FlowsModule,
     HistoryModule,
     AiModule,
-    WspWebGatewayModule
-    ],
+    WspWebGatewayModule,
+  ],
   exports: [BotService],
 })
 export class BotModule {}

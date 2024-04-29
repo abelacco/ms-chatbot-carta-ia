@@ -25,7 +25,7 @@ export class AiService {
    * @param temperature
    * @returns
    */
-  async createChat  (
+  async createChat(
     messages: ChatCompletionMessageParam[],
     model?: string,
     temperature = 0,
@@ -46,112 +46,114 @@ export class AiService {
       console.error(err);
       return 'ERROR';
     }
-  };
+  }
 
-   /**
-     * 
-     * @param messages 
-     * @param model 
-     * @param temperature 
-     * @returns 
-     */
-   async desiredDateFn  (
+  /**
+   *
+   * @param messages
+   * @param model
+   * @param temperature
+   * @returns
+   */
+  async desiredDateFn(
     messages: ChatCompletionMessageParam[],
     model?: string,
-    temperature = 0
-  ): Promise<{ date: string}> {
+    temperature = 0,
+  ): Promise<{ date: string }> {
     try {
-        const completion = await this.openai.chat.completions.create({
-            model: model ?? this.model,
-            temperature: temperature,
-            messages,
-            functions: [
-                {
-                    name: "fn_desired_date",
-                    description: "determine the user's desired date in the format dd/mm/yyyy",
-                    parameters: {
-                        type: "object",
-                        properties: {
-                          date: {
-                            type: "string",
-                            description: "dd/mm/yyyy",
-                        }
-                        },
-                        required: ["date"]
-                    }
-                }
-            ],
-            function_call: {
-                name: "fn_desired_date",
-            }
-        });
-        // Convert json to object
-        const response = JSON.parse(completion.choices[0].message.function_call.arguments);
+      const completion = await this.openai.chat.completions.create({
+        model: model ?? this.model,
+        temperature: temperature,
+        messages,
+        functions: [
+          {
+            name: 'fn_desired_date',
+            description:
+              "determine the user's desired date in the format dd/mm/yyyy",
+            parameters: {
+              type: 'object',
+              properties: {
+                date: {
+                  type: 'string',
+                  description: 'dd/mm/yyyy',
+                },
+              },
+              required: ['date'],
+            },
+          },
+        ],
+        function_call: {
+          name: 'fn_desired_date',
+        },
+      });
+      // Convert json to object
+      const response = JSON.parse(
+        completion.choices[0].message.function_call.arguments,
+      );
 
-        return response;
+      return response;
     } catch (err) {
-        console.error(err);
-        return {
-            date: ''        
-          }
+      console.error(err);
+      return {
+        date: '',
+      };
     }
-};
+  }
 
-
-   /**
-     * 
-     * @param messages 
-     * @param model 
-     * @param temperature 
-     * @returns 
-     */
-   async checkData  (
+  /**
+   *
+   * @param messages
+   * @param model
+   * @param temperature
+   * @returns
+   */
+  async checkData(
     messages: ChatCompletionMessageParam[],
     model?: string,
-    temperature = 0
-  ): Promise<{ clientName: string , outOfContext: boolean}> {
+    temperature = 0,
+  ): Promise<{ clientName: string; outOfContext: boolean }> {
     try {
-        const completion = await this.openai.chat.completions.create({
-            model: model ?? this.model,
-            temperature: temperature,
-            messages,
-            functions: [
-                {
-                    name: "fn_check_data",
-                    description: "determine the user's information in the format clientName, businessName, businessCategory, email",
-                    parameters: {
-                        type: "object",
-                        properties: {
-                          clientName: {
-                            type: "string",
-                            description: "Has to be the client name",
-                        },
-                        outOfContext: {
-                            type: "boolean",
-                            description: "In case the user is out of context or not",
+      const completion = await this.openai.chat.completions.create({
+        model: model ?? this.model,
+        temperature: temperature,
+        messages,
+        functions: [
+          {
+            name: 'fn_check_data',
+            description:
+              "determine the user's information in the format clientName, businessName, businessCategory, email",
+            parameters: {
+              type: 'object',
+              properties: {
+                clientName: {
+                  type: 'string',
+                  description: 'Has to be the client name',
+                },
+                outOfContext: {
+                  type: 'boolean',
+                  description: 'In case the user is out of context or not',
+                },
+              },
+              required: ['clientName', 'outOfContext'],
+            },
+          },
+        ],
+        function_call: {
+          name: 'fn_check_data',
+        },
+      });
+      // Convert json to object
+      const response = JSON.parse(
+        completion.choices[0].message.function_call.arguments,
+      );
 
-                        },
-                      },
-                        required: [ "clientName","outOfContext"]
-                    }
-                }
-            ],
-            function_call: {
-                name: "fn_check_data",
-            }
-        });
-        // Convert json to object
-        const response = JSON.parse(completion.choices[0].message.function_call.arguments);
-
-        return response;
+      return response;
     } catch (err) {
-        console.error(err);
-        return {
-            clientName: '',
-            outOfContext: false
-        }
+      console.error(err);
+      return {
+        clientName: '',
+        outOfContext: false,
+      };
     }
-};
-
-  
+  }
 }
