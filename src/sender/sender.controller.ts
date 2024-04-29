@@ -1,6 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SenderService } from './sender.service';
-
 
 @Controller('sender')
 export class SenderController {
@@ -13,7 +20,7 @@ export class SenderController {
       this.senderService.sendMessages(botResponse);
       // response.success = 1;
       // response.message = "Message sent successfully";
-      return  this.senderService.sendMessages(botResponse);
+      return this.senderService.sendMessages(botResponse);
     } catch (error) {
       return error;
       // response.success = 0;
@@ -21,5 +28,4 @@ export class SenderController {
       // errorHandler(error.code, response)
     }
   }
-
 }

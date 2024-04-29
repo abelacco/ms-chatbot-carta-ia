@@ -15,7 +15,7 @@ import { MongoDbService } from './db/mongodb.service';
         schema: HistorySchema,
       },
     ]),
-    ],
-    exports: [HistoryService]
+  ],
+  exports: [HistoryService],
 })
 export class HistoryModule {}

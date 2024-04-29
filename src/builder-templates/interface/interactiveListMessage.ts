@@ -16,14 +16,17 @@ export interface InteractiveListMessage {
   type: string;
   interactive: {
     type: string;
-    header?: { // Ahora es opcional
+    header?: {
+      // Ahora es opcional
       type: string;
       text: string;
     };
-    body?: { // Ahora es opcional
+    body?: {
+      // Ahora es opcional
       text: string;
     };
-    footer?: { // Ahora es opcional
+    footer?: {
+      // Ahora es opcional
       text: string;
     };
     action: {

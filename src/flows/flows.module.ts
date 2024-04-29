@@ -6,6 +6,8 @@ import { CtxModule } from 'src/context/ctx.module';
 import { SenderModule } from 'src/sender/sender.module';
 import { AiModule } from 'src/ai/ai.module';
 import { HistoryModule } from 'src/history/history.module';
+import { BusinessModule } from 'src/business/business.module';
+import { GeneralServicesModule } from 'src/general-services/general-services.module';
 
 @Module({
   controllers: [FlowsController],
@@ -13,10 +15,12 @@ import { HistoryModule } from 'src/history/history.module';
   exports: [FlowsService],
   imports: [
     CtxModule,
+    BusinessModule,
     BuilderTemplatesModule,
     SenderModule,
     AiModule,
     HistoryModule,
+    GeneralServicesModule,
   ],
 })
 export class FlowsModule {}

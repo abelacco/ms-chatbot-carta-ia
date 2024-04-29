@@ -15,7 +15,7 @@ import { MongoDbService } from './db/mongodb.service';
         schema: CtxSchema,
       },
     ]),
-    ],
-  exports: [CtxService,MongoDbService],
+  ],
+  exports: [CtxService, MongoDbService],
 })
 export class CtxModule {}

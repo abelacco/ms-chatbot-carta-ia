@@ -3,7 +3,7 @@ export const WSP_MESSAGE_TYPES = {
   TEXT: 'text',
   INTERACTIVE: 'interactive',
   IMAGE: 'image',
-  BUTTON: 'button'
+  BUTTON: 'button',
 };
 
 export const INTERACTIVE_REPLIES_TYPES = {
@@ -25,5 +25,3 @@ export const DOCUMENT_IDENTIFIERS = {
   DNI_TYPE: 'dni',
   RUC_TYPE: 'ruc',
 };
-
-

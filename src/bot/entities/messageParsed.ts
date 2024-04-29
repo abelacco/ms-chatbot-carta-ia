@@ -1,7 +1,7 @@
 export interface IParsedMessage {
-    chatbotNumber: string;
-    clientName: string;
-    clientPhone: string;
-    type: string;
-    content: any;
-  }
+  chatbotNumber: string;
+  clientName: string;
+  clientPhone: string;
+  type: string;
+  content: any;
+}

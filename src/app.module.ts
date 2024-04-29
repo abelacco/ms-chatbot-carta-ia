@@ -14,6 +14,8 @@ import { HistoryModule } from './history/history.module';
 import { WspWebGatewayModule } from './wsp-web-gateway/wsp-web-gateway.module';
 import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
+import { BusinessModule } from './business/business.module';
+import BusinessController from './business/business.controller';
 
 @Module({
   imports: [
@@ -32,8 +34,9 @@ import { JoiValidationSchema } from './config/joi.validation';
     AiModule,
     HistoryModule,
     WspWebGatewayModule,
+    BusinessModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, BusinessController],
   providers: [AppService],
 })
 export class AppModule {}

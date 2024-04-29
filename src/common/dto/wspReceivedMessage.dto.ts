@@ -8,9 +8,11 @@ export interface WspReceivedMessageDto {
           phone_number_id?: string;
         };
         messages?: Array<IMessage>;
-        statuses?: [{
-          status: string;
-        }]
+        statuses?: [
+          {
+            status: string;
+          },
+        ];
       };
     }>;
   }>;
@@ -58,5 +60,4 @@ interface IInteractiveObject {
     description: string;
   };
   type: string;
-
 }
