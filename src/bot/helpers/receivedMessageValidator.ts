@@ -16,6 +16,7 @@ export const receivedMessageValidator = (
   entryMessage: IParsedMessage,
 ) => {
   const currentStep = ctx.step || STEPS.INIT;
+  console.log(currentStep);
   if (
     typeof entryMessage.content === 'string' &&
     entryMessage.content.toUpperCase() === 'RESET'
@@ -24,48 +25,25 @@ export const receivedMessageValidator = (
   }
   switch (currentStep) {
     case STEPS.INIT: // Respondo al primer saludo
-      if (isTextMessage(entryMessage)) {
-        // Debo llamar al servicio para responder
-        return 'analyzeDataFlow';
-      }
+      //if (isTextMessage(entryMessage)) {
+      // Debo llamar al servicio para responder
+      return 'analyzeDataFlow';
+      //}
+      break;
     case STEPS.PRE_PAY:
       if (isImageMessage(entryMessage)) {
         return 'checkPayFlow';
       } else {
         return 'analyzeDataFlow';
       }
-    /*  // debo llamar al servicio para responder que no es el mensaje esperado
-      return 'NOT_VALID';
-    case STEPS.CARTA: // Estoy esperando que el usuario seleccione una fecha o pregunte por otra cosa
-      if (isInteractiveMessage(entryMessage)) {
-        // Si es fecha seleccionada, debo enviar el flow de confirmacion de datos
-        return 'preconfirmFlow';
-      } else if (isTextMessage(entryMessage)) {
-        // LLamo al flow para responder infor general
+    case STEPS.WAITING_LOCATION:
+      if (isLocationMessage(entryMessage)) {
+        return 'locationFlow';
+      } else {
         return 'analyzeDataFlow';
       }
-      return 'NOT_VALID';
-    case STEPS.EXTRA_DATA: // Estoy esperando que el usuario confirmen los datos adicionales o tambien puede que cambie de fecha
-      if (isTextMessage(entryMessage)) {
-        // Entra al flujo para corrobar los datos extras
-        return 'checkExtaDataFlow';
-      } else if (isInteractiveMessage(entryMessage)) {
-        // Asume que estas escogiendo otra fecha
-        return 'preconfirmFlow';
-      } else {
-        return 'NOT_VALID';
-      }
-    case STEPS.AFTER_CONFIRM: // Estoy esperando que el cliente reagende o haga preguntas adicionales
-      if (isTextMessage(entryMessage)) {
-        return 'anlyzeAfterConfirmFlow';
-      }
-      return 'NOT_VALID';
-    case STEPS.WAITING_FOR_RESCHEDULE:
-      if (isTextMessage(entryMessage)) {
-        return 'analyzeAnswerFlow';
-      }
-      return 'NOT_VALID';
-      */
+    case STEPS.ORDERED:
+      return 'orderStateFlow';
     default:
       return 'NOT_VALID';
   }
@@ -75,6 +53,9 @@ export const receivedMessageValidator = (
 
 export const isInteractiveMessage = (infoMessage: IParsedMessage): boolean =>
   infoMessage.type === WSP_MESSAGE_TYPES.INTERACTIVE;
+
+export const isLocationMessage = (infoMessage: IParsedMessage): boolean =>
+  infoMessage.type === WSP_MESSAGE_TYPES.LOCATION;
 
 export const isButtonMessage = (infoMessage: IParsedMessage): boolean =>
   infoMessage.type === WSP_MESSAGE_TYPES.BUTTON;

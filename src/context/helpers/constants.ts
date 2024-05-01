@@ -177,15 +177,9 @@ export const SCHUDULE_LIST = [
 
 export const STEPS = {
   INIT: '0',
-  CARTA: '1',
-  INFO: '10',
-  DISPONIBILIDAD: '2',
-  DATE_SELECTED: '3',
-  EXTRA_DATA: '4',
-  CONFIRM_APPOINMENT: '5',
-  AFTER_CONFIRM: '6',
-  WAITING_FOR_RESCHEDULE: '7',
-  PRE_PAY: '14',
+  PRE_PAY: '1',
+  WAITING_LOCATION: '2',
+  ORDERED: '3',
 };
 
 export const STATUS_APPOINTMENT = {

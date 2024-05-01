@@ -9,6 +9,7 @@ import {
   TemplateComponent,
   TemplateTextParameter,
   TemplateMessage,
+  LocationMessage,
 } from './interface/index';
 import { SenderService } from 'src/sender/sender.service';
 
@@ -23,6 +24,26 @@ export class BuilderTemplatesService {
       type: 'text',
       text: {
         body: bodyText,
+      },
+    };
+  }
+
+  buildLocationMessage(
+    phoneNumber: string,
+    longitude: number,
+    latitude: number,
+    name?: string,
+    address?: string,
+  ): LocationMessage {
+    return {
+      messaging_product: 'whatsapp',
+      to: phoneNumber,
+      type: 'location',
+      location: {
+        longitude: longitude,
+        latitude: latitude,
+        name: name,
+        address: address,
       },
     };
   }

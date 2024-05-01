@@ -10,6 +10,7 @@ export interface WspReceivedMessageDto {
         messages?: Array<IMessage>;
         statuses?: [
           {
+            recipient_id: any;
             status: string;
           },
         ];
@@ -26,6 +27,7 @@ interface IContact {
 }
 
 interface IMessage {
+  location?: any;
   from: string;
   id: string;
   timestamp: string;

@@ -7,10 +7,6 @@ export class SenderService {
   constructor(private gatewayService: WhatsappGateway) {}
 
   async sendMessages(messageClient: any) {
-    Logger.log(
-      `Mensaje a enviar ${JSON.stringify(messageClient)}`,
-      'SENDER SERVICE',
-    );
     try {
       const response = await axios.post(
         `https://graph.facebook.com/v19.0/${process.env.PHONE_ID}/messages`,

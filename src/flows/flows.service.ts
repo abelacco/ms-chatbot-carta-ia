@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ORDER_STATUS } from 'src/common/constants';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { CtxService } from 'src/context/ctx.service';
 import { HistoryService } from 'src/history/history.service';
@@ -15,7 +16,11 @@ import {
   PROMPT_COVERAGE,
   PROMPT_PAY_LINK,
   PROMPT_PRE_PAY_CONFIRMATION,
+  PROMPT_DECLINE_PAY,
+  PROMPT_ACCEPT_PAY,
+  PROMPT_LOCATION,
 } from './Utils/promps';
+import { string } from 'joi';
 
 @Injectable()
 export class FlowsService {
@@ -29,6 +34,57 @@ export class FlowsService {
     private readonly generalService: GeneralServicesService,
   ) {}
 
+  async locationFlow(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+  ) {
+    const locationSplit = messageEntry.content.split(',');
+    const latitude = parseFloat(locationSplit[0]);
+    const longitude = parseFloat(locationSplit[1]);
+    // send to admin
+    ctx.step = STEPS.ORDERED;
+    this.ctxService.updateCtx(ctx._id, ctx);
+    await this.senderService.sendMessages(
+      this.builderTemplate.buildLocationMessage(
+        process.env.PHONE_ADMIN,
+        longitude,
+        latitude,
+      ),
+    );
+    setTimeout(async () => {
+      await this.senderService.sendMessages(
+        this.builderTemplate.buildInteractiveButtonMessage(
+          process.env.PHONE_ADMIN,
+          `Ubicación cliente ${messageEntry.clientPhone}`,
+          [
+            {
+              id: `Avisar`,
+              title: 'Avisar repartidores',
+            },
+          ],
+        ),
+      );
+    }, 1000);
+    // send to client
+    const response = await this.aiService.createChat([
+      {
+        role: 'system',
+        content: PROMPT_LOCATION,
+      },
+    ]);
+    const chunks = response.split(/(?<!\d)\.\s+/g);
+    for (const chunk of chunks) {
+      const newMessage = await this.historyService.setAndCreateAssitantMessage(
+        messageEntry,
+        chunk,
+      );
+      await this.senderService.sendMessages(
+        this.builderTemplate.buildTextMessage(messageEntry.clientPhone, chunk),
+      );
+    }
+  }
+
   async analyzeDataFlow(
     ctx: Ctx,
     messageEntry: IParsedMessage,
@@ -37,7 +93,10 @@ export class FlowsService {
     try {
       Logger.log('DEFINO INTENCION DEL CLIENTE', 'ANALYZE_PROMPT');
       let response = '';
-      if (messageEntry.content.includes('Número de orden:')) {
+      if (
+        ctx.step === STEPS.INIT &&
+        messageEntry.content.includes('Número de orden:')
+      ) {
         response = 'ORDENAR';
       } else {
         const prompt = this.generateAnalyzePrompt(
@@ -64,6 +123,85 @@ export class FlowsService {
     } catch (err) {
       console.log(`[ERROR]:`, err);
       return;
+    }
+  }
+
+  async orderStateFlow(ctx: Ctx, messageEntry: IParsedMessage) {
+    try {
+      const orderStatus = await this.businessService.getOrderStatus(
+        parseInt(ctx.order),
+      );
+      let message = '';
+      if (orderStatus === ORDER_STATUS.JUST_CREATED) {
+        message = 'Estamos analizando tu pedido';
+      } else if (orderStatus === ORDER_STATUS.ACEPTED_BY_ADMIN) {
+        message = 'Estamos preparando tu pedido';
+      } else if (orderStatus === ORDER_STATUS.ACCEPTED) {
+        message = 'Estamos preparando tu pedido';
+      } else if (orderStatus === ORDER_STATUS.PREPARED_BY_RESTAURANT) {
+        message = 'Tu pedido esta preparado';
+      } else if (orderStatus === ORDER_STATUS.PICKED_UP) {
+        message = 'Tu pedido ha sido entregado';
+      } else if (orderStatus === ORDER_STATUS.DELIVERED) {
+        message = 'Tu pedido esta siendo enviado';
+      } else if (orderStatus === ORDER_STATUS.REJECTED_BY_ADMIN) {
+        message = 'Tu pedido ha sido cancelado';
+      } else if (orderStatus === ORDER_STATUS.REJECTED_BY_RESTAURANT) {
+        message = 'Tu pedido ha sido cancelado';
+      } else if (orderStatus === ORDER_STATUS.CLOSED) {
+        message = 'Tu pedido esta cerrado';
+      }
+      await this.senderService.sendMessages(
+        this.builderTemplate.buildTextMessage(
+          messageEntry.clientPhone,
+          message,
+        ),
+      );
+    } catch (error) {}
+  }
+
+  async declinePay(messageEntry: IParsedMessage) {
+    const clientNumberPhone = messageEntry.content.id.split(' ')[3];
+    const response = await this.aiService.createChat([
+      {
+        role: 'system',
+        content: PROMPT_DECLINE_PAY,
+      },
+    ]);
+    const chunks = response.split(/(?<!\d)\.\s+/g);
+    for (const chunk of chunks) {
+      const newMessage = await this.historyService.setAndCreateAssitantMessage(
+        messageEntry,
+        chunk,
+      );
+      await this.senderService.sendMessages(
+        this.builderTemplate.buildTextMessage(clientNumberPhone, chunk),
+      );
+    }
+  }
+
+  async acceptPay(messageEntry: IParsedMessage) {
+    const clientPhone: string = messageEntry.content.id.split(' ')[2];
+    const ctx = await this.ctxService.findOrCreateCtx({
+      clientPhone: clientPhone,
+    });
+    ctx.step = STEPS.WAITING_LOCATION;
+    await this.ctxService.updateCtx(ctx._id, ctx);
+    const response = await this.aiService.createChat([
+      {
+        role: 'system',
+        content: PROMPT_ACCEPT_PAY,
+      },
+    ]);
+    const chunks = response.split(/(?<!\d)\.\s+/g);
+    for (const chunk of chunks) {
+      const newMessage = await this.historyService.setAndCreateAssitantMessage(
+        messageEntry,
+        chunk,
+      );
+      await this.senderService.sendMessages(
+        this.builderTemplate.buildTextMessage(clientPhone, chunk),
+      );
     }
   }
 
@@ -106,7 +244,7 @@ export class FlowsService {
       // send message about the pay to the admin
       await this.senderService.sendMessages(
         this.builderTemplate.buildMultimediaMessage(
-          messageEntry.clientPhone,
+          process.env.PHONE_ADMIN,
           'image',
           { link: cloudinaryImageUrl.url },
         ),
@@ -114,15 +252,21 @@ export class FlowsService {
       setTimeout(async () => {
         await this.senderService.sendMessages(
           this.builderTemplate.buildInteractiveButtonMessage(
-            messageEntry.clientPhone,
+            process.env.PHONE_ADMIN,
             'Comprobante de pago',
             [
-              { id: 'Confirmar pedido', title: 'Confirmar' },
-              { id: 'Rechazar', title: 'Rechazar' },
+              {
+                id: `Confirmar pedido ${messageEntry.clientPhone}`,
+                title: 'Confirmar',
+              },
+              {
+                id: `Rechazar pedido ${messageEntry.clientPhone}`,
+                title: 'Rechazar',
+              },
             ],
           ),
         );
-      }, 1000); // 5000 milisegundos = 5 segundos
+      }, 1000);
 
       // Actualizar paso
       ctx.step = STEPS.PRE_PAY;
@@ -147,6 +291,8 @@ export class FlowsService {
     historyParsed: string,
   ) {
     try {
+      ctx.order = messageEntry.content.split(' ')[3].replace('*', '');
+      this.ctxService.updateCtx(ctx._id, ctx);
       const prompt = await this.generatePayLink(
         messageEntry.content,
         historyParsed,
