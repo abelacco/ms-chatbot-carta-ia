@@ -4,6 +4,7 @@ export const WSP_MESSAGE_TYPES = {
   INTERACTIVE: 'interactive',
   IMAGE: 'image',
   BUTTON: 'button',
+  LOCATION: 'location',
 };
 
 export const INTERACTIVE_REPLIES_TYPES = {
@@ -24,4 +25,16 @@ export const DOCUMENT_IDENTIFIERS = {
   RUC_LENGTH: 11,
   DNI_TYPE: 'dni',
   RUC_TYPE: 'ruc',
+};
+
+export const ORDER_STATUS = {
+  JUST_CREATED: 'Just created',
+  ACEPTED_BY_ADMIN: 'Accepted by admin',
+  ACCEPTED: 'Accepted',
+  PREPARED_BY_RESTAURANT: 'Prepared by restaurant',
+  PICKED_UP: 'Picked up/Entregado',
+  DELIVERED: 'Delivered/ Enviado',
+  REJECTED_BY_ADMIN: 'Rejected by admin',
+  REJECTED_BY_RESTAURANT: 'Rejected by restaurant',
+  CLOSED: 'Closed',
 };

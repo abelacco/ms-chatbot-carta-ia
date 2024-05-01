@@ -4,3 +4,4 @@ export * from './multimediaMessage';
 export * from './parsedMessage';
 export * from './templateStandardMessage';
 export * from './textMessage';
+export * from './locationMessage';

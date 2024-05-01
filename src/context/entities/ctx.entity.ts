@@ -20,7 +20,7 @@ export class Ctx extends Document {
   parsedAvailableHours: string;
 
   @Prop()
-  order: Product[];
+  order: string;
 
   @Prop()
   address: string;

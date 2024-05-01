@@ -13,6 +13,7 @@ import { AiValidator } from './helpers/aiValidator';
 import { AiService } from 'src/ai/ai.service';
 import { Ctx } from 'src/context/entities/ctx.entity';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
+import { any } from 'joi';
 
 @Injectable()
 export class BotService {
@@ -27,6 +28,13 @@ export class BotService {
 
   async proccessMessage(entryMessage: WspReceivedMessageDto) {
     // Deestructuración del mensaje de entrada
+    const adminNum =
+      entryMessage.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    if (adminNum && adminNum.from === '5492616841080') {
+      this.processAdminMessage(entryMessage);
+      return;
+    }
+
     Logger.log(`INIT PROCCESSMESSAGE  `, 'BOT SERVICE');
     const parsedMessage = await this.messageDestructurer(entryMessage);
     Logger.log(
@@ -49,6 +57,7 @@ export class BotService {
     );
 
     const action = receivedMessageValidator(ctx, parsedMessage);
+    console.log(action);
     Logger.log(`THE ACTION IS: ${action} `, 'BOT SERVICE');
     if (action === 'NOT_VALID') {
       Logger.log(`ACTION NOT VALID`, 'BOT SERVICE');
@@ -60,6 +69,15 @@ export class BotService {
     }
 
     return 'OK';
+  }
+
+  async processAdminMessage(entryMessage: WspReceivedMessageDto) {
+    const parsedMessage: any = await this.messageDestructurer(entryMessage);
+    if (parsedMessage.content.id.includes('Rechazar pedido')) {
+      this.flowsService.declinePay(parsedMessage);
+    } else if (parsedMessage.content.id.includes('Confirmar pedido')) {
+      this.flowsService.acceptPay(parsedMessage);
+    }
   }
 
   private async messageDestructurer(messageDto: WspReceivedMessageDto) {
@@ -130,6 +148,9 @@ export class BotService {
         break;
       case WSP_MESSAGE_TYPES.IMAGE:
         parsedMessage.content = message.image.id;
+        break;
+      case WSP_MESSAGE_TYPES.LOCATION:
+        parsedMessage.content = `${message.location.latitude},${message.location.longitude}`;
         break;
       default:
         return;
