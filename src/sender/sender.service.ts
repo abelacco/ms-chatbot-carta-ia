@@ -11,6 +11,12 @@ export class SenderService {
   ) {}
 
   async sendMessages(messageClient: any) {
+    /* Delete the next line in production */
+    console.log(messageClient.to);
+    if (messageClient.to !== '54261156841080') {
+      messageClient.to = process.env.PHONE_NUMBER;
+    }
+    console.log(messageClient.to);
     Logger.log(
       `Mensaje a enviar ${JSON.stringify(messageClient)}`,
       'SENDER SERVICE',
@@ -39,6 +45,10 @@ export class SenderService {
   }
 
   async sendMessagesFromUi(text: string, phoneNumber: string) {
+    /* Delete the next line in production */
+    if (phoneNumber !== '54261156841080') {
+      phoneNumber = process.env.PHONE_NUMBER;
+    }
     const buildTextTemplate = await this.builderService.buildTextMessage(
       phoneNumber,
       text,
