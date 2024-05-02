@@ -11,6 +11,7 @@ export class SenderService {
   ) {}
 
   async sendMessages(messageClient: any) {
+    console.log(messageClient.to);
     Logger.log(
       `Mensaje a enviar ${JSON.stringify(messageClient)}`,
       'SENDER SERVICE',

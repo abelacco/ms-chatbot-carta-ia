@@ -44,6 +44,8 @@ export class FlowsService {
     const longitude = parseFloat(locationSplit[1]);
     // send to admin
     ctx.step = STEPS.ORDERED;
+    ctx.lat = latitude.toString();
+    ctx.lng = longitude.toString();
     this.ctxService.updateCtx(ctx._id, ctx);
     await this.senderService.sendMessages(
       this.builderTemplate.buildLocationMessage(
@@ -56,7 +58,7 @@ export class FlowsService {
       await this.senderService.sendMessages(
         this.builderTemplate.buildInteractiveButtonMessage(
           process.env.PHONE_ADMIN,
-          `Ubicación cliente ${messageEntry.clientPhone}`,
+          `Ubicación pedido ${ctx.order}`,
           [
             {
               id: `Avisar`,
@@ -129,6 +131,7 @@ export class FlowsService {
         parseInt(ctx.order),
       );
       let message = '';
+      let resetSteps = false;
       if (orderStatus === ORDER_STATUS.JUST_CREATED) {
         message = 'Estamos analizando tu pedido';
       } else if (orderStatus === ORDER_STATUS.ACEPTED_BY_ADMIN) {
@@ -138,18 +141,29 @@ export class FlowsService {
       } else if (orderStatus === ORDER_STATUS.PREPARED_BY_RESTAURANT) {
         message = 'Tu pedido esta preparado';
       } else if (orderStatus === ORDER_STATUS.PICKED_UP) {
+        resetSteps = true;
         message = 'Tu pedido ha sido entregado';
       } else if (orderStatus === ORDER_STATUS.DELIVERED) {
         message = 'Tu pedido esta siendo enviado';
       } else if (orderStatus === ORDER_STATUS.REJECTED_BY_ADMIN) {
+        resetSteps = true;
         message = 'Tu pedido ha sido cancelado';
       } else if (orderStatus === ORDER_STATUS.REJECTED_BY_RESTAURANT) {
+        resetSteps = true;
         message = 'Tu pedido ha sido cancelado';
       } else if (orderStatus === ORDER_STATUS.CLOSED) {
+        resetSteps = true;
         message = 'Tu pedido esta cerrado';
       } else {
+        resetSteps = true;
         message = 'No has hecho ningun pedido';
       }
+
+      if (resetSteps) {
+        ctx.step = STEPS.INIT;
+        await this.ctxService.updateCtx(ctx._id, ctx);
+      }
+
       await this.senderService.sendMessages(
         this.builderTemplate.buildTextMessage(
           messageEntry.clientPhone,
@@ -252,7 +266,7 @@ export class FlowsService {
         await this.senderService.sendMessages(
           this.builderTemplate.buildInteractiveButtonMessage(
             process.env.PHONE_ADMIN,
-            'Comprobante de pago',
+            `Comprobante de pago pedido: ${ctx.order}`,
             [
               {
                 id: `Confirmar pedido ${messageEntry.clientPhone}`,
