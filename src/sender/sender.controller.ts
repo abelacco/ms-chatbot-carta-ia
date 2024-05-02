@@ -8,12 +8,13 @@ import {
   Delete,
 } from '@nestjs/common';
 import { SenderService } from './sender.service';
+import { SenderFromUiDto } from './dto/sender-from-ui.dto';
 
 @Controller('sender')
 export class SenderController {
   constructor(private readonly senderService: SenderService) {}
 
-  @Post('/sendMessage')
+  @Post('/send-message')
   sendMessage(@Body() botResponse: any) {
     console.log('CONTROLLER - Iniciando proceso de mensaje', botResponse);
     try {
@@ -21,6 +22,21 @@ export class SenderController {
       // response.success = 1;
       // response.message = "Message sent successfully";
       return this.senderService.sendMessages(botResponse);
+    } catch (error) {
+      return error;
+      // response.success = 0;
+      // response.message = 'Message could not be sent';
+      // errorHandler(error.code, response)
+    }
+  }
+  @Post('/send-message-from-ui')
+  sendMessageFromUi(@Body() botResponse: SenderFromUiDto) {
+    console.log('CONTROLLER - Iniciando proceso de mensaje', botResponse);
+    try {
+      return this.senderService.sendMessagesFromUi(
+        botResponse.text,
+        botResponse.text,
+      );
     } catch (error) {
       return error;
       // response.success = 0;

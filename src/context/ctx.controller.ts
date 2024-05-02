@@ -1,5 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Put } from '@nestjs/common';
 import { CtxService } from './ctx.service';
+import { SwitchBotDto } from './dto';
 
 @Controller('ctx')
 export class CtxController {
@@ -11,5 +12,10 @@ export class CtxController {
     @Query('chatbotNumber') chatbotNumber: string,
   ) {
     return this.ctxService.findAllCtx();
+  }
+
+  @Put('switch-bot')
+  switchBot(@Query() switchBot: SwitchBotDto) {
+    return this.ctxService.switchBotCtx(switchBot);
   }
 }

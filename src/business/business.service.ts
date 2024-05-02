@@ -8,8 +8,8 @@ export class BusinessService {
   async getToken() {
     const url = 'https://menu.cartadirecta.com/api/v2/vendor/auth/gettoken';
     const data = {
-      email: 'process.env.CARTA_DIRECTA_EMAIL',
-      password: 'process.env.CARTA_DIRECTA_PASSWORD',
+      email: process.env.CARTA_DIRECTA_EMAIL,
+      password: process.env.CARTA_DIRECTA_PASSWORD,
     };
 
     try {
@@ -45,8 +45,12 @@ export class BusinessService {
 
   async getOrderStatus(orderId: number) {
     const order = await this.getOrderById(orderId);
-    const orderStatus = order.last_status[0].name;
-    return orderStatus;
+    if (!order || order.length === 0) {
+      return 'No hay orden';
+    } else {
+      const orderStatus = order.last_status[0].name;
+      return orderStatus;
+    }
   }
 
   async getMenuFromApi() {

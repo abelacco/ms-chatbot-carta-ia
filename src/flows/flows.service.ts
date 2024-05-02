@@ -93,10 +93,7 @@ export class FlowsService {
     try {
       Logger.log('DEFINO INTENCION DEL CLIENTE', 'ANALYZE_PROMPT');
       let response = '';
-      if (
-        ctx.step === STEPS.INIT &&
-        messageEntry.content.includes('Número de orden:')
-      ) {
+      if (messageEntry.content.includes('Número de orden:')) {
         response = 'ORDENAR';
       } else {
         const prompt = this.generateAnalyzePrompt(
@@ -150,6 +147,8 @@ export class FlowsService {
         message = 'Tu pedido ha sido cancelado';
       } else if (orderStatus === ORDER_STATUS.CLOSED) {
         message = 'Tu pedido esta cerrado';
+      } else {
+        message = 'No has hecho ningun pedido';
       }
       await this.senderService.sendMessages(
         this.builderTemplate.buildTextMessage(

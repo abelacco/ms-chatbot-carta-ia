@@ -38,3 +38,13 @@ export const ORDER_STATUS = {
   REJECTED_BY_RESTAURANT: 'Rejected by restaurant',
   CLOSED: 'Closed',
 };
+
+export const STATUS_BOT = {
+  OFF: 0,
+  ON: 1,
+};
+
+export const GENERAL_STATUS = {
+  OFF: 0,
+  ON: 1,
+};
