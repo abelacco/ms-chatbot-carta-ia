@@ -57,7 +57,12 @@ export class BotService {
       parsedMessage,
     );
 
-    if (ctx.statusBot === STATUS_BOT.OFF) {
+    const globalContext = await this.ctxService.findOrCreateCtx({
+      clientPhone: '0',
+    });
+    if (globalContext.statusBot === STATUS_BOT.OFF) {
+      return 'OK';
+    } else if (ctx.statusBot === STATUS_BOT.OFF) {
       return 'OK';
     }
 

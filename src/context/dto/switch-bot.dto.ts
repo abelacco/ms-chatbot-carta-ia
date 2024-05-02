@@ -18,9 +18,4 @@ export class SwitchBotDto {
   @IsNumber()
   @Min(0)
   status: number;
-
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  all?: number;
 }
