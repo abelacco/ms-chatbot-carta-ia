@@ -4,6 +4,7 @@ import { WspReceivedMessageDto } from 'src/common/dto';
 import {
   INTERACTIVE_REPLIES_TYPES,
   WSP_MESSAGE_TYPES,
+  STATUS_BOT,
 } from 'src/common/constants';
 import { receivedMessageValidator } from './helpers/receivedMessageValidator';
 import { FlowsService } from 'src/flows/flows.service';
@@ -55,6 +56,10 @@ export class BotService {
     const history = await this.historyService.createAndGetHistoryParsed(
       parsedMessage,
     );
+
+    if (ctx.statusBot === STATUS_BOT.OFF) {
+      return 'OK';
+    }
 
     const action = receivedMessageValidator(ctx, parsedMessage);
     console.log(action);

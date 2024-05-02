@@ -17,9 +17,6 @@ export class Ctx extends Document {
   clientPhone: string;
 
   @Prop()
-  parsedAvailableHours: string;
-
-  @Prop()
   order: string;
 
   @Prop()
@@ -44,25 +41,19 @@ export class Ctx extends Document {
   date: Date;
 
   @Prop()
-  status: string;
+  statusBot: number;
 
   @Prop()
   step: string;
-
-  @Prop()
-  dateSelected: string;
-
-  @Prop()
-  datePreselected: string;
-
-  @Prop()
-  email: string;
 
   @Prop()
   attempts: number;
 
   @Prop()
   voucherUrl: string;
+
+  @Prop()
+  codeLinkPay: string;
 }
 
 export const CtxSchema = SchemaFactory.createForClass(Ctx);

@@ -11,11 +11,10 @@ import {
   TemplateMessage,
   LocationMessage,
 } from './interface/index';
-import { SenderService } from 'src/sender/sender.service';
 
 @Injectable()
 export class BuilderTemplatesService {
-  constructor(private readonly senderService: SenderService) {}
+  constructor() {}
 
   buildTextMessage(phoneNumber: string, bodyText: string): TextMessage {
     return {
