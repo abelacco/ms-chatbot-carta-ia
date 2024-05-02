@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Ctx } from './entities/ctx.entity';
 import { MongoDbService } from './db/mongodb.service';
 import { ICtxDao } from './db/ctxDao';
-import { SwitchBotDto, UpdateCtxDto } from './dto';
+import { SwitchBotDto, SwitchBotGlobalDto, UpdateCtxDto } from './dto';
 import { STATUS_BOT } from 'src/common/constants';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
@@ -38,6 +38,21 @@ export class CtxService {
   async switchBotCtx(switchBot: SwitchBotDto): Promise<Ctx> {
     const ctx = await this.findOrCreateCtx({
       clientPhone: parseInt(switchBot.clientPhone),
+    });
+    if (switchBot.status === STATUS_BOT.OFF) {
+      ctx.statusBot = STATUS_BOT.OFF;
+    } else if (switchBot.status === STATUS_BOT.ON) {
+      ctx.statusBot = STATUS_BOT.ON;
+    }
+
+    const ctxUpdated = await this.updateCtx(ctx._id, ctx);
+
+    return ctxUpdated;
+  }
+
+  async switchBotGlobalCtx(switchBot: SwitchBotGlobalDto): Promise<Ctx> {
+    const ctx = await this.findOrCreateCtx({
+      clientPhone: 0,
     });
     if (switchBot.status === STATUS_BOT.OFF) {
       ctx.statusBot = STATUS_BOT.OFF;
