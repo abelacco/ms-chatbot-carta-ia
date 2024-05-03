@@ -159,10 +159,13 @@ export class FlowsService {
         message = 'No has hecho ningun pedido';
       }
 
+      ctx.orderStatus = orderStatus;
       if (resetSteps) {
         ctx.step = STEPS.INIT;
-        await this.ctxService.updateCtx(ctx._id, ctx);
+        delete ctx.order;
+        delete ctx.orderStatus;
       }
+      await this.ctxService.updateCtx(ctx._id, ctx);
 
       await this.senderService.sendMessages(
         this.builderTemplate.buildTextMessage(
@@ -174,7 +177,13 @@ export class FlowsService {
   }
 
   async declinePay(messageEntry: IParsedMessage) {
-    const clientNumberPhone = messageEntry.content.id.split(' ')[3];
+    const clientNumberPhone = messageEntry.content.id.split(' ')[2];
+    const ctx = await this.ctxService.findOrCreateCtx({
+      clientPhone: clientNumberPhone,
+    });
+    ctx.orderStatus = ORDER_STATUS.REJECTED_BY_RESTAURANT;
+    ctx.step = STEPS.INIT;
+    await this.ctxService.updateCtx(ctx._id, ctx);
     const response = await this.aiService.createChat([
       {
         role: 'system',
@@ -198,6 +207,7 @@ export class FlowsService {
     const ctx = await this.ctxService.findOrCreateCtx({
       clientPhone: clientPhone,
     });
+    ctx.orderStatus = ORDER_STATUS.ACCEPTED;
     ctx.step = STEPS.WAITING_LOCATION;
     await this.ctxService.updateCtx(ctx._id, ctx);
     const response = await this.aiService.createChat([
@@ -269,11 +279,11 @@ export class FlowsService {
             `Comprobante de pago pedido: ${ctx.order}`,
             [
               {
-                id: `Confirmar pedido ${messageEntry.clientPhone}`,
+                id: `Confirmar pedido ${messageEntry.clientPhone} orden ${ctx.order}`,
                 title: 'Confirmar',
               },
               {
-                id: `Rechazar pedido ${messageEntry.clientPhone}`,
+                id: `Rechazar pedido ${messageEntry.clientPhone} orden ${ctx.order}`,
                 title: 'Rechazar',
               },
             ],
@@ -332,6 +342,7 @@ export class FlowsService {
       }
       // Actualizar paso
       ctx.step = STEPS.PRE_PAY;
+      ctx.orderStatus = ORDER_STATUS.JUST_CREATED;
       await this.ctxService.updateCtx(ctx._id, ctx);
     } catch (err) {
       console.log(`[ERROR]:`, err);
