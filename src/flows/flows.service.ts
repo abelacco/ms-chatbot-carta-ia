@@ -389,9 +389,12 @@ export class FlowsService {
   async generateGeneralCovergaInfo(question: string, history: string) {
     const mainPrompt = PROMPT_COVERAGE.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', 'La Burguesía')
+      .replace('{restaurante}', 'De Todo Delivery')
       .replace('{direccion}', 'Los Cardos 123, Urb. Miraflores,Piura')
-      .replace('{link}', 'https://menu.cartadirecta.com/laburguesia');
+      .replace(
+        '{link}',
+        'https://menu.cartadirecta.com/restaurant/restaurante1',
+      );
     return mainPrompt;
   }
 
@@ -399,14 +402,17 @@ export class FlowsService {
     const menu = await this.businessService.parseMenuFromApiResponse();
     const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', 'La Burguesía')
+      .replace('{restaurante}', 'De Todo Delivery')
       .replace(
         '{slogan}',
-        'Regla #1 Contarle a tus amigos del sabor de La Burguesía',
+        'Regla #1 Contarle a tus amigos del sabor de De Todo Delivery',
       )
       .replace('{direccion}', 'Los Cardos 123, Urb. Miraflores,Piura')
       .replace('{horarios}', 'Lunes a Sábados de 7 pm a 11pm')
-      .replace('{link}', 'https://menu.cartadirecta.com/laburguesia')
+      .replace(
+        '{link}',
+        'https://menu.cartadirecta.com/restaurant/restaurante1',
+      )
       .replace('{extra}', menu.extras)
       .replace('{menu}', menu.comidas)
       .replace('{drinks}', menu.bebidas);
