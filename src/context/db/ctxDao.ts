@@ -20,6 +20,7 @@ export interface ICtxDao {
     updateMessageDto: UpdateCtxDto,
   ): Promise<Ctx>;
 
+  findByOrder(orderId: string): Promise<Ctx>;
   // findMessageByterm(term: string): Promise<Ctx>;
 
   // remove(id: string): Promise<Doctor>;

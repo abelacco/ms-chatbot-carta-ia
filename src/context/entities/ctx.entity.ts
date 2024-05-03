@@ -20,6 +20,9 @@ export class Ctx extends Document {
   order: string;
 
   @Prop()
+  orderStatus: string;
+
+  @Prop()
   address: string;
 
   @Prop()

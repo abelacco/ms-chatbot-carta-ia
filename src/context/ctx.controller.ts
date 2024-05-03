@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Put } from '@nestjs/common';
 import { CtxService } from './ctx.service';
-import { SwitchBotDto, SwitchBotGlobalDto } from './dto';
+import { SwitchBotDto, SwitchBotGlobalDto, UpdateOrderStatusDto } from './dto';
 
 @Controller('ctx')
 export class CtxController {
@@ -22,5 +22,10 @@ export class CtxController {
   @Put('switch-bot-global')
   switchBotGlobalDto(@Query() switchBot: SwitchBotGlobalDto) {
     return this.ctxService.switchBotGlobalCtx(switchBot);
+  }
+
+  @Put('update-status-order')
+  updateStatusOrder(@Query() updateOrder: UpdateOrderStatusDto) {
+    return this.ctxService.updateStatusOrder(updateOrder);
   }
 }

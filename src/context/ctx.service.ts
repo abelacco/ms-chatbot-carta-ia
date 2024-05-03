@@ -2,7 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Ctx } from './entities/ctx.entity';
 import { MongoDbService } from './db/mongodb.service';
 import { ICtxDao } from './db/ctxDao';
-import { SwitchBotDto, SwitchBotGlobalDto, UpdateCtxDto } from './dto';
+import {
+  SwitchBotDto,
+  SwitchBotGlobalDto,
+  UpdateCtxDto,
+  UpdateOrderStatusDto,
+} from './dto';
 import { STATUS_BOT } from 'src/common/constants';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
@@ -62,6 +67,18 @@ export class CtxService {
 
     const ctxUpdated = await this.updateCtx(ctx._id, ctx);
 
+    return ctxUpdated;
+  }
+
+  async getCtxByOrderId(orderId: string): Promise<Ctx> {
+    const ctx = await this._db.findByOrder(orderId);
+    return ctx;
+  }
+
+  async updateStatusOrder(updateOrder: UpdateOrderStatusDto): Promise<Ctx> {
+    const ctx = await this._db.findByOrder(updateOrder.order);
+    ctx.orderStatus = updateOrder.orderStatus;
+    const ctxUpdated = await this.updateCtx(ctx._id, ctx);
     return ctxUpdated;
   }
 }

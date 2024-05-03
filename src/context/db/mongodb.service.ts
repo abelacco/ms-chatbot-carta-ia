@@ -72,6 +72,19 @@ export class MongoDbService implements ICtxDao {
     }
   }
 
+  async findByOrder(orderId: string): Promise<Ctx> {
+    try {
+      const ctx = await this._ctxModel.findOne({
+        order: orderId,
+      });
+
+      return ctx;
+    } catch (error) {
+      if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
+      else throw error;
+    }
+  }
+
   // async findMessageByterm(term: string): Promise<Ctx> {
   //   try{
   //     const message = await this._ctxModel.findOne({term});

@@ -31,7 +31,7 @@ export class BotService {
     // Deestructuración del mensaje de entrada
     const adminNum =
       entryMessage.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-    if (adminNum && adminNum.from === '5492616841080') {
+    if (adminNum && adminNum.from === process.env.PHONE_ADMIN) {
       this.processAdminMessage(entryMessage);
       return;
     }
