@@ -250,6 +250,8 @@ export class FlowsService {
           content: prompt,
         },
       ]);
+      ctx.voucherUrl = cloudinaryImageUrl.url;
+      await this.ctxService.updateCtx(ctx._id, ctx);
       const chunks = response.split(/(?<!\d)\.\s+/g);
       for (const chunk of chunks) {
         const newMessage =
