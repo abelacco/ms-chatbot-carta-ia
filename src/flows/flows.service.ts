@@ -69,6 +69,7 @@ export class FlowsService {
       );
     }, 1000);
     // send to client
+    messageEntry.type = 'text';
     const response = await this.aiService.createChat([
       {
         role: 'system',
@@ -183,6 +184,8 @@ export class FlowsService {
     });
     ctx.orderStatus = ORDER_STATUS.REJECTED_BY_RESTAURANT;
     ctx.step = STEPS.INIT;
+
+    messageEntry.type = 'text';
     await this.ctxService.updateCtx(ctx._id, ctx);
     const response = await this.aiService.createChat([
       {
@@ -210,6 +213,8 @@ export class FlowsService {
     ctx.orderStatus = ORDER_STATUS.ACCEPTED;
     ctx.step = STEPS.WAITING_LOCATION;
     await this.ctxService.updateCtx(ctx._id, ctx);
+
+    messageEntry.type = 'text';
     const response = await this.aiService.createChat([
       {
         role: 'system',
@@ -253,6 +258,7 @@ export class FlowsService {
       ctx.voucherUrl = cloudinaryImageUrl.url;
       await this.ctxService.updateCtx(ctx._id, ctx);
       const chunks = response.split(/(?<!\d)\.\s+/g);
+      messageEntry.type = 'text';
       for (const chunk of chunks) {
         const newMessage =
           await this.historyService.setAndCreateAssitantMessage(
