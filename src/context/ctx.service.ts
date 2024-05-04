@@ -9,6 +9,7 @@ import {
   UpdateOrderStatusDto,
 } from './dto';
 import { STATUS_BOT } from 'src/common/constants';
+import { EnumOrderStatus } from 'src/common/enums';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
 @Injectable()
@@ -77,7 +78,7 @@ export class CtxService {
 
   async updateStatusOrder(updateOrder: UpdateOrderStatusDto): Promise<Ctx> {
     const ctx = await this._db.findByOrder(updateOrder.order);
-    ctx.orderStatus = updateOrder.orderStatus;
+    ctx.orderStatus = EnumOrderStatus[updateOrder.orderStatus];
     const ctxUpdated = await this.updateCtx(ctx._id, ctx);
     return ctxUpdated;
   }
