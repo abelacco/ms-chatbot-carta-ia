@@ -21,6 +21,7 @@ import {
   PROMPT_LOCATION,
 } from './Utils/promps';
 import { string } from 'joi';
+import { filterOrderId } from './Utils/filterOrderId';
 
 @Injectable()
 export class FlowsService {
@@ -322,7 +323,8 @@ export class FlowsService {
     historyParsed: string,
   ) {
     try {
-      ctx.order = messageEntry.content.split(' ')[3].replace('*', '');
+      const orderId = messageEntry.content.split(' ')[3].replace('*', '');
+      ctx.order = filterOrderId(orderId);
       this.ctxService.updateCtx(ctx._id, ctx);
       const prompt = await this.generatePayLink(
         messageEntry.content,
