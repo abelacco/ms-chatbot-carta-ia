@@ -10,6 +10,7 @@ import {
 } from './dto';
 import { STATUS_BOT } from 'src/common/constants';
 import { EnumOrderStatus } from 'src/common/enums';
+import { setWeekYear } from 'date-fns';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
 @Injectable()
@@ -20,9 +21,9 @@ export class CtxService {
     this._db = this._mongoDbService;
   }
 
-  async findOrCreateCtx({ clientPhone }): Promise<Ctx> {
+  async findOrCreateCtx({ clientPhone, chatbotNumber }): Promise<Ctx> {
     //Busca mensaje por número de cliente
-    const message = await this._db.findOrCreate(clientPhone);
+    const message = await this._db.findOrCreate(clientPhone, chatbotNumber);
 
     return message;
   }
@@ -43,7 +44,8 @@ export class CtxService {
 
   async switchBotCtx(switchBot: SwitchBotDto): Promise<Ctx> {
     const ctx = await this.findOrCreateCtx({
-      clientPhone: parseInt(switchBot.clientPhone),
+      clientPhone: switchBot.clientPhone,
+      chatbotNumber: switchBot.chatBotNumber,
     });
     if (switchBot.status === STATUS_BOT.OFF) {
       ctx.statusBot = STATUS_BOT.OFF;
@@ -58,7 +60,8 @@ export class CtxService {
 
   async switchBotGlobalCtx(switchBot: SwitchBotGlobalDto): Promise<Ctx> {
     const ctx = await this.findOrCreateCtx({
-      clientPhone: 0,
+      clientPhone: switchBot.chatBotNumber,
+      chatbotNumber: switchBot.chatBotNumber,
     });
     if (switchBot.status === STATUS_BOT.OFF) {
       ctx.statusBot = STATUS_BOT.OFF;

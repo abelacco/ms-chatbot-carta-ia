@@ -30,7 +30,7 @@ export default class BusinessController {
   }
 
   @Get('get-order/:id')
-  hola(@Param('id') orderId: string) {
+  getOrderById(@Param('id') orderId: string) {
     return this.businessService.getOrderById(parseInt(orderId));
   }
 }

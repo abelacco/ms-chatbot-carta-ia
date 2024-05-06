@@ -11,7 +11,7 @@ export interface ICtxDao {
 
   // findById(id: string): Promise<Doctor>;
 
-  findOrCreate(clientPhone: string): Promise<Ctx>;
+  findOrCreate(clientPhone: string, chatBotNumber: string): Promise<Ctx>;
 
   updateCtx(id: string, updateCtxDto: UpdateCtxDto): Promise<Ctx>;
 

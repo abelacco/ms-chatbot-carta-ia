@@ -16,16 +16,18 @@ import { UpdateCtxDto } from 'src/bot/dto';
 export class MongoDbService implements ICtxDao {
   constructor(@InjectModel(Ctx.name) private readonly _ctxModel: Model<Ctx>) {}
 
-  async findOrCreate(clientPhone: string): Promise<Ctx> {
+  async findOrCreate(clientPhone: string, chatBotNumber: string): Promise<Ctx> {
     try {
       const ctx = await this._ctxModel.findOne({
         clientPhone: clientPhone,
+        chatbotNumber: chatBotNumber,
       });
 
       if (!ctx) {
         try {
           const createMessage = new this._ctxModel({
             clientPhone: clientPhone,
+            chatbotNumber: chatBotNumber,
           });
           await createMessage.save();
           return createMessage;
@@ -41,6 +43,7 @@ export class MongoDbService implements ICtxDao {
       else throw error;
     }
   }
+
   async updateCtx(id: string, updateCtxDto: UpdateCtxDto): Promise<Ctx> {
     try {
       const updatedMessage = await this._ctxModel.findByIdAndUpdate(
