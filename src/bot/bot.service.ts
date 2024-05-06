@@ -15,6 +15,7 @@ import { AiService } from 'src/ai/ai.service';
 import { Ctx } from 'src/context/entities/ctx.entity';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
 import { any } from 'joi';
+import { BusinessService } from 'src/business/business.service';
 
 @Injectable()
 export class BotService {
@@ -25,6 +26,7 @@ export class BotService {
     private readonly aiValidatorService: AiValidator,
     private aiService: AiService,
     private gatewayService: WhatsappGateway,
+    private readonly businessService: BusinessService,
   ) {}
 
   async proccessMessage(entryMessage: WspReceivedMessageDto) {
@@ -60,15 +62,23 @@ export class BotService {
       return 'OK';
     }
 
+    const businessInfo = await this.businessService.getBusiness(
+      parsedMessage.chatbotNumber,
+    );
+
     const action = receivedMessageValidator(ctx, parsedMessage);
-    console.log(action);
     Logger.log(`THE ACTION IS: ${action} `, 'BOT SERVICE');
     if (action === 'NOT_VALID') {
       Logger.log(`ACTION NOT VALID`, 'BOT SERVICE');
       await this.flowsService[action](ctx, parsedMessage);
       return 'OK';
     } else {
-      await this.flowsService[action](ctx, parsedMessage, history);
+      await this.flowsService[action](
+        ctx,
+        parsedMessage,
+        history,
+        businessInfo,
+      );
       Logger.log(`THE FLOW : ${action} WAS EXCUTED`, 'BOT SERVICE');
     }
 

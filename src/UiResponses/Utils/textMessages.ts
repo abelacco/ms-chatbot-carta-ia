@@ -1,11 +1,11 @@
 export const justCreated =
-  'Hemos recibido tu pedido numero: {orderId} y lo estamos analisando';
+  'Hemos recibido tu pedido numero: {orderId} y lo estamos analizando';
 
 export const aceptedMessage =
   'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}';
 
 export const rejectedMessage =
-  'Hemos rechazo el comprobante de pago de tu pedido numero: {orderId}';
+  'Hemos rechazado el comprobante de pago de tu pedido numero: {orderId}';
 
 export const prepared = 'Tu pedido numero: {orderId} ya ha sido preparado';
 

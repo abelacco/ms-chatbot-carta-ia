@@ -7,6 +7,7 @@ import { HistoryModule } from 'src/history/history.module';
 import { AiValidator } from './helpers/aiValidator';
 import { AiModule } from 'src/ai/ai.module';
 import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module';
+import { BusinessModule } from 'src/business/business.module';
 
 @Module({
   controllers: [BotController],
@@ -17,6 +18,7 @@ import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module'
     HistoryModule,
     AiModule,
     WspWebGatewayModule,
+    BusinessModule,
   ],
   exports: [BotService],
 })

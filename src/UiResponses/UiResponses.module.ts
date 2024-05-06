@@ -4,6 +4,7 @@ import { UiResponsesService } from './UiResponses.service';
 import { SenderModule } from 'src/sender/sender.module';
 import { HistoryModule } from 'src/history/history.module';
 import { BuilderTemplatesModule } from 'src/builder-templates/builder-templates.module';
+import { CtxModule } from 'src/context/ctx.module';
 
 @Module({
   controllers: [UiResponseController],
@@ -15,6 +16,7 @@ import { BuilderTemplatesModule } from 'src/builder-templates/builder-templates.
     SenderModule,
     BuilderTemplatesModule,
     HistoryModule,
+    CtxModule,
   ],
 })
 export class UiResponseModule {}

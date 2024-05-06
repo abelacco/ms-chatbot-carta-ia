@@ -22,6 +22,7 @@ import {
 } from './Utils/promps';
 import { string } from 'joi';
 import { filterOrderId } from './Utils/filterOrderId';
+import { measureMemory } from 'vm';
 
 @Injectable()
 export class FlowsService {
@@ -48,27 +49,6 @@ export class FlowsService {
     ctx.lat = latitude.toString();
     ctx.lng = longitude.toString();
     this.ctxService.updateCtx(ctx._id, ctx);
-    await this.senderService.sendMessages(
-      this.builderTemplate.buildLocationMessage(
-        process.env.PHONE_ADMIN,
-        longitude,
-        latitude,
-      ),
-    );
-    setTimeout(async () => {
-      await this.senderService.sendMessages(
-        this.builderTemplate.buildInteractiveButtonMessage(
-          process.env.PHONE_ADMIN,
-          `Ubicación pedido ${ctx.order}`,
-          [
-            {
-              id: `Avisar`,
-              title: 'Avisar repartidores',
-            },
-          ],
-        ),
-      );
-    }, 1000);
     // send to client
     messageEntry.type = 'text';
     const response = await this.aiService.createChat([
@@ -85,6 +65,7 @@ export class FlowsService {
       );
       await this.senderService.sendMessages(
         this.builderTemplate.buildTextMessage(messageEntry.clientPhone, chunk),
+        messageEntry.chatbotNumber,
       );
     }
   }
@@ -93,8 +74,10 @@ export class FlowsService {
     ctx: Ctx,
     messageEntry: IParsedMessage,
     historyParsed: string,
+    businessInfo,
   ) {
     try {
+      console.log(businessInfo);
       Logger.log('DEFINO INTENCION DEL CLIENTE', 'ANALYZE_PROMPT');
       let response = '';
       if (messageEntry.content.includes('Número de orden:')) {
@@ -113,13 +96,13 @@ export class FlowsService {
       }
       if (response === 'INFO') {
         Logger.log('INFO', 'INTENCION');
-        await this.sendInfoFlow(ctx, messageEntry, historyParsed);
+        await this.sendInfoFlow(ctx, messageEntry, historyParsed, businessInfo);
       } else if (response === 'ORDENAR') {
         Logger.log('ORDERNAR', 'INTENCION');
-        await this.sendPayLink(ctx, messageEntry, historyParsed);
+        await this.sendPayLink(ctx, messageEntry, historyParsed, businessInfo);
       } else {
         Logger.log('COBERTURA', 'INTENCION');
-        this.sendCoverageInfo(ctx, messageEntry, historyParsed);
+        this.sendCoverageInfo(ctx, messageEntry, historyParsed, businessInfo);
       }
     } catch (err) {
       console.log(`[ERROR]:`, err);
@@ -131,6 +114,7 @@ export class FlowsService {
     try {
       const orderStatus = await this.businessService.getOrderStatus(
         parseInt(ctx.order),
+        messageEntry.chatbotNumber,
       );
       let message = '';
       let resetSteps = false;
@@ -174,6 +158,7 @@ export class FlowsService {
           messageEntry.clientPhone,
           message,
         ),
+        messageEntry.chatbotNumber,
       );
     } catch (error) {}
   }
@@ -182,6 +167,7 @@ export class FlowsService {
     ctx: Ctx,
     messageEntry: IParsedMessage,
     historyParsed: string,
+    businessInfo,
   ) {
     try {
       const wspImageUrl = await this.generalService.getWhatsappMediaUrl(
@@ -193,6 +179,7 @@ export class FlowsService {
       const prompt = await this.generatePrePayConfirmation(
         messageEntry.content,
         historyParsed,
+        businessInfo,
       );
       const response = await this.aiService.createChat([
         {
@@ -215,34 +202,9 @@ export class FlowsService {
             messageEntry.clientPhone,
             chunk,
           ),
+          messageEntry.chatbotNumber,
         );
       }
-      // send message about the pay to the admin
-      await this.senderService.sendMessages(
-        this.builderTemplate.buildMultimediaMessage(
-          process.env.PHONE_ADMIN,
-          'image',
-          { link: cloudinaryImageUrl.url },
-        ),
-      );
-      setTimeout(async () => {
-        await this.senderService.sendMessages(
-          this.builderTemplate.buildInteractiveButtonMessage(
-            process.env.PHONE_ADMIN,
-            `Comprobante de pago pedido: ${ctx.order}`,
-            [
-              {
-                id: `Confirmar pedido ${messageEntry.clientPhone} orden ${ctx.order}`,
-                title: 'Confirmar',
-              },
-              {
-                id: `Rechazar pedido ${messageEntry.clientPhone} orden ${ctx.order}`,
-                title: 'Rechazar',
-              },
-            ],
-          ),
-        );
-      }, 1000);
 
       // Actualizar paso
       ctx.step = STEPS.PRE_PAY;
@@ -253,11 +215,15 @@ export class FlowsService {
     }
   }
 
-  async generatePrePayConfirmation(question: string, history: string) {
+  async generatePrePayConfirmation(
+    question: string,
+    history: string,
+    businessInfo,
+  ) {
     const mainPrompt = PROMPT_PRE_PAY_CONFIRMATION.replace(
       '{chatHistory}',
       history,
-    ).replace('{restaurante}', 'La Burguesía');
+    ).replace('{restaurante}', businessInfo.businessName);
     return mainPrompt;
   }
 
@@ -265,6 +231,7 @@ export class FlowsService {
     ctx: Ctx,
     messageEntry: IParsedMessage,
     historyParsed: string,
+    businessInfo,
   ) {
     try {
       const orderId = messageEntry.content.split(' ')[3].replace('*', '');
@@ -273,6 +240,7 @@ export class FlowsService {
       const prompt = await this.generatePayLink(
         messageEntry.content,
         historyParsed,
+        businessInfo,
       );
       const response = await this.aiService.createChat([
         {
@@ -292,6 +260,7 @@ export class FlowsService {
             messageEntry.clientPhone,
             chunk,
           ),
+          messageEntry.chatbotNumber,
         );
       }
       // Actualizar paso
@@ -304,10 +273,10 @@ export class FlowsService {
     }
   }
 
-  async generatePayLink(question: string, history: string) {
+  async generatePayLink(question: string, history: string, businessInfo) {
     const mainPrompt = PROMPT_PAY_LINK.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', 'La Burguesía')
+      .replace('{restaurante}', businessInfo.businessName)
       .replace('{payLink}', 'https://linkdepagodummy.com/laburguesia');
     return mainPrompt;
   }
@@ -316,11 +285,13 @@ export class FlowsService {
     ctx: Ctx,
     messageEntry: IParsedMessage,
     historyParsed: string,
+    businessInfo,
   ) {
     try {
       const prompt = await this.generateGeneralCovergaInfo(
         messageEntry.content,
         historyParsed,
+        businessInfo,
       );
       const response = await this.aiService.createChat([
         {
@@ -340,6 +311,7 @@ export class FlowsService {
             messageEntry.clientPhone,
             chunk,
           ),
+          messageEntry.chatbotNumber,
         );
       }
       // Actualizar paso
@@ -351,36 +323,45 @@ export class FlowsService {
     }
   }
 
-  async generateGeneralCovergaInfo(question: string, history: string) {
+  async generateGeneralCovergaInfo(
+    question: string,
+    history: string,
+    businessInfo,
+  ) {
     const mainPrompt = PROMPT_COVERAGE.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', 'De Todo Delivery')
-      .replace('{direccion}', 'Los Cardos 123, Urb. Miraflores,Piura')
+      .replace('{restaurante}', businessInfo.businessName)
+      .replace('{direccion}', businessInfo.address)
       .replace(
         '{link}',
-        'https://menu.cartadirecta.com/restaurant/restaurante1',
+        `https://menu.cartadirecta.com/restaurant/${businessInfo.businessId}`,
       );
     return mainPrompt;
   }
 
-  async generateGeneralInfoFlow(question: string, history: string) {
-    const menu = await this.businessService.parseMenuFromApiResponse();
-    const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
+  async generateGeneralInfoFlow(
+    question: string,
+    history: string,
+    businessInfo,
+  ) {
+    const menu = await this.businessService.parseMenuFromApiResponse(
+      businessInfo.businessId,
+    );
+    let mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', 'De Todo Delivery')
-      .replace(
-        '{slogan}',
-        'Regla #1 Contarle a tus amigos del sabor de De Todo Delivery',
-      )
-      .replace('{direccion}', 'Los Cardos 123, Urb. Miraflores,Piura')
-      .replace('{horarios}', 'Lunes a Sábados de 7 pm a 11pm')
+      .replace('{restaurante}', businessInfo.businessName)
+      .replace('{direccion}', businessInfo.address)
+      .replace('{horarios}', businessInfo.businessHours[0])
       .replace(
         '{link}',
-        'https://menu.cartadirecta.com/restaurant/restaurante1',
+        `https://menu.cartadirecta.com/restaurant/${businessInfo.businessId}`,
       )
       .replace('{extra}', menu.extras)
       .replace('{menu}', menu.comidas)
       .replace('{drinks}', menu.bebidas);
+    if (businessInfo.slogan) {
+      mainPrompt = mainPrompt.replace('{slogan}', businessInfo.slogan);
+    }
     return mainPrompt;
   }
 
@@ -388,11 +369,13 @@ export class FlowsService {
     ctx: Ctx,
     messageEntry: IParsedMessage,
     historyParsed: string,
+    businessInfo,
   ) => {
     try {
       const prompt = await this.generateGeneralInfoFlow(
         messageEntry.content,
         historyParsed,
+        businessInfo,
       );
       const response = await this.aiService.createChat([
         {
@@ -412,6 +395,7 @@ export class FlowsService {
             messageEntry.clientPhone,
             chunk,
           ),
+          messageEntry.chatbotNumber,
         );
       }
       // Actualizar paso

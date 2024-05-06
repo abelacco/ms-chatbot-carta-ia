@@ -75,11 +75,14 @@ export class BusinessService {
     return business;
   }
 
-  async getToken() {
+  async getToken(chatbotNumber: string) {
     const url = `${process.env.CARTA_DIRECTA_URL}/vendor/auth/gettoken`;
+    /* Dejar en let aunque marque error "is never reassigned" */
+    let { email, password } = await this.getBusiness(chatbotNumber);
+    password = this.authService.decrypt(password);
     const data = {
-      email: process.env.CARTA_DIRECTA_EMAIL,
-      password: process.env.CARTA_DIRECTA_PASSWORD,
+      email: email,
+      password: password,
     };
 
     try {
@@ -96,8 +99,8 @@ export class BusinessService {
     }
   }
 
-  async getOrdersList() {
-    const token = await this.getToken();
+  async getOrdersList(chatbotNumber: string) {
+    const token = await this.getToken(chatbotNumber);
     const url = `${process.env.URI_CARTA_DIRECTA}/vendor/orders?api_token=${token}`;
     try {
       const response = await axios.get(url);
@@ -107,14 +110,14 @@ export class BusinessService {
     }
   }
 
-  async getOrderById(orderId: number) {
-    const ordersList = await this.getOrdersList();
+  async getOrderById(orderId: number, chatbotNumber: string) {
+    const ordersList = await this.getOrdersList(chatbotNumber);
     const order = ordersList.find((order) => order.id === orderId);
     return order;
   }
 
-  async getOrderStatus(orderId: number) {
-    const order = await this.getOrderById(orderId);
+  async getOrderStatus(orderId: number, chatbotNumber: string) {
+    const order = await this.getOrderById(orderId, chatbotNumber);
     if (!order || order.length === 0) {
       return 'No hay orden';
     } else {
@@ -123,10 +126,10 @@ export class BusinessService {
     }
   }
 
-  async getMenuFromApi() {
+  async getMenuFromApi(id: string) {
     try {
       const response = await axios.get(
-        `${process.env.URI_CARTA_DIRECTA}/client/vendor/38/items`,
+        `${process.env.URI_CARTA_DIRECTA}/client/vendor/${id}/items`,
       );
       return response.data.data;
     } catch (error) {
@@ -135,7 +138,7 @@ export class BusinessService {
     }
   }
 
-  async parseMenuFromApiResponse() {
+  async parseMenuFromApiResponse(id: string) {
     const menu = {
       comidas: '',
       extras: '',
@@ -143,7 +146,7 @@ export class BusinessService {
     };
     let stepMenu = 'comidas';
 
-    const memuFromApi = await this.getMenuFromApi();
+    const memuFromApi = await this.getMenuFromApi(id);
     memuFromApi.forEach((element, index) => {
       if (index === 6) {
         stepMenu = 'bebidas';

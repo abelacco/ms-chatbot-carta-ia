@@ -16,6 +16,8 @@ import {
   statusOrderMessageList,
 } from './Utils/textMessages';
 import { EnumOrderStatus } from 'src/common/enums';
+import { CtxService } from 'src/context/ctx.service';
+import { STEPS } from 'src/context/helpers/constants';
 
 @Injectable()
 export class UiResponsesService {
@@ -23,6 +25,7 @@ export class UiResponsesService {
     private readonly senderService: SenderService,
     private readonly builderTemplate: BuilderTemplatesService,
     private readonly historyService: HistoryService,
+    private readonly ctxService: CtxService,
   ) {}
 
   async responseToLocation(body: ResponseToLocationDto) {
@@ -47,13 +50,20 @@ export class UiResponsesService {
       messageContent,
     );
 
-    await this.senderService.sendMessages(template);
+    await this.senderService.sendMessages(template, body.chatBotNumber);
 
     return body;
   }
 
   async responseOrderStatus(body: ResponseOrderStatusDto) {
-    console.log(EnumOrderStatus[body.orderStatus]);
+    const ctx = await this.ctxService.findOrCreateCtx({
+      clientPhone: body.clientPhone,
+      chatbotNumber: body.chatBotNumber,
+    });
+
+    ctx.orderStatus = EnumOrderStatus[body.orderStatus];
+    await this.ctxService.updateCtx(ctx._id, ctx);
+
     const messageContent =
       statusOrderMessageList[EnumOrderStatus[body.orderStatus]];
 
@@ -78,17 +88,28 @@ export class UiResponsesService {
       messageContent,
     );
 
-    await this.senderService.sendMessages(template);
+    await this.senderService.sendMessages(template, body.chatBotNumber);
     return body;
   }
 
   async responseToVoucher(body: ResponseToVoucherDto) {
+    const ctx = await this.ctxService.findOrCreateCtx({
+      clientPhone: body.clientPhone,
+      chatbotNumber: body.chatBotNumber,
+    });
     let messageContent = '';
+
     if (body.action === 0) {
       messageContent = rejectedMessage;
+      ctx.step = STEPS.INIT;
+      ctx.orderStatus = EnumOrderStatus[7];
     } else if (body.action === 1) {
       messageContent = aceptedMessage;
+      ctx.step = STEPS.WAITING_LOCATION;
+      ctx.orderStatus = EnumOrderStatus[2];
     }
+
+    await this.ctxService.updateCtx(ctx._id, ctx);
 
     const templateMessage = createTemplateReponseMessage(
       messageContent,
@@ -111,7 +132,7 @@ export class UiResponsesService {
       messageContent,
     );
 
-    await this.senderService.sendMessages(template);
+    await this.senderService.sendMessages(template, body.chatBotNumber);
     return body;
   }
 
@@ -123,7 +144,7 @@ export class UiResponsesService {
         numberPhone,
         messageContent,
       );
-      await this.senderService.sendMessages(template);
+      await this.senderService.sendMessages(template, body.chatBotNumber);
     });
 
     return body;

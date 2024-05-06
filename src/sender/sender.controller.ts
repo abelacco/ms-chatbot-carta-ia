@@ -18,10 +18,13 @@ export class SenderController {
   sendMessage(@Body() botResponse: any) {
     console.log('CONTROLLER - Iniciando proceso de mensaje', botResponse);
     try {
-      this.senderService.sendMessages(botResponse);
+      this.senderService.sendMessages(botResponse, botResponse.chatbotNumber);
       // response.success = 1;
       // response.message = "Message sent successfully";
-      return this.senderService.sendMessages(botResponse);
+      return this.senderService.sendMessages(
+        botResponse,
+        botResponse.chatbotNumber,
+      );
     } catch (error) {
       return error;
       // response.success = 0;

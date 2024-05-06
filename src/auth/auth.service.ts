@@ -9,6 +9,7 @@ import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Business } from 'src/business/entity';
+import { createCipheriv, randomBytes, createDecipheriv } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -17,9 +18,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // Método para hashear contraseñas
+  // Método para encriptar contraseñas
   async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10); // El número 10 es el número de rondas para generar el salt
+    const encryptedPass = this.encrypt(password);
+    return encryptedPass;
   }
 
   // Método para verificar contraseñas
@@ -27,7 +29,28 @@ export class AuthService {
     password: string,
     storedPasswordHash: string,
   ): Promise<boolean> {
-    return bcrypt.compare(password, storedPasswordHash);
+    const comparedResult = password === this.decrypt(storedPasswordHash);
+    return comparedResult;
+  }
+
+  encrypt(text: string) {
+    const key = Buffer.from(process.env.ENCRYPT_PASSWORD, 'utf8').slice(0, 32);
+    const iv = randomBytes(16);
+    const cipher = createCipheriv('aes-256-cbc', key, iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return iv.toString('hex') + ':' + encrypted;
+  }
+
+  decrypt(encryptedText) {
+    const parts = encryptedText.split(':');
+    const iv = Buffer.from(parts[0], 'hex');
+    const encrypted = parts[1];
+    const key = Buffer.from(process.env.ENCRYPT_PASSWORD, 'utf8').slice(0, 32);
+    const decipher = createDecipheriv('aes-256-cbc', key, iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
   }
 
   // async loginBusiness(email: string, password: string) {

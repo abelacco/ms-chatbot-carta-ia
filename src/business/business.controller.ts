@@ -30,7 +30,13 @@ export default class BusinessController {
   }
 
   @Get('get-order/:id')
-  getOrderById(@Param('id') orderId: string) {
-    return this.businessService.getOrderById(parseInt(orderId));
+  getOrderById(
+    @Param('id') orderId: string,
+    @Body() requestBody: { chatBotNumber: string },
+  ) {
+    return this.businessService.getOrderById(
+      parseInt(orderId),
+      requestBody.chatBotNumber,
+    );
   }
 }

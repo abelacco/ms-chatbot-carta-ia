@@ -7,6 +7,9 @@ export class NotifyDeliveryDto {
   @IsString()
   clientPhone: string;
 
+  @IsString()
+  chatBotNumber: string;
+
   @IsArray()
   @IsString({ each: true })
   deliveryPhones: string[];
