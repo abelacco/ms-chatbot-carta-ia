@@ -178,62 +178,6 @@ export class FlowsService {
     } catch (error) {}
   }
 
-  async declinePay(messageEntry: IParsedMessage) {
-    const clientNumberPhone = messageEntry.content.id.split(' ')[2];
-    const ctx = await this.ctxService.findOrCreateCtx({
-      clientPhone: clientNumberPhone,
-    });
-    ctx.orderStatus = ORDER_STATUS.REJECTED_BY_RESTAURANT;
-    ctx.step = STEPS.INIT;
-
-    messageEntry.type = 'text';
-    await this.ctxService.updateCtx(ctx._id, ctx);
-    const response = await this.aiService.createChat([
-      {
-        role: 'system',
-        content: PROMPT_DECLINE_PAY,
-      },
-    ]);
-    const chunks = response.split(/(?<!\d)\.\s+/g);
-    for (const chunk of chunks) {
-      const newMessage = await this.historyService.setAndCreateAssitantMessage(
-        messageEntry,
-        chunk,
-      );
-      await this.senderService.sendMessages(
-        this.builderTemplate.buildTextMessage(clientNumberPhone, chunk),
-      );
-    }
-  }
-
-  async acceptPay(messageEntry: IParsedMessage) {
-    const clientPhone: string = messageEntry.content.id.split(' ')[2];
-    const ctx = await this.ctxService.findOrCreateCtx({
-      clientPhone: clientPhone,
-    });
-    ctx.orderStatus = ORDER_STATUS.ACCEPTED;
-    ctx.step = STEPS.WAITING_LOCATION;
-    await this.ctxService.updateCtx(ctx._id, ctx);
-
-    messageEntry.type = 'text';
-    const response = await this.aiService.createChat([
-      {
-        role: 'system',
-        content: PROMPT_ACCEPT_PAY,
-      },
-    ]);
-    const chunks = response.split(/(?<!\d)\.\s+/g);
-    for (const chunk of chunks) {
-      const newMessage = await this.historyService.setAndCreateAssitantMessage(
-        messageEntry,
-        chunk,
-      );
-      await this.senderService.sendMessages(
-        this.builderTemplate.buildTextMessage(clientPhone, chunk),
-      );
-    }
-  }
-
   async checkPayFlow(
     ctx: Ctx,
     messageEntry: IParsedMessage,

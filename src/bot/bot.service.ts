@@ -29,13 +29,6 @@ export class BotService {
 
   async proccessMessage(entryMessage: WspReceivedMessageDto) {
     // Deestructuración del mensaje de entrada
-    const adminNum =
-      entryMessage.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-    if (adminNum && adminNum.from === process.env.PHONE_ADMIN) {
-      this.processAdminMessage(entryMessage);
-      return;
-    }
-
     Logger.log(`INIT PROCCESSMESSAGE  `, 'BOT SERVICE');
     const parsedMessage = await this.messageDestructurer(entryMessage);
     Logger.log(
@@ -79,15 +72,6 @@ export class BotService {
     }
 
     return 'OK';
-  }
-
-  async processAdminMessage(entryMessage: WspReceivedMessageDto) {
-    const parsedMessage: any = await this.messageDestructurer(entryMessage);
-    if (parsedMessage.content.id.includes('Rechazar pedido')) {
-      this.flowsService.declinePay(parsedMessage);
-    } else if (parsedMessage.content.id.includes('Confirmar pedido')) {
-      this.flowsService.acceptPay(parsedMessage);
-    }
   }
 
   private async messageDestructurer(messageDto: WspReceivedMessageDto) {
