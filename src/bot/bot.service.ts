@@ -68,19 +68,9 @@ export class BotService {
 
     const action = receivedMessageValidator(ctx, parsedMessage);
     Logger.log(`THE ACTION IS: ${action} `, 'BOT SERVICE');
-    if (action === 'NOT_VALID') {
-      Logger.log(`ACTION NOT VALID`, 'BOT SERVICE');
-      await this.flowsService[action](ctx, parsedMessage);
-      return 'OK';
-    } else {
-      await this.flowsService[action](
-        ctx,
-        parsedMessage,
-        history,
-        businessInfo,
-      );
-      Logger.log(`THE FLOW : ${action} WAS EXCUTED`, 'BOT SERVICE');
-    }
+
+    await this.flowsService[action](ctx, parsedMessage, history, businessInfo);
+    Logger.log(`THE FLOW : ${action} WAS EXCUTED`, 'BOT SERVICE');
 
     return 'OK';
   }
