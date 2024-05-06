@@ -15,6 +15,7 @@ import { WspWebGatewayModule } from './wsp-web-gateway/wsp-web-gateway.module';
 import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
 import { BusinessModule } from './business/business.module';
+import { AuthModule } from './auth/auth.module';
 import BusinessController from './business/business.controller';
 
 @Module({
@@ -35,6 +36,7 @@ import BusinessController from './business/business.controller';
     HistoryModule,
     WspWebGatewayModule,
     BusinessModule,
+    AuthModule,
   ],
   controllers: [AppController, BusinessController],
   providers: [AppService],
