@@ -223,7 +223,7 @@ export class FlowsService {
     const mainPrompt = PROMPT_PRE_PAY_CONFIRMATION.replace(
       '{chatHistory}',
       history,
-    ).replace('{restaurante}', businessInfo.businessName);
+    ).replace(/{restaurante}/g, businessInfo.businessName);
     return mainPrompt;
   }
 
@@ -276,7 +276,7 @@ export class FlowsService {
   async generatePayLink(question: string, history: string, businessInfo) {
     const mainPrompt = PROMPT_PAY_LINK.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', businessInfo.businessName)
+      .replace(/{restaurante}/g, businessInfo.businessName)
       .replace('{payLink}', 'https://linkdepagodummy.com/laburguesia');
     return mainPrompt;
   }
@@ -330,11 +330,11 @@ export class FlowsService {
   ) {
     const mainPrompt = PROMPT_COVERAGE.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', businessInfo.businessName)
+      .replace(/{restaurante}/g, businessInfo.businessName)
       .replace('{direccion}', businessInfo.address)
       .replace(
         '{link}',
-        `https://menu.cartadirecta.com/restaurant/${businessInfo.businessId}`,
+        `https://menu.cartadirecta.com/restaurant/${businessInfo.businessName}`,
       );
     return mainPrompt;
   }
@@ -347,21 +347,20 @@ export class FlowsService {
     const menu = await this.businessService.parseMenuFromApiResponse(
       businessInfo.businessId,
     );
-    let mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
+    const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
       .replace('{question}', question)
-      .replace('{restaurante}', businessInfo.businessName)
+      .replace(/{restaurante}/g, businessInfo.businessName)
       .replace('{direccion}', businessInfo.address)
       .replace('{horarios}', businessInfo.businessHours[0])
       .replace(
         '{link}',
-        `https://menu.cartadirecta.com/restaurant/${businessInfo.businessId}`,
+        `https://menu.cartadirecta.com/restaurant/${businessInfo.businessName}`,
       )
       .replace('{extra}', menu.extras)
       .replace('{menu}', menu.comidas)
-      .replace('{drinks}', menu.bebidas);
-    if (businessInfo.slogan) {
-      mainPrompt = mainPrompt.replace('{slogan}', businessInfo.slogan);
-    }
+      .replace('{drinks}', menu.bebidas)
+      .replace('{slogan}', businessInfo.slogan);
+    console.log(mainPrompt);
     return mainPrompt;
   }
 
