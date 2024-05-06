@@ -15,6 +15,7 @@ import { WspWebGatewayModule } from './wsp-web-gateway/wsp-web-gateway.module';
 import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
 import { BusinessModule } from './business/business.module';
+import { AuthModule } from './auth/auth.module';
 import BusinessController from './business/business.controller';
 import UiResponseController from './UiResponses/UiResponses.controller';
 import { UiResponseModule } from './UiResponses/UiResponses.module';
@@ -38,6 +39,7 @@ import { UiResponseModule } from './UiResponses/UiResponses.module';
     WspWebGatewayModule,
     BusinessModule,
     UiResponseModule,
+    AuthModule,
   ],
   controllers: [AppController, BusinessController],
   providers: [AppService],
