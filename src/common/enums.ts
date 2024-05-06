@@ -4,7 +4,7 @@ export enum EnumOrderStatus {
   'Accepted',
   'Prepared by restaurant',
   'Picked up/Entregado',
-  'Delivered/Enviado',
+  'Delivered/ Enviado',
   'Rejected by admin',
   'Rejected by restaurant',
   'Closed',

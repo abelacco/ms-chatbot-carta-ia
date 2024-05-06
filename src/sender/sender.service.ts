@@ -11,9 +11,8 @@ export class SenderService {
   ) {}
 
   async sendMessages(messageClient: any) {
-    console.log(messageClient.to);
+    console.log(messageClient);
     /* Delete the next line in production */
-    console.log(messageClient.to);
     if (messageClient.to !== '54261156841080') {
       messageClient.to = process.env.PHONE_NUMBER;
     }

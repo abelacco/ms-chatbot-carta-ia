@@ -16,6 +16,8 @@ import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
 import { BusinessModule } from './business/business.module';
 import BusinessController from './business/business.controller';
+import UiResponseController from './UiResponses/UiResponses.controller';
+import { UiResponseModule } from './UiResponses/UiResponses.module';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import BusinessController from './business/business.controller';
     HistoryModule,
     WspWebGatewayModule,
     BusinessModule,
+    UiResponseModule,
   ],
   controllers: [AppController, BusinessController],
   providers: [AppService],
