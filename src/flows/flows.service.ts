@@ -23,6 +23,7 @@ import {
 import { string } from 'joi';
 import { filterOrderId } from './Utils/filterOrderId';
 import { measureMemory } from 'vm';
+import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 
 @Injectable()
 export class FlowsService {
@@ -34,6 +35,7 @@ export class FlowsService {
     private readonly senderService: SenderService,
     private readonly aiService: AiService,
     private readonly generalService: GeneralServicesService,
+    private readonly cartaDirectaService: CartaDirectaService,
   ) {}
 
   async locationFlow(
@@ -112,8 +114,8 @@ export class FlowsService {
 
   async orderStateFlow(ctx: Ctx, messageEntry: IParsedMessage) {
     try {
-      const orderStatus = await this.businessService.getOrderStatus(
-        parseInt(ctx.order),
+      const orderStatus = await this.cartaDirectaService.getOrderStatus(
+        parseInt(ctx.currentOrderId),
         messageEntry.chatbotNumber,
       );
       let message = '';
@@ -145,10 +147,13 @@ export class FlowsService {
         message = 'No has hecho ningun pedido';
       }
 
-      ctx.orderStatus = orderStatus;
+      ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
+        ctx,
+        ctx.chatbotNumber,
+      );
       if (resetSteps) {
         ctx.step = STEPS.INIT;
-        delete ctx.order;
+        delete ctx.currentOrderId;
         delete ctx.orderStatus;
       }
       await this.ctxService.updateCtx(ctx._id, ctx);
@@ -235,7 +240,11 @@ export class FlowsService {
   ) {
     try {
       const orderId = messageEntry.content.split(' ')[3].replace('*', '');
-      ctx.order = filterOrderId(orderId);
+      ctx.currentOrderId = filterOrderId(orderId);
+      ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
+        ctx,
+        ctx.chatbotNumber,
+      );
       this.ctxService.updateCtx(ctx._id, ctx);
       const prompt = await this.generatePayLink(
         messageEntry.content,
@@ -265,7 +274,6 @@ export class FlowsService {
       }
       // Actualizar paso
       ctx.step = STEPS.PRE_PAY;
-      ctx.orderStatus = ORDER_STATUS.JUST_CREATED;
       await this.ctxService.updateCtx(ctx._id, ctx);
     } catch (err) {
       console.log(`[ERROR]:`, err);
@@ -344,7 +352,7 @@ export class FlowsService {
     history: string,
     businessInfo,
   ) {
-    const menu = await this.businessService.parseMenuFromApiResponse(
+    const menu = await this.cartaDirectaService.parseMenuFromApiResponse(
       businessInfo.businessId,
     );
     const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)

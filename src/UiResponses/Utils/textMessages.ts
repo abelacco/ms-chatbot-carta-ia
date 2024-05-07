@@ -2,7 +2,7 @@ export const justCreated =
   'Hemos recibido tu pedido numero: {orderId} y lo estamos analizando';
 
 export const aceptedMessage =
-  'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}';
+  'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}\n Porfavor compartenos tu ubicación por whatsapp';
 
 export const rejectedMessage =
   'Hemos rechazado el comprobante de pago de tu pedido numero: {orderId}';

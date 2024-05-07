@@ -18,6 +18,7 @@ import {
 import { EnumOrderStatus } from 'src/common/enums';
 import { CtxService } from 'src/context/ctx.service';
 import { STEPS } from 'src/context/helpers/constants';
+import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 
 @Injectable()
 export class UiResponsesService {
@@ -26,6 +27,7 @@ export class UiResponsesService {
     private readonly builderTemplate: BuilderTemplatesService,
     private readonly historyService: HistoryService,
     private readonly ctxService: CtxService,
+    private readonly cartaDirectaService: CartaDirectaService,
   ) {}
 
   async responseToLocation(body: ResponseToLocationDto) {
@@ -103,10 +105,18 @@ export class UiResponsesService {
       messageContent = rejectedMessage;
       ctx.step = STEPS.INIT;
       ctx.orderStatus = EnumOrderStatus[7];
+      await this.cartaDirectaService.rejectorder(
+        body.orderId,
+        body.chatBotNumber,
+      );
     } else if (body.action === 1) {
       messageContent = aceptedMessage;
       ctx.step = STEPS.WAITING_LOCATION;
       ctx.orderStatus = EnumOrderStatus[2];
+      await this.cartaDirectaService.acceptOrder(
+        body.orderId,
+        body.chatBotNumber,
+      );
     }
 
     await this.ctxService.updateCtx(ctx._id, ctx);

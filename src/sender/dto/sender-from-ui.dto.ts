@@ -6,4 +6,7 @@ export class SenderFromUiDto {
 
   @IsString()
   phoneNumber: string;
+
+  @IsString()
+  chatbotNumber: string;
 }

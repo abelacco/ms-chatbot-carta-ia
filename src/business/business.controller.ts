@@ -28,15 +28,4 @@ export default class BusinessController {
   ) {
     return this.businessService.updateMetadata(id, updateMetaAccess);
   }
-
-  @Get('get-order/:id')
-  getOrderById(
-    @Param('id') orderId: string,
-    @Body() requestBody: { chatBotNumber: string },
-  ) {
-    return this.businessService.getOrderById(
-      parseInt(orderId),
-      requestBody.chatBotNumber,
-    );
-  }
 }

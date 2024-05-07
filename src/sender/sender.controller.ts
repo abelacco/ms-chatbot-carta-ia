@@ -32,14 +32,12 @@ export class SenderController {
       // errorHandler(error.code, response)
     }
   }
+
   @Post('/send-message-from-ui')
-  sendMessageFromUi(@Body() botResponse: SenderFromUiDto) {
-    console.log('CONTROLLER - Iniciando proceso de mensaje', botResponse);
+  sendMessageFromUi(@Body() Body: SenderFromUiDto) {
+    console.log('CONTROLLER - Iniciando proceso de mensaje', Body);
     try {
-      return this.senderService.sendMessagesFromUi(
-        botResponse.text,
-        botResponse.text,
-      );
+      return this.senderService.sendMessagesFromUi(Body);
     } catch (error) {
       return error;
       // response.success = 0;

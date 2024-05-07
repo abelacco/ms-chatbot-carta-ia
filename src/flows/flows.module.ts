@@ -8,6 +8,7 @@ import { AiModule } from 'src/ai/ai.module';
 import { HistoryModule } from 'src/history/history.module';
 import { BusinessModule } from 'src/business/business.module';
 import { GeneralServicesModule } from 'src/general-services/general-services.module';
+import { CartaDirectaModule } from 'src/carta-directa/cartaDirecta.module';
 
 @Module({
   controllers: [FlowsController],
@@ -19,6 +20,7 @@ import { GeneralServicesModule } from 'src/general-services/general-services.mod
     BuilderTemplatesModule,
     SenderModule,
     AiModule,
+    CartaDirectaModule,
     HistoryModule,
     GeneralServicesModule,
   ],
