@@ -17,7 +17,10 @@ export class Ctx extends Document {
   clientPhone: string;
 
   @Prop()
-  order: string;
+  currentOrder: any[];
+
+  @Prop()
+  currentOrderId: string;
 
   @Prop()
   orderStatus: string;

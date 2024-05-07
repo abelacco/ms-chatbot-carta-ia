@@ -113,7 +113,7 @@ export class FlowsService {
   async orderStateFlow(ctx: Ctx, messageEntry: IParsedMessage) {
     try {
       const orderStatus = await this.businessService.getOrderStatus(
-        parseInt(ctx.order),
+        parseInt(ctx.currentOrderId),
         messageEntry.chatbotNumber,
       );
       let message = '';
@@ -148,7 +148,7 @@ export class FlowsService {
       ctx.orderStatus = orderStatus;
       if (resetSteps) {
         ctx.step = STEPS.INIT;
-        delete ctx.order;
+        delete ctx.currentOrderId;
         delete ctx.orderStatus;
       }
       await this.ctxService.updateCtx(ctx._id, ctx);
@@ -235,7 +235,7 @@ export class FlowsService {
   ) {
     try {
       const orderId = messageEntry.content.split(' ')[3].replace('*', '');
-      ctx.order = filterOrderId(orderId);
+      ctx.currentOrderId = filterOrderId(orderId);
       this.ctxService.updateCtx(ctx._id, ctx);
       const prompt = await this.generatePayLink(
         messageEntry.content,

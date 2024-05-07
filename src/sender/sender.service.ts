@@ -4,6 +4,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { BusinessService } from 'src/business/business.service';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
+import { SenderFromUiDto } from './dto/sender-from-ui.dto';
 
 @Injectable()
 export class SenderService {
@@ -15,7 +16,7 @@ export class SenderService {
   ) {}
 
   async sendMessages(messageClient: any, chatbotNumber: string) {
-    // messageClient.to = '54261156841080';
+    messageClient.to = '54261156841080';
     const businessInfo = await this.businessService.getBusiness(chatbotNumber);
     const accessToken = this.authService.decrypt(businessInfo.accessToken);
 
@@ -46,23 +47,30 @@ export class SenderService {
     }
   }
 
-  async sendMessagesFromUi(text: string, phoneNumber: string) {
-    const buildTextTemplate = await this.builderService.buildTextMessage(
-      phoneNumber,
-      text,
+  async sendMessagesFromUi(body: SenderFromUiDto) {
+    /* Build Message template */
+    const buildTextTemplate = this.builderService.buildTextMessage(
+      body.phoneNumber,
+      body.text,
     );
+    /* Get business info */
+    const businessInfo = await this.businessService.getBusiness(
+      body.chatbotNumber,
+    );
+    const accessToken = this.authService.decrypt(businessInfo.accessToken);
+    /* Send meta message request */
     Logger.log(
       `Mensaje a enviar ${JSON.stringify(buildTextTemplate)}`,
       'SENDER SERVICE',
     );
     try {
       const response = await axios.post(
-        `https://graph.facebook.com/v19.0/${process.env.PHONE_ID}/messages`,
+        `https://graph.facebook.com/v19.0/${businessInfo.phoneId}/messages`,
         buildTextTemplate,
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.CURRENT_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         },
       );
