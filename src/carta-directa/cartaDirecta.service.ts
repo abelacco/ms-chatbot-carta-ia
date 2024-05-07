@@ -54,6 +54,21 @@ export class CartaDirectaService {
     return order;
   }
 
+  async parseCtxWithOrderInfo(ctx: any, chatbotNumber: string) {
+    const order = await this.getOrderById(
+      parseInt(ctx.currentOrderId),
+      chatbotNumber,
+    );
+    ctx['orderStatus'] = order.last_status[0].name;
+    ctx['total'] = order.order_price;
+    ctx['dni'] = order.configs['DNI Cliente'];
+    ctx['clientName'] = order.configs.client_name;
+    order.items.forEach((item) => {
+      ctx.currentOrder.push(item);
+    });
+    return ctx;
+  }
+
   async getOrderStatus(orderId: number, chatbotNumber: string) {
     const order = await this.getOrderById(orderId, chatbotNumber);
     if (!order || order.length === 0) {

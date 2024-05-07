@@ -147,7 +147,10 @@ export class FlowsService {
         message = 'No has hecho ningun pedido';
       }
 
-      ctx.orderStatus = orderStatus;
+      ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
+        ctx,
+        ctx.chatbotNumber,
+      );
       if (resetSteps) {
         ctx.step = STEPS.INIT;
         delete ctx.currentOrderId;
@@ -238,6 +241,10 @@ export class FlowsService {
     try {
       const orderId = messageEntry.content.split(' ')[3].replace('*', '');
       ctx.currentOrderId = filterOrderId(orderId);
+      ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
+        ctx,
+        ctx.chatbotNumber,
+      );
       this.ctxService.updateCtx(ctx._id, ctx);
       const prompt = await this.generatePayLink(
         messageEntry.content,
@@ -267,7 +274,6 @@ export class FlowsService {
       }
       // Actualizar paso
       ctx.step = STEPS.PRE_PAY;
-      ctx.orderStatus = ORDER_STATUS.JUST_CREATED;
       await this.ctxService.updateCtx(ctx._id, ctx);
     } catch (err) {
       console.log(`[ERROR]:`, err);

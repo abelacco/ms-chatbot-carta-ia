@@ -5,6 +5,7 @@ import { SenderModule } from 'src/sender/sender.module';
 import { HistoryModule } from 'src/history/history.module';
 import { BuilderTemplatesModule } from 'src/builder-templates/builder-templates.module';
 import { CtxModule } from 'src/context/ctx.module';
+import { CartaDirectaModule } from 'src/carta-directa/cartaDirecta.module';
 
 @Module({
   controllers: [UiResponseController],
@@ -17,6 +18,7 @@ import { CtxModule } from 'src/context/ctx.module';
     BuilderTemplatesModule,
     HistoryModule,
     CtxModule,
+    CartaDirectaModule,
   ],
 })
 export class UiResponseModule {}
