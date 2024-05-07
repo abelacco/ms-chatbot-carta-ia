@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Body } from '@nestjs/common';
+import { Controller, Post, Param, Body } from '@nestjs/common';
 import { CartaDirectaService } from './cartaDirecta.service';
 import { getOrderByIdBodyDto } from './dto';
 
@@ -6,7 +6,7 @@ import { getOrderByIdBodyDto } from './dto';
 export class CartaDirectaController {
   constructor(private readonly cartaDirectaService: CartaDirectaService) {}
 
-  @Get('get-order/:id')
+  @Post('get-order/:id')
   getOrderById(
     @Param('id') orderId: string,
     @Body() requestBody: getOrderByIdBodyDto,
