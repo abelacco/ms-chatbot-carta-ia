@@ -23,6 +23,7 @@ import {
 import { string } from 'joi';
 import { filterOrderId } from './Utils/filterOrderId';
 import { measureMemory } from 'vm';
+import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 
 @Injectable()
 export class FlowsService {
@@ -34,6 +35,7 @@ export class FlowsService {
     private readonly senderService: SenderService,
     private readonly aiService: AiService,
     private readonly generalService: GeneralServicesService,
+    private readonly cartaDirectaService: CartaDirectaService,
   ) {}
 
   async locationFlow(
@@ -112,7 +114,7 @@ export class FlowsService {
 
   async orderStateFlow(ctx: Ctx, messageEntry: IParsedMessage) {
     try {
-      const orderStatus = await this.businessService.getOrderStatus(
+      const orderStatus = await this.cartaDirectaService.getOrderStatus(
         parseInt(ctx.currentOrderId),
         messageEntry.chatbotNumber,
       );
@@ -344,7 +346,7 @@ export class FlowsService {
     history: string,
     businessInfo,
   ) {
-    const menu = await this.businessService.parseMenuFromApiResponse(
+    const menu = await this.cartaDirectaService.parseMenuFromApiResponse(
       businessInfo.businessId,
     );
     const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)

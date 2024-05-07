@@ -1,11 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { BusinessService } from './business.service';
-import {
-  CreateBusinessDto,
-  LoginBusinessDto,
-  UpdateMetaAccess,
-  getOrderByIdBodyDto,
-} from './dto';
+import { CreateBusinessDto, LoginBusinessDto, UpdateMetaAccess } from './dto';
 
 @Controller('business')
 export default class BusinessController {
@@ -32,16 +27,5 @@ export default class BusinessController {
     @Body() updateMetaAccess: UpdateMetaAccess,
   ) {
     return this.businessService.updateMetadata(id, updateMetaAccess);
-  }
-
-  @Get('get-order/:id')
-  getOrderById(
-    @Param('id') orderId: string,
-    @Body() requestBody: getOrderByIdBodyDto,
-  ) {
-    return this.businessService.getOrderById(
-      parseInt(orderId),
-      requestBody.chatbotNumber,
-    );
   }
 }
