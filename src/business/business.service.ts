@@ -76,15 +76,16 @@ export class BusinessService {
   }
 
   async getToken(chatbotNumber: string) {
-    const url = `${process.env.CARTA_DIRECTA_URL}/vendor/auth/gettoken`;
+    const url = `${process.env.URI_CARTA_DIRECTA}/vendor/auth/gettoken`;
     /* Dejar en let aunque marque error "is never reassigned" */
     let { email, password } = await this.getBusiness(chatbotNumber);
+
     password = this.authService.decrypt(password);
     const data = {
       email: email,
       password: password,
     };
-
+    console.log(url);
     try {
       const response = await axios.post(url, data);
       return response.data.token;
@@ -112,7 +113,7 @@ export class BusinessService {
 
   async getOrderById(orderId: number, chatbotNumber: string) {
     const ordersList = await this.getOrdersList(chatbotNumber);
-    const order = ordersList.find((order) => order.id === orderId);
+    const order = ordersList?.find((order) => order.id === orderId);
     return order;
   }
 
