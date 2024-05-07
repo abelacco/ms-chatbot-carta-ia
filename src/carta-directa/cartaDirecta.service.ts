@@ -37,6 +37,28 @@ export class CartaDirectaService {
     }
   }
 
+  async acceptOrder(orderId: string, chatbotNumber: string) {
+    const token = await this.getToken(chatbotNumber);
+    const url = `${process.env.URI_CARTA_DIRECTA}/vendor/orders/acceptorder/${orderId}?api_token=${token}`;
+    try {
+      const response = await axios.get(url);
+      return response.data.data;
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async rejectorder(orderId: string, chatbotNumber: string) {
+    const token = await this.getToken(chatbotNumber);
+    const url = `${process.env.URI_CARTA_DIRECTA}/vendor/orders/rejectorder/${orderId}?api_token=${token}`;
+    try {
+      const response = await axios.get(url);
+      return response.data.data;
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   async getOrdersList(chatbotNumber: string) {
     const token = await this.getToken(chatbotNumber);
     const url = `${process.env.URI_CARTA_DIRECTA}/vendor/orders?api_token=${token}`;
