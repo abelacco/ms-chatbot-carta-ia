@@ -85,7 +85,6 @@ export class BusinessService {
       email: email,
       password: password,
     };
-    console.log(url);
     try {
       const response = await axios.post(url, data);
       return response.data.token;
