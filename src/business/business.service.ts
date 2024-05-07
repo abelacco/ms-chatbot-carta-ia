@@ -57,9 +57,7 @@ export class BusinessService {
   }
 
   async updateMetadata(id: string, updateMetaAccess: UpdateMetaAccess) {
-    const hashedPassword = await this.authService.hashPassword(
-      updateMetaAccess.accessToken,
-    );
+    const hashedPassword = updateMetaAccess.accessToken;
     updateMetaAccess.accessToken = hashedPassword;
     const business = await this._db.updateMetaAccess(id, updateMetaAccess);
     return business;

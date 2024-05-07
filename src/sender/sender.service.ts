@@ -16,9 +16,9 @@ export class SenderService {
   ) {}
 
   async sendMessages(messageClient: any, chatbotNumber: string) {
-    // messageClient.to = '54261156841080';
+    messageClient.to = '54261156841080';
     const businessInfo = await this.businessService.getBusiness(chatbotNumber);
-    const accessToken = this.authService.decrypt(businessInfo.accessToken);
+    const accessToken = businessInfo.accessToken;
 
     Logger.log(
       `Mensaje a enviar ${JSON.stringify(messageClient)}`,
@@ -57,7 +57,7 @@ export class SenderService {
     const businessInfo = await this.businessService.getBusiness(
       body.chatbotNumber,
     );
-    const accessToken = this.authService.decrypt(businessInfo.accessToken);
+    const accessToken = businessInfo.accessToken;
     /* Send meta message request */
     Logger.log(
       `Mensaje a enviar ${JSON.stringify(buildTextTemplate)}`,
