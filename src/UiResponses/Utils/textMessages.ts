@@ -2,7 +2,10 @@ export const justCreated =
   'Hemos recibido tu pedido numero: {orderId} y lo estamos analizando';
 
 export const aceptedMessage =
-  'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}\n Porfavor compartenos tu ubicación por whatsapp';
+  'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}\nPorfavor compartenos tu ubicación por whatsapp';
+
+export const inCooking =
+  'Tu pedido numero: {orderId} esta en preparación, te avisaremos cuando este listo';
 
 export const rejectedMessage =
   'Hemos rechazado el comprobante de pago de tu pedido numero: {orderId}';
@@ -20,13 +23,10 @@ export const orderShipped = 'Tu pedido numero: {orderId} esta en camino';
 export const pickUp = 'Tu pedido numero: {orderId} ya ha sido entregado';
 
 export const statusOrderMessageList = {
-  'Just created': justCreated,
-  'Accepted by admin': aceptedMessage,
-  Accepted: aceptedMessage,
-  'Prepared by restaurant': prepared,
-  'Picked up/Entregado': pickUp,
-  'Delivered/ Enviado': orderShipped,
-  'Rejected by admin': rejectedMessage,
-  'Rejected by restaurant': rejectedMessage,
-  Closed: pickUp,
+  1: justCreated,
+  2: aceptedMessage,
+  3: inCooking,
+  4: prepared,
+  5: orderShipped,
+  6: pickUp,
 };

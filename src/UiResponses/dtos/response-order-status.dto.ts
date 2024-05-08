@@ -1,4 +1,4 @@
-import { IsString, IsEnum } from 'class-validator';
+import { IsString, IsInt, Min, Max } from 'class-validator';
 import { EnumOrderStatusBot, EnumOrderStatusCD } from 'src/common/enums';
 
 export class ResponseOrderStatusDto {
@@ -11,6 +11,8 @@ export class ResponseOrderStatusDto {
   @IsString()
   clientPhone: string;
 
-  @IsEnum(EnumOrderStatusBot, { message: 'Invalid order status' })
-  orderStatus: EnumOrderStatusBot;
+  @IsInt()
+  @Min(1)
+  @Max(6)
+  orderStatus: number;
 }

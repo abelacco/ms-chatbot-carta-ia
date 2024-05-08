@@ -15,7 +15,6 @@ import {
   rejectedMessage,
   statusOrderMessageList,
 } from './Utils/textMessages';
-import { EnumOrderStatusCD } from 'src/common/enums';
 import { CtxService } from 'src/context/ctx.service';
 import { STEPS } from 'src/context/helpers/constants';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
@@ -64,11 +63,18 @@ export class UiResponsesService {
     });
 
     ctx.orderStatus = body.orderStatus;
+    if (body.orderStatus === 6) {
+      ctx.step = STEPS.INIT;
+    }
+
     await this.ctxService.updateCtx(ctx._id, ctx);
-
-    const messageContent =
-      statusOrderMessageList[EnumOrderStatusCD[body.orderStatus]];
-
+    await this.cartaDirectaService.changeOrderStatus(
+      body.orderId,
+      body.chatBotNumber,
+      body.orderStatus,
+    );
+    const messageContent = statusOrderMessageList[body.orderStatus];
+    console.log(body.orderStatus);
     const templateMessage = createTemplateReponseMessage(
       messageContent,
       body.orderId,

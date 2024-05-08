@@ -6,28 +6,61 @@ import {
   ResponseToLocationDto,
   ResponseToVoucherDto,
 } from './dtos';
+import { ApiResponse } from 'src/common/ApiResponses';
 
 @Controller('ui-response')
 export default class UiResponseController {
   constructor(private readonly uiResponseService: UiResponsesService) {}
 
   @Post('location')
-  responseToLocation(@Body() body: ResponseToLocationDto) {
-    return this.uiResponseService.responseToLocation(body);
+  async responseToLocation(@Body() body: ResponseToLocationDto) {
+    try {
+      const response = await this.uiResponseService.responseToLocation(body);
+      return ApiResponse.success('Successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while responding to location',
+        error,
+      );
+    }
   }
 
   @Post('voucher')
-  responseToVoucher(@Body() body: ResponseToVoucherDto) {
-    return this.uiResponseService.responseToVoucher(body);
+  async responseToVoucher(@Body() body: ResponseToVoucherDto) {
+    try {
+      const response = await this.uiResponseService.responseToVoucher(body);
+      return ApiResponse.success('Successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error occurred while responding voucher',
+        error,
+      );
+    }
   }
 
   @Post('order-status')
-  responseOrderStatus(@Body() body: ResponseOrderStatusDto) {
-    return this.uiResponseService.responseOrderStatus(body);
+  async responseOrderStatus(@Body() body: ResponseOrderStatusDto) {
+    try {
+      const response = await this.uiResponseService.responseOrderStatus(body);
+      return ApiResponse.success('Successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error occurred while changing order status',
+        error,
+      );
+    }
   }
 
   @Post('notify-delivery')
-  notifyDelivery(@Body() body: NotifyDeliveryDto) {
-    return this.uiResponseService.notifyDelivery(body);
+  async notifyDelivery(@Body() body: NotifyDeliveryDto) {
+    try {
+      const response = await this.uiResponseService.notifyDelivery(body);
+      return ApiResponse.success('Successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while notifying to deliverys',
+        error,
+      );
+    }
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { AuthService } from 'src/auth/auth.service';
 import { BusinessService } from 'src/business/business.service';
+import { statusEquals } from './utils/StatusEquals';
 
 @Injectable()
 export class CartaDirectaService {
@@ -65,6 +66,10 @@ export class CartaDirectaService {
     statusId: number,
   ) {
     const token = await this.getToken(chatbotNumber);
+    statusId = statusEquals[statusId];
+    if (!statusId) {
+      return;
+    }
     const url = `${process.env.URI_CARTA_DIRECTA}/vendor/orders/updateorderstatus/${orderId}/${statusId}?api_token=${token}`;
     try {
       const response = await axios.get(url);

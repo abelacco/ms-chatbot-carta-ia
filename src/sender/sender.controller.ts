@@ -1,48 +1,35 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { SenderService } from './sender.service';
 import { SenderFromUiDto } from './dto/sender-from-ui.dto';
+import { ApiResponse } from 'src/common/ApiResponses';
 
 @Controller('sender')
 export class SenderController {
   constructor(private readonly senderService: SenderService) {}
 
   @Post('/send-message')
-  sendMessage(@Body() botResponse: any) {
-    console.log('CONTROLLER - Iniciando proceso de mensaje', botResponse);
+  async sendMessage(@Body() botResponse: any) {
     try {
-      this.senderService.sendMessages(botResponse, botResponse.chatbotNumber);
-      // response.success = 1;
-      // response.message = "Message sent successfully";
-      return this.senderService.sendMessages(
+      const response = await this.senderService.sendMessages(
         botResponse,
         botResponse.chatbotNumber,
       );
+      return ApiResponse.success('Send message successfully', response);
     } catch (error) {
-      return error;
-      // response.success = 0;
-      // response.message = 'Message could not be sent';
-      // errorHandler(error.code, response)
+      return ApiResponse.error('An error ocurred while sending message', error);
     }
   }
 
   @Post('/send-message-from-ui')
-  sendMessageFromUi(@Body() Body: SenderFromUiDto) {
-    console.log('CONTROLLER - Iniciando proceso de mensaje', Body);
+  async sendMessageFromUi(@Body() Body: SenderFromUiDto) {
     try {
-      return this.senderService.sendMessagesFromUi(Body);
+      const response = await this.senderService.sendMessagesFromUi(Body);
+      return ApiResponse.success('Send message from ui successfully', response);
     } catch (error) {
-      return error;
-      // response.success = 0;
-      // response.message = 'Message could not be sent';
-      // errorHandler(error.code, response)
+      return ApiResponse.error(
+        'An error ocurred while sending message from ui',
+        error,
+      );
     }
   }
 }

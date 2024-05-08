@@ -1,35 +1,48 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { CreateHistoryDto } from './dto';
+import { ApiResponse } from 'src/common/ApiResponses';
 
 @Controller('history')
 export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
 
   @Post('create')
-  create(@Body() createHistoryDto: CreateHistoryDto) {
-    return this.historyService.create(createHistoryDto);
+  async create(@Body() createHistoryDto: CreateHistoryDto) {
+    try {
+      const response = await this.historyService.create(createHistoryDto);
+      return ApiResponse.success('Create history successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while creating history',
+        error,
+      );
+    }
   }
 
   @Get('get-history')
-  findAll(
+  async findAll(
     @Query('clientPhone') clientPhone: string,
     @Query('chatbotNumber') chatbotNumber: string,
   ) {
-    return this.historyService.findAll(clientPhone, chatbotNumber);
+    try {
+      const response = await this.historyService.findAll(
+        clientPhone,
+        chatbotNumber,
+      );
+      return ApiResponse.success('Get history successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while geting history', error);
+    }
   }
 
   @Get('parse-history')
-  parseHistory(@Body() arrayHistory: any[]) {
-    return this.historyService.parseHistory(arrayHistory);
+  async parseHistory(@Body() arrayHistory: any[]) {
+    try {
+      const response = await this.historyService.parseHistory(arrayHistory);
+      return ApiResponse.success('Parse history successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while parsing history', error);
+    }
   }
 }

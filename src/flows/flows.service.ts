@@ -24,6 +24,7 @@ import { string } from 'joi';
 import { filterOrderId } from './Utils/filterOrderId';
 import { measureMemory } from 'vm';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
+import { statusOrderMessageList } from './Utils/orderStatusMessages';
 
 @Injectable()
 export class FlowsService {
@@ -114,48 +115,13 @@ export class FlowsService {
 
   async orderStateFlow(ctx: Ctx, messageEntry: IParsedMessage) {
     try {
-      const orderStatus = await this.cartaDirectaService.getOrderStatus(
-        parseInt(ctx.currentOrderId),
-        messageEntry.chatbotNumber,
-      );
       let message = '';
-      let resetSteps = false;
-      if (orderStatus === ORDER_STATUS.JUST_CREATED) {
-        message = 'Estamos analizando tu pedido';
-      } else if (orderStatus === ORDER_STATUS.ACEPTED_BY_ADMIN) {
-        message = 'Estamos preparando tu pedido';
-      } else if (orderStatus === ORDER_STATUS.ACCEPTED) {
-        message = 'Estamos preparando tu pedido';
-      } else if (orderStatus === ORDER_STATUS.PREPARED_BY_RESTAURANT) {
-        message = 'Tu pedido esta preparado';
-      } else if (orderStatus === ORDER_STATUS.PICKED_UP) {
-        resetSteps = true;
-        message = 'Tu pedido ha sido entregado';
-      } else if (orderStatus === ORDER_STATUS.DELIVERED) {
-        message = 'Tu pedido esta siendo enviado';
-      } else if (orderStatus === ORDER_STATUS.REJECTED_BY_ADMIN) {
-        resetSteps = true;
-        message = 'Tu pedido ha sido cancelado';
-      } else if (orderStatus === ORDER_STATUS.REJECTED_BY_RESTAURANT) {
-        resetSteps = true;
-        message = 'Tu pedido ha sido cancelado';
-      } else if (orderStatus === ORDER_STATUS.CLOSED) {
-        resetSteps = true;
-        message = 'Tu pedido esta cerrado';
-      } else {
-        resetSteps = true;
-        message = 'No has hecho ningun pedido';
-      }
+      message = statusOrderMessageList[ctx.orderStatus];
 
       ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
         ctx,
         ctx.chatbotNumber,
       );
-      if (resetSteps) {
-        ctx.step = STEPS.INIT;
-        delete ctx.currentOrderId;
-        delete ctx.orderStatus;
-      }
       await this.ctxService.updateCtx(ctx._id, ctx);
 
       await this.senderService.sendMessages(
