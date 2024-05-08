@@ -101,10 +101,18 @@ export class CartaDirectaService {
       parseInt(ctx.currentOrderId),
       chatbotNumber,
     );
-    ctx['total'] = order.order_price;
-    ctx['dni'] = order.configs['DNI Cliente'];
-    ctx['clientName'] = order.configs.client_name;
-    ctx.currentOrder = order;
+    if (order) {
+      ctx['total'] = order.order_price;
+      ctx['dni'] = order.configs['DNI Cliente'];
+      ctx['clientname'] = order.configs.client_name;
+      ctx[
+        'address'
+      ] = `${order.configs.delivery_area_name}, ${order.whatsapp_address}`;
+      ctx['deliveryCost'] = order.delivery_price;
+      ctx['date'] = order.created_at;
+      console.log(ctx);
+      ctx.currentOrder = order;
+    }
     return ctx;
   }
 

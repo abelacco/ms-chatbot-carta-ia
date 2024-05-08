@@ -25,6 +25,10 @@ import { filterOrderId } from './Utils/filterOrderId';
 import { measureMemory } from 'vm';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 import { statusOrderMessageList } from './Utils/orderStatusMessages';
+import {
+  reminderLocationMessage,
+  reminderVoucherMessage,
+} from './Utils/reminderStepMessage';
 
 @Injectable()
 export class FlowsService {
@@ -289,9 +293,21 @@ export class FlowsService {
           messageEntry.chatbotNumber,
         );
       }
-      // Actualizar paso
-      ctx.step = ctx.step;
-      await this.ctxService.updateCtx(ctx._id, ctx);
+      let reminderMessage = '';
+      if (ctx.step === STEPS.PRE_PAY) {
+        reminderMessage = reminderVoucherMessage;
+      } else if (ctx.step === STEPS.WAITING_LOCATION) {
+        reminderMessage = reminderLocationMessage;
+      }
+      if (reminderMessage !== '') {
+        await this.senderService.sendMessages(
+          this.builderTemplate.buildTextMessage(
+            messageEntry.clientPhone,
+            reminderMessage,
+          ),
+          messageEntry.chatbotNumber,
+        );
+      }
     } catch (err) {
       console.log(`[ERROR]:`, err);
       return;
@@ -372,9 +388,21 @@ export class FlowsService {
           messageEntry.chatbotNumber,
         );
       }
-      // Actualizar paso
-      ctx.step = ctx.step;
-      await this.ctxService.updateCtx(ctx._id, ctx);
+      let reminderMessage = '';
+      if (ctx.step === STEPS.PRE_PAY) {
+        reminderMessage = reminderVoucherMessage;
+      } else if (ctx.step === STEPS.WAITING_LOCATION) {
+        reminderMessage = reminderLocationMessage;
+      }
+      if (reminderMessage !== '') {
+        await this.senderService.sendMessages(
+          this.builderTemplate.buildTextMessage(
+            messageEntry.clientPhone,
+            reminderMessage,
+          ),
+          messageEntry.chatbotNumber,
+        );
+      }
     } catch (err) {
       console.log(`[ERROR]:`, err);
       return;

@@ -8,7 +8,10 @@ import {
 import { SenderService } from 'src/sender/sender.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { HistoryService } from 'src/history/history.service';
-import { createTemplateReponseMessage } from './Utils/templateMessage';
+import {
+  createTemplateNotifyToDelivery,
+  createTemplateReponseMessage,
+} from './Utils/templateMessage';
 import {
   aceptedMessage,
   locationMessage,
@@ -151,7 +154,11 @@ export class UiResponsesService {
   }
 
   async notifyDelivery(body: NotifyDeliveryDto) {
-    const messageContent = 'Notify delivery';
+    const ctx = await this.ctxService.findOrCreateCtx({
+      clientPhone: body.clientPhone,
+      chatbotNumber: body.chatBotNumber,
+    });
+    const messageContent = createTemplateNotifyToDelivery(ctx);
 
     body.deliveryPhones.forEach(async (numberPhone) => {
       const template = this.builderTemplate.buildTextMessage(
@@ -159,6 +166,14 @@ export class UiResponsesService {
         messageContent,
       );
       await this.senderService.sendMessages(template, body.chatBotNumber);
+      if (ctx.lat && ctx.lng) {
+        const template = this.builderTemplate.buildLocationMessage(
+          numberPhone,
+          parseFloat(ctx.lng),
+          parseFloat(ctx.lat),
+        );
+        await this.senderService.sendMessages(template, body.chatBotNumber);
+      }
     });
 
     return body;

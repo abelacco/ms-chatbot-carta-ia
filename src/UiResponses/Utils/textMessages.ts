@@ -1,3 +1,5 @@
+export const notifyToDeliverysMessage =
+  'Pedido numero: {orderId}\nPara: {clientName}\nDirección: {addres}\nNumero del cliente: {clientPhone}\nCosto total: {total}\nCosto delivery: {deliveryCost}';
 export const justCreated =
   'Hemos recibido tu pedido numero: {orderId} y lo estamos analizando';
 
