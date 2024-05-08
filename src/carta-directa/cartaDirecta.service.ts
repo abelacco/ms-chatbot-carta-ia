@@ -96,13 +96,10 @@ export class CartaDirectaService {
       parseInt(ctx.currentOrderId),
       chatbotNumber,
     );
-    ctx['orderStatus'] = order.last_status[0].name;
     ctx['total'] = order.order_price;
     ctx['dni'] = order.configs['DNI Cliente'];
     ctx['clientName'] = order.configs.client_name;
-    order.items.forEach((item) => {
-      ctx.currentOrder.push(item);
-    });
+    ctx.currentOrder = order;
     return ctx;
   }
 

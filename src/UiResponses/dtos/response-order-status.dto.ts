@@ -1,5 +1,5 @@
 import { IsString, IsEnum } from 'class-validator';
-import { EnumOrderStatus } from 'src/common/enums';
+import { EnumOrderStatusBot, EnumOrderStatusCD } from 'src/common/enums';
 
 export class ResponseOrderStatusDto {
   @IsString()
@@ -11,6 +11,6 @@ export class ResponseOrderStatusDto {
   @IsString()
   clientPhone: string;
 
-  @IsEnum(EnumOrderStatus, { message: 'Invalid order status' })
-  orderStatus: EnumOrderStatus;
+  @IsEnum(EnumOrderStatusBot, { message: 'Invalid order status' })
+  orderStatus: EnumOrderStatusBot;
 }

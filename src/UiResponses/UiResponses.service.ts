@@ -15,7 +15,7 @@ import {
   rejectedMessage,
   statusOrderMessageList,
 } from './Utils/textMessages';
-import { EnumOrderStatus } from 'src/common/enums';
+import { EnumOrderStatusCD } from 'src/common/enums';
 import { CtxService } from 'src/context/ctx.service';
 import { STEPS } from 'src/context/helpers/constants';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
@@ -63,11 +63,11 @@ export class UiResponsesService {
       chatbotNumber: body.chatBotNumber,
     });
 
-    ctx.orderStatus = EnumOrderStatus[body.orderStatus];
+    ctx.orderStatus = body.orderStatus;
     await this.ctxService.updateCtx(ctx._id, ctx);
 
     const messageContent =
-      statusOrderMessageList[EnumOrderStatus[body.orderStatus]];
+      statusOrderMessageList[EnumOrderStatusCD[body.orderStatus]];
 
     const templateMessage = createTemplateReponseMessage(
       messageContent,
@@ -103,8 +103,6 @@ export class UiResponsesService {
 
     if (body.action === 0) {
       messageContent = rejectedMessage;
-      ctx.step = STEPS.INIT;
-      ctx.orderStatus = EnumOrderStatus[7];
       await this.cartaDirectaService.rejectorder(
         body.orderId,
         body.chatBotNumber,
@@ -112,7 +110,7 @@ export class UiResponsesService {
     } else if (body.action === 1) {
       messageContent = aceptedMessage;
       ctx.step = STEPS.WAITING_LOCATION;
-      ctx.orderStatus = EnumOrderStatus[2];
+      ctx.orderStatus = 2;
       await this.cartaDirectaService.acceptOrder(
         body.orderId,
         body.chatBotNumber,

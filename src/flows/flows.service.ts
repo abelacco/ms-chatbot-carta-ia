@@ -245,6 +245,7 @@ export class FlowsService {
         ctx,
         ctx.chatbotNumber,
       );
+      ctx.orderStatus = 1;
       this.ctxService.updateCtx(ctx._id, ctx);
       const prompt = await this.generatePayLink(
         messageEntry.content,

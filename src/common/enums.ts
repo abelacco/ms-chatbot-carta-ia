@@ -1,4 +1,4 @@
-export enum EnumOrderStatus {
+export enum EnumOrderStatusCD {
   'Just created',
   'Accepted by admin',
   'Accepted',
@@ -8,4 +8,14 @@ export enum EnumOrderStatus {
   'Rejected by admin',
   'Rejected by restaurant',
   'Closed',
+}
+
+export enum EnumOrderStatusBot {
+  'pidiendo',
+  'orden',
+  'pagado',
+  'cocina',
+  'preparado',
+  'enviado',
+  'entregado',
 }

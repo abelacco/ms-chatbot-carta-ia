@@ -9,7 +9,7 @@ import {
   UpdateOrderStatusDto,
 } from './dto';
 import { STATUS_BOT } from 'src/common/constants';
-import { EnumOrderStatus } from 'src/common/enums';
+import { EnumOrderStatusBot, EnumOrderStatusCD } from 'src/common/enums';
 import { setWeekYear } from 'date-fns';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
@@ -81,7 +81,7 @@ export class CtxService {
 
   async updateStatusOrder(updateOrder: UpdateOrderStatusDto): Promise<Ctx> {
     const ctx = await this._db.findByOrder(updateOrder.order);
-    ctx.orderStatus = EnumOrderStatus[updateOrder.orderStatus];
+    ctx.orderStatus = updateOrder.orderStatus;
     const ctxUpdated = await this.updateCtx(ctx._id, ctx);
     return ctxUpdated;
   }

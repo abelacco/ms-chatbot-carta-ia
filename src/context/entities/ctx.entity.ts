@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Product } from '../interface';
 
 @Schema()
 export class Ctx extends Document {
@@ -16,14 +15,14 @@ export class Ctx extends Document {
   @Prop()
   clientPhone: string;
 
-  @Prop()
-  currentOrder: any[];
+  @Prop({ type: Object })
+  currentOrder: Record<any, any>;
 
   @Prop()
   currentOrderId: string;
 
   @Prop()
-  orderStatus: string;
+  orderStatus: number;
 
   @Prop()
   address: string;
