@@ -71,6 +71,8 @@ export class UiResponsesService {
       ctx.step = STEPS.INIT;
     } else if (body.orderStatus === ORDER_STATUS_BOT.rechazado) {
       ctx.step = STEPS.INIT;
+    } else if (body.orderStatus === ORDER_STATUS_BOT.pidiendo) {
+      ctx.step = STEPS.INIT;
     }
     await this.ctxService.updateCtx(ctx._id, ctx);
     await this.cartaDirectaService.changeOrderStatus(
