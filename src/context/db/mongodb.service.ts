@@ -79,7 +79,7 @@ export class MongoDbService implements ICtxDao {
   async findByOrder(orderId: string): Promise<Ctx> {
     try {
       const ctx = await this._ctxModel.findOne({
-        order: orderId,
+        currentOrderId: orderId,
       });
 
       return ctx;
