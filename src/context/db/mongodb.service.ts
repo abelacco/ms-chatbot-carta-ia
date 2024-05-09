@@ -28,6 +28,7 @@ export class MongoDbService implements ICtxDao {
           const createMessage = new this._ctxModel({
             clientPhone: clientPhone,
             chatbotNumber: chatBotNumber,
+            orderStatus: 0,
           });
           await createMessage.save();
           return createMessage;
