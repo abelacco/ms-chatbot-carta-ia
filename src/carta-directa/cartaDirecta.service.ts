@@ -3,12 +3,15 @@ import axios from 'axios';
 import { AuthService } from 'src/auth/auth.service';
 import { BusinessService } from 'src/business/business.service';
 import { statusEquals } from './utils/StatusEquals';
+import { AiService } from 'src/ai/ai.service';
+import { getMenuKeyWordsPrompt } from './utils/prompts';
 
 @Injectable()
 export class CartaDirectaService {
   constructor(
     private authService: AuthService,
     private businessServide: BusinessService,
+    private aiService: AiService,
   ) {}
 
   async getToken(chatbotNumber: string) {
@@ -138,40 +141,34 @@ export class CartaDirectaService {
     }
   }
 
-  async parseMenuFromApiResponse(id: string) {
-    const menu = {
-      comidas: '',
-      extras: '',
-      bebidas: '',
-    };
-    let stepMenu = 'comidas';
-
+  async parseMenuFromApiResponse(id: string, question: string) {
+    const menu = {};
     const memuFromApi = await this.getMenuFromApi(id);
-    memuFromApi.forEach((element, index) => {
-      if (index === 6) {
-        stepMenu = 'bebidas';
-      }
-
-      menu[stepMenu] =
-        menu[stepMenu] +
-        JSON.stringify(
-          element.map((item: any) => ({
+    console.log(question);
+    /* Parse Menu */
+    memuFromApi.forEach((element) => {
+      if (element[0]) {
+        const categoryName = element[0].category_name;
+        menu[categoryName] = [];
+        element.forEach((item) => {
+          menu[categoryName].push({
             name: item.name,
             description: item.description,
             price: item.price,
-          })),
-        );
-
-      if (index === 0) {
-        menu.extras = JSON.stringify(
-          element[0].extras.map((item) => ({
-            name: item.name,
-            price: item.price,
-          })),
-        );
+          });
+        });
       }
     });
+    const menuKeys = Object.keys(menu).join('|');
+    /* Get keysword with ia */
+    const prompt = getMenuKeyWordsPrompt
+      .replace(/{KEY_WORDS}/g, menuKeys)
+      .replace(/{CLIENT_ANSWER}/g, question);
 
-    return menu;
+    const keyWord = await this.aiService.createChat([
+      { role: 'system', content: prompt },
+    ]);
+
+    return menu[keyWord];
   }
 }

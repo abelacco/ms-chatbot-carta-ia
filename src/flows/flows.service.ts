@@ -337,6 +337,7 @@ export class FlowsService {
   ) {
     const menu = await this.cartaDirectaService.parseMenuFromApiResponse(
       businessInfo.businessId,
+      question,
     );
     const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
       .replace('{question}', question)
@@ -347,9 +348,7 @@ export class FlowsService {
         '{link}',
         `https://menu.cartadirecta.com/restaurant/${businessInfo.businessName}`,
       )
-      .replace('{extra}', menu.extras)
-      .replace('{menu}', menu.comidas)
-      .replace('{drinks}', menu.bebidas)
+      .replace('{menu}', JSON.stringify(menu))
       .replace('{slogan}', businessInfo.slogan);
     console.log(mainPrompt);
     return mainPrompt;
