@@ -13,7 +13,7 @@ const pickUp = 'Tu pedido ya ha sido entregado';
 
 export const statusOrderMessageList = {
   1: justCreated,
-  2: aceptedMessage,
+  2: inCooking,
   3: inCooking,
   4: prepared,
   5: orderShipped,
