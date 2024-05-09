@@ -37,7 +37,7 @@ export const PROMPT_ANALYZE_DATA = `Como una inteligencia artificial avanzada, t
 {CLIENT_ANSWER}
 
 Posibles acciones a realizar:
-1. INFO: Esta acción se debe realizar cuando el cliente expresa su deseo de conocer más sobre nuestros servicios, o información de nuestros productos.
+1. INFO: Esta acción se debe realizar cuando el cliente expresa su deseo de conocer más sobre nuestros servicios, información de nuestros productos, o si tenemos cierto producto.
 2. ORDERNAR: Esta acción se debe realizar cuando el cliente expresa su deseo por algun producto o promoción.
 3. COBERTURA: Esta acción se debe realizar cuando el cliente desea conocer si hacemos envios o tenemos cobertura en su zona.
 

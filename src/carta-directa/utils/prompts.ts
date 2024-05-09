@@ -8,5 +8,6 @@ export const getMenuKeyWordsPrompt = `Como una inteligencia artificial avanzada,
 
 
 Tu objetivo es comprender la intención del cliente y seleccionar la keyword más adecuada en respuesta a su declaración.
+En el caso de que la pregunta no este relacionada a ninguna keyword devuelve (null).
 
-Respuesta ideal ({KEY_WORDS}):`;
+Respuesta ideal ({KEY_WORDS}|null):`;

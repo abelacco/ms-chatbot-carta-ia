@@ -165,10 +165,10 @@ export class CartaDirectaService {
       .replace(/{KEY_WORDS}/g, menuKeys)
       .replace(/{CLIENT_ANSWER}/g, question);
 
-    const keyWord = await this.aiService.createChat([
+    let keyWord = await this.aiService.createChat([
       { role: 'system', content: prompt },
     ]);
-
+    keyWord = keyWord.replace(/\(|\)/g, '');
     return menu[keyWord];
   }
 }

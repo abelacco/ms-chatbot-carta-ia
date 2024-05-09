@@ -345,7 +345,7 @@ export class FlowsService {
       .replace('{direccion}', businessInfo.address)
       .replace('{horarios}', businessInfo.businessHours[0])
       .replace(
-        '{link}',
+        /{link}/g,
         `https://menu.cartadirecta.com/restaurant/${businessInfo.businessName}`,
       )
       .replace('{menu}', JSON.stringify(menu))
