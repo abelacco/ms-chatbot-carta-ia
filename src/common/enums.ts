@@ -18,4 +18,5 @@ export enum EnumOrderStatusBot {
   'preparado',
   'enviado',
   'entregado',
+  'rechazado' = 9,
 }

@@ -21,6 +21,7 @@ import {
 import { CtxService } from 'src/context/ctx.service';
 import { STEPS } from 'src/context/helpers/constants';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
+import { ORDER_STATUS, ORDER_STATUS_BOT } from 'src/common/constants';
 
 @Injectable()
 export class UiResponsesService {
@@ -66,10 +67,11 @@ export class UiResponsesService {
     });
 
     ctx.orderStatus = body.orderStatus;
-    if (body.orderStatus === 6) {
+    if (body.orderStatus === ORDER_STATUS_BOT.entregado) {
+      ctx.step = STEPS.INIT;
+    } else if (body.orderStatus === ORDER_STATUS_BOT.rechazado) {
       ctx.step = STEPS.INIT;
     }
-
     await this.ctxService.updateCtx(ctx._id, ctx);
     await this.cartaDirectaService.changeOrderStatus(
       body.orderId,
@@ -77,6 +79,9 @@ export class UiResponsesService {
       body.orderStatus,
     );
     const messageContent = statusOrderMessageList[body.orderStatus];
+    if (!messageContent) {
+      return body;
+    }
     console.log(body.orderStatus);
     const templateMessage = createTemplateReponseMessage(
       messageContent,

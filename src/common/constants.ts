@@ -53,3 +53,14 @@ export const GENERAL_STATUS = {
   OFF: 0,
   ON: 1,
 };
+
+export const ORDER_STATUS_BOT = {
+  pidiendo: 0,
+  orden: 1,
+  pagado: 2,
+  cocina: 3,
+  preparado: 4,
+  enviado: 5,
+  entregado: 6,
+  rechazado: 9,
+};
