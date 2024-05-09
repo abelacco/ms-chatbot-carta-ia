@@ -1,7 +1,8 @@
-import { Controller, Get, Query, Put } from '@nestjs/common';
+import { Controller, Get, Query, Put, Body } from '@nestjs/common';
 import { CtxService } from './ctx.service';
 import { SwitchBotDto, SwitchBotGlobalDto, UpdateOrderStatusDto } from './dto';
 import { ApiResponse } from 'src/common/ApiResponses';
+import { CancelHelpDto } from './dto/switch-bot.dto copy';
 
 @Controller('ctx')
 export class CtxController {
@@ -53,6 +54,16 @@ export class CtxController {
         'An error ocurred while updating status order',
         error,
       );
+    }
+  }
+
+  @Put('cancel-help')
+  async cancelHelp(@Body() body: CancelHelpDto) {
+    try {
+      const response = await this.ctxService.cancelHelpStatus(body);
+      return ApiResponse.success('Cancel help successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while canceling help', error);
     }
   }
 }

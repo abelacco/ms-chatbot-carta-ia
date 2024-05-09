@@ -8,9 +8,10 @@ import {
   UpdateCtxDto,
   UpdateOrderStatusDto,
 } from './dto';
-import { STATUS_BOT } from 'src/common/constants';
+import { HELP_STATUS, STATUS_BOT } from 'src/common/constants';
 import { EnumOrderStatusBot, EnumOrderStatusCD } from 'src/common/enums';
 import { setWeekYear } from 'date-fns';
+import { CancelHelpDto } from './dto/switch-bot.dto copy';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
 @Injectable()
@@ -82,6 +83,17 @@ export class CtxService {
   async updateStatusOrder(updateOrder: UpdateOrderStatusDto): Promise<Ctx> {
     const ctx = await this._db.findByOrder(updateOrder.order);
     ctx.orderStatus = updateOrder.orderStatus;
+    const ctxUpdated = await this.updateCtx(ctx._id, ctx);
+    return ctxUpdated;
+  }
+
+  async cancelHelpStatus(body: CancelHelpDto) {
+    const ctx = await this.findOrCreateCtx({
+      clientPhone: body.clientPhone,
+      chatbotNumber: body.chatBotNumber,
+    });
+    ctx.help = HELP_STATUS.OFF;
+    ctx.statusBot = STATUS_BOT.ON;
     const ctxUpdated = await this.updateCtx(ctx._id, ctx);
     return ctxUpdated;
   }

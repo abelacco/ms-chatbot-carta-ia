@@ -22,6 +22,9 @@ export class Ctx extends Document {
   currentOrderId: string;
 
   @Prop()
+  help: number;
+
+  @Prop()
   orderStatus: number;
 
   @Prop()

@@ -27,6 +27,11 @@ export const DOCUMENT_IDENTIFIERS = {
   RUC_TYPE: 'ruc',
 };
 
+export const HELP_STATUS = {
+  OFF: 0,
+  ON: 1,
+};
+
 export const ORDER_STATUS = {
   JUST_CREATED: 'Just created',
   ACEPTED_BY_ADMIN: 'Accepted by admin',

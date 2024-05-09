@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ORDER_STATUS } from 'src/common/constants';
+import { HELP_STATUS, ORDER_STATUS, STATUS_BOT } from 'src/common/constants';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { CtxService } from 'src/context/ctx.service';
 import { HistoryService } from 'src/history/history.service';
@@ -19,7 +19,8 @@ import {
   PROMPT_DECLINE_PAY,
   PROMPT_ACCEPT_PAY,
   PROMPT_LOCATION,
-} from './Utils/promps';
+  PROMPT_HELP,
+} from './Utils/prompts';
 import { string } from 'joi';
 import { filterOrderId } from './Utils/filterOrderId';
 import { measureMemory } from 'vm';
@@ -107,6 +108,8 @@ export class FlowsService {
       } else if (response === 'ORDENAR') {
         Logger.log('ORDERNAR', 'INTENCION');
         await this.sendPayLink(ctx, messageEntry, historyParsed, businessInfo);
+      } else if (response === 'HELP') {
+        await this.sendHelpFlow(ctx, messageEntry, historyParsed, businessInfo);
       } else {
         Logger.log('COBERTURA', 'INTENCION');
         this.sendCoverageInfo(ctx, messageEntry, historyParsed, businessInfo);
@@ -138,6 +141,35 @@ export class FlowsService {
     } catch (error) {}
   }
 
+  async sendHelpFlow(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+    businessInfo,
+  ) {
+    ctx.help = HELP_STATUS.ON;
+    ctx.statusBot = STATUS_BOT.OFF;
+    await this.ctxService.updateCtx(ctx._id, ctx);
+    const prompt = PROMPT_HELP;
+    const response = await this.aiService.createChat([
+      {
+        role: 'system',
+        content: prompt,
+      },
+    ]);
+    const chunks = response.split(/(?<!\d)\.\s+/g);
+    messageEntry.type = 'text';
+    for (const chunk of chunks) {
+      const newMessage = await this.historyService.setAndCreateAssitantMessage(
+        messageEntry,
+        chunk,
+      );
+      await this.senderService.sendMessages(
+        this.builderTemplate.buildTextMessage(messageEntry.clientPhone, chunk),
+        messageEntry.chatbotNumber,
+      );
+    }
+  }
   async checkPayFlow(
     ctx: Ctx,
     messageEntry: IParsedMessage,
