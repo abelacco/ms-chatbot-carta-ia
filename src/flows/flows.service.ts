@@ -130,7 +130,10 @@ export class FlowsService {
         ctx.chatbotNumber,
       );
       await this.ctxService.updateCtx(ctx._id, ctx);
-
+      const newMessage = await this.historyService.setAndCreateAssitantMessage(
+        messageEntry,
+        message,
+      );
       await this.senderService.sendMessages(
         this.builderTemplate.buildTextMessage(
           messageEntry.clientPhone,
