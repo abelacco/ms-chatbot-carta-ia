@@ -5,6 +5,7 @@ import { BuilderTemplatesService } from 'src/builder-templates/builder-templates
 import { BusinessService } from 'src/business/business.service';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
 import { SenderFromUiDto } from './dto/sender-from-ui.dto';
+import { HistoryService } from 'src/history/history.service';
 
 @Injectable()
 export class SenderService {
@@ -13,6 +14,7 @@ export class SenderService {
     private builderService: BuilderTemplatesService,
     private readonly businessService: BusinessService,
     private readonly authService: AuthService,
+    private readonly historyService: HistoryService,
   ) {}
 
   async sendMessages(messageClient: any, chatbotNumber: string) {
@@ -48,6 +50,18 @@ export class SenderService {
   }
 
   async sendMessagesFromUi(body: SenderFromUiDto) {
+    // body.phoneNumber = '54261156841080';
+    /* Add to historial */
+    await this.historyService.setAndCreateAssitantMessage(
+      {
+        chatbotNumber: body.chatbotNumber,
+        clientName: '',
+        clientPhone: body.phoneNumber,
+        type: 'text',
+        content: body.text,
+      },
+      body.text,
+    );
     /* Build Message template */
     const buildTextTemplate = this.builderService.buildTextMessage(
       body.phoneNumber,

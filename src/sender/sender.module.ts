@@ -5,6 +5,7 @@ import { BuilderTemplatesModule } from 'src/builder-templates/builder-templates.
 import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module';
 import { BusinessModule } from 'src/business/business.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { HistoryModule } from 'src/history/history.module';
 
 @Module({
   controllers: [SenderController],
@@ -13,6 +14,7 @@ import { AuthModule } from 'src/auth/auth.module';
     BuilderTemplatesModule,
     BusinessModule,
     AuthModule,
+    HistoryModule,
   ],
   providers: [SenderService],
   exports: [SenderService],
