@@ -69,10 +69,13 @@ export class UiResponsesService {
     ctx.orderStatus = body.orderStatus;
     if (body.orderStatus === ORDER_STATUS_BOT.entregado) {
       ctx.step = STEPS.INIT;
+      ctx.voucherUrl = '';
     } else if (body.orderStatus === ORDER_STATUS_BOT.rechazado) {
       ctx.step = STEPS.INIT;
+      ctx.voucherUrl = '';
     } else if (body.orderStatus === ORDER_STATUS_BOT.pidiendo) {
       ctx.step = STEPS.INIT;
+      ctx.voucherUrl = '';
     }
     await this.ctxService.updateCtx(ctx._id, ctx);
     await this.cartaDirectaService.changeOrderStatus(
