@@ -119,6 +119,7 @@ export class UiResponsesService {
 
     if (body.action === 0) {
       messageContent = rejectedMessage;
+      ctx.voucherUrl = '';
       await this.cartaDirectaService.rejectorder(
         body.orderId,
         body.chatBotNumber,
