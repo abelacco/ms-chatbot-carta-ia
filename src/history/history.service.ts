@@ -114,4 +114,12 @@ export class HistoryService {
 
     return conversationString;
   }
+
+  async removeAll() {
+    try {
+      await this._db.removeAll();
+    } catch (error) {
+      throw error;
+    }
+  }
 }

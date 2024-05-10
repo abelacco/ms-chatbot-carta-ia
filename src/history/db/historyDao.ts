@@ -7,4 +7,6 @@ export interface IHistoryDao {
   create(createHistory: CreateHistoryDto): Promise<History>;
 
   findAll(clientPhone: string, chatbotNumber: string): Promise<Array<History>>;
+
+  removeAll();
 }

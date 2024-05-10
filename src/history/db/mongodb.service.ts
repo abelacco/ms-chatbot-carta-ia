@@ -36,4 +36,13 @@ export class MongoDbService implements IHistoryDao {
       else throw error;
     }
   }
+
+  async removeAll(): Promise<void> {
+    try {
+      await this._historyModel.deleteMany({});
+    } catch (error) {
+      if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
+      else throw error;
+    }
+  }
 }

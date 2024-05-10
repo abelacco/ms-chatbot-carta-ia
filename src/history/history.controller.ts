@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete } from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { CreateHistoryDto } from './dto';
 import { ApiResponse } from 'src/common/ApiResponses';
@@ -43,6 +43,19 @@ export class HistoryController {
       return ApiResponse.success('Parse history successfully', response);
     } catch (error) {
       return ApiResponse.error('An error ocurred while parsing history', error);
+    }
+  }
+
+  @Delete('delete-history')
+  async deleteHistory() {
+    try {
+      const response = await this.historyService.removeAll();
+      return ApiResponse.success('Delete history successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while deleting history',
+        error,
+      );
     }
   }
 }
