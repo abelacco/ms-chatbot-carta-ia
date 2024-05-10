@@ -99,11 +99,11 @@ export class UiResponsesService {
       {
         chatbotNumber: body.chatBotNumber,
         clientPhone: body.clientPhone,
-        content: messageContent,
+        content: templateMessage,
         type: 'text',
         clientName: '',
       },
-      messageContent,
+      templateMessage,
     );
 
     await this.senderService.sendMessages(template, body.chatBotNumber);
@@ -149,11 +149,11 @@ export class UiResponsesService {
       {
         chatbotNumber: body.chatBotNumber,
         clientPhone: body.clientPhone,
-        content: messageContent,
+        content: templateMessage,
         type: 'text',
         clientName: '',
       },
-      messageContent,
+      templateMessage,
     );
 
     await this.senderService.sendMessages(template, body.chatBotNumber);
