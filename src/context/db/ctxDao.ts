@@ -24,4 +24,5 @@ export interface ICtxDao {
   // findMessageByterm(term: string): Promise<Ctx>;
 
   // remove(id: string): Promise<Doctor>;
+  removeAll();
 }

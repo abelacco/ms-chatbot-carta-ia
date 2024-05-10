@@ -9,8 +9,6 @@ import {
   UpdateOrderStatusDto,
 } from './dto';
 import { HELP_STATUS, STATUS_BOT } from 'src/common/constants';
-import { EnumOrderStatusBot, EnumOrderStatusCD } from 'src/common/enums';
-import { setWeekYear } from 'date-fns';
 import { CancelHelpDto } from './dto/switch-bot.dto copy';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
@@ -96,5 +94,13 @@ export class CtxService {
     ctx.statusBot = STATUS_BOT.ON;
     const ctxUpdated = await this.updateCtx(ctx._id, ctx);
     return ctxUpdated;
+  }
+
+  async removeAll() {
+    try {
+      await this._db.removeAll();
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Put, Body } from '@nestjs/common';
+import { Controller, Get, Query, Put, Body, Delete } from '@nestjs/common';
 import { CtxService } from './ctx.service';
 import { SwitchBotDto, SwitchBotGlobalDto, UpdateOrderStatusDto } from './dto';
 import { ApiResponse } from 'src/common/ApiResponses';
@@ -64,6 +64,19 @@ export class CtxController {
       return ApiResponse.success('Cancel help successfully', response);
     } catch (error) {
       return ApiResponse.error('An error ocurred while canceling help', error);
+    }
+  }
+
+  @Delete('delete-ctx')
+  async deleteCtx() {
+    try {
+      const response = await this.ctxService.removeAll();
+      return ApiResponse.success('Delete all ctx successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while deleting all ctx',
+        error,
+      );
     }
   }
 }

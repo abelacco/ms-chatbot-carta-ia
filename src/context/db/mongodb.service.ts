@@ -166,6 +166,15 @@ export class MongoDbService implements ICtxDao {
     }
   }
 
+  async removeAll(): Promise<void> {
+    try {
+      await this._ctxModel.deleteMany({});
+    } catch (error) {
+      if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
+      else throw error;
+    }
+  }
+
   // async findByName(name: string): Promise<Doctor> {
   //   try {
   //     const findDoctor: Doctor = await this._messageModel.findOne({ name });
