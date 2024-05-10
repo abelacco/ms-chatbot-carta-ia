@@ -181,12 +181,6 @@ export class FlowsService {
     businessInfo,
   ) {
     try {
-      const wspImageUrl = await this.generalService.getWhatsappMediaUrl(
-        messageEntry.content,
-      );
-      const cloudinaryImageUrl = await this.generalService.uploadFromURL(
-        wspImageUrl,
-      );
       const prompt = await this.generatePrePayConfirmation(
         messageEntry.content,
         historyParsed,
@@ -198,7 +192,7 @@ export class FlowsService {
           content: prompt,
         },
       ]);
-      ctx.voucherUrl = cloudinaryImageUrl.url;
+      ctx.voucherUrl = messageEntry.content;
       await this.ctxService.updateCtx(ctx._id, ctx);
       const chunks = response.split(/(?<!\d)\.\s+/g);
       messageEntry.type = 'text';

@@ -4,12 +4,16 @@ import { IHistoryDao } from './db/historyDao';
 import { MongoDbService } from './db/mongodb.service';
 import { IParsedMessage } from 'src/builder-templates/interface';
 import { History } from './entities/history.entity';
+import { GeneralServicesService } from 'src/general-services/general-services.service';
 
 @Injectable()
 export class HistoryService {
   private readonly _db: IHistoryDao;
 
-  constructor(private readonly _mongoDbService: MongoDbService) {
+  constructor(
+    private readonly _mongoDbService: MongoDbService,
+    private readonly generalService: GeneralServicesService,
+  ) {
     this._db = this._mongoDbService;
   }
   // creas una nuevo mensaje en el historial
@@ -49,12 +53,24 @@ export class HistoryService {
 
   // Creas un nuevo mensaje en el historial y obtienes el historial completo
   async createAndGetHistoryParsed(messageEntry: IParsedMessage) {
-    messageEntry.content.id
-      ? (messageEntry.content = messageEntry.content.id)
-      : '';
-    const newMessage = this.setModel(messageEntry, 'user');
-
     try {
+      /* If image parse image */
+      if (messageEntry.type === 'image') {
+        const wspImageUrl = await this.generalService.getWhatsappMediaUrl(
+          messageEntry.content,
+          messageEntry.chatbotNumber,
+        );
+        let cloudinaryImageUrl = await this.generalService.uploadFromURL(
+          wspImageUrl,
+          messageEntry.chatbotNumber,
+        );
+        cloudinaryImageUrl = cloudinaryImageUrl.url;
+        messageEntry.content = cloudinaryImageUrl;
+      }
+      messageEntry.content.id
+        ? (messageEntry.content = messageEntry.content.id)
+        : '';
+      const newMessage = this.setModel(messageEntry, 'user');
       await this.create(newMessage);
       const history = await this.findAll(
         newMessage.clientPhone,

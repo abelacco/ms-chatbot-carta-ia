@@ -5,6 +5,7 @@ import { DOCUMENT_IDENTIFIERS } from 'src/common/constants';
 import axios from 'axios';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryResponse } from './types/cloudinary-response';
+import { BusinessService } from 'src/business/business.service';
 const streamifier = require('streamifier');
 
 @Injectable()
@@ -12,7 +13,7 @@ export class GeneralServicesService {
   private apiKey: string;
   private urlApiPeruService: string;
 
-  constructor() {
+  constructor(private readonly businessService: BusinessService) {
     this.apiKey = process.env.API_PERU_KEY;
     this.urlApiPeruService = process.env.URL_API_PERU_SERVICE;
   }
@@ -31,12 +32,16 @@ export class GeneralServicesService {
     }
   }
 
-  async uploadFromURL(imageUrl: string): Promise<CloudinaryResponse> {
-    const whatsAppToken = process.env.CURRENT_ACCESS_TOKEN;
+  async uploadFromURL(
+    imageUrl: string,
+    chatbotNumber: string,
+  ): Promise<CloudinaryResponse> {
+    const businessInfo = await this.businessService.getBusiness(chatbotNumber);
+    const accessToken = businessInfo.accessToken;
     // Descargar la imagen de la URL
     const response = await axios.get(imageUrl, {
       responseType: 'arraybuffer',
-      headers: { Authorization: `Bearer ${whatsAppToken}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
     const imageBuffer = Buffer.from(response.data, 'binary');
 
@@ -59,14 +64,18 @@ export class GeneralServicesService {
     });
   }
 
-  async getWhatsappMediaUrl(imageId: string) {
+  async getWhatsappMediaUrl(imageId: string, chatbotNumber: string) {
     try {
+      const businessInfo = await this.businessService.getBusiness(
+        chatbotNumber,
+      );
+      const accessToken = businessInfo.accessToken;
       const getImage = await axios.get(
         `https://graph.facebook.com/v16.0/${imageId}`,
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.CURRENT_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         },
       );

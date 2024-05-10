@@ -4,6 +4,7 @@ import { HistoryController } from './history.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { History, HistorySchema } from './entities/history.entity';
 import { MongoDbService } from './db/mongodb.service';
+import { GeneralServicesModule } from 'src/general-services/general-services.module';
 
 @Module({
   controllers: [HistoryController],
@@ -15,6 +16,7 @@ import { MongoDbService } from './db/mongodb.service';
         schema: HistorySchema,
       },
     ]),
+    GeneralServicesModule,
   ],
   exports: [HistoryService],
 })
