@@ -47,6 +47,10 @@ export class BotService {
     this.gatewayService.server.emit('newMessage');
     //Busca mensaje por número de cliente
     const ctx = await this.ctxService.findOrCreateCtx(parsedMessage);
+    if (!ctx.clientname) {
+      ctx.clientname = parsedMessage.clientName;
+      await this.ctxService.updateCtx(ctx._id, ctx);
+    }
     Logger.log(`CTX  ${JSON.stringify(ctx)} `, 'BOT SERVICE');
     const history = await this.historyService.createAndGetHistoryParsed(
       parsedMessage,

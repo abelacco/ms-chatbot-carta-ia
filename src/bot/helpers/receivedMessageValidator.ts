@@ -4,13 +4,6 @@ import { STATUS_BOT, WSP_MESSAGE_TYPES } from 'src/common/constants';
 import { Ctx } from 'src/context/entities/ctx.entity';
 import { STEPS } from 'src/context/helpers/constants';
 
-// En esta función voy a recibir el paso en el que el carrito de compras se encuentra
-// Si recibe que el carrito de compras esta en el paso init , entonces el mensaje que reciba debe ser de tipo texto
-// Si recibe que el carrito de compras esta en el paso put_dni , entonces el mensaje que reciba debe ser de tipo texto o interactive
-// Si recibe que el carrito de compras esta en el paso insert_date , entonces el mensaje que reciba debe ser de tipo texto o interactive
-// Si recibe que el carrito de compras esta en el paso select_provider , entonces el mensaje que reciba debe ser de tipo interactive
-// Si recibe que el carrito de compras esta en el paso select_payment , entonces el mensaje que reciba debe ser de tipo interactive
-// Si recibe que el carrito de compras esta en el paso submit_voucher , entonces el mensaje que reciba debe ser de tipo image
 export const receivedMessageValidator = (
   ctx: Ctx,
   entryMessage: IParsedMessage,
@@ -18,10 +11,10 @@ export const receivedMessageValidator = (
   const currentStep = ctx.step || STEPS.INIT;
   console.log(currentStep);
   if (
-    typeof entryMessage.content === 'string' &&
-    entryMessage.content.toUpperCase() === 'RESET'
+    entryMessage.type === 'text' &&
+    entryMessage.content.toUpperCase().includes('AYUDA')
   ) {
-    return 'resetExpenseFlow';
+    return 'sendHelpFlow';
   }
   switch (currentStep) {
     case STEPS.INIT: // Respondo al primer saludo

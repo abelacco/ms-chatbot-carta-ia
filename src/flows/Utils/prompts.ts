@@ -40,11 +40,10 @@ Posibles acciones a realizar:
 1. INFO: Esta acción se debe realizar cuando el cliente expresa su deseo de conocer más sobre nuestros servicios, información de nuestros productos, o si tenemos cierto producto.
 2. ORDERNAR: Esta acción se debe realizar cuando el cliente expresa su deseo por algun producto o promoción.
 3. COBERTURA: Esta acción se debe realizar cuando el cliente desea conocer si hacemos envios o tenemos cobertura en su zona.
-4. HELP: Es cuando el cliente desea hablar con alguien humano, expresa que quiere hablar con alguien o expresa que necesita ayuda.
 
 Tu objetivo es comprender la intención del cliente y seleccionar la acción más adecuada en respuesta a su declaración.
 
-Respuesta ideal (INFO|ORDERNAR|COBERTURA|HELP):`;
+Respuesta ideal (INFO|ORDERNAR|COBERTURA):`;
 
 export const PROMPT_COVERAGE = `Como asistente virtual del {restaurante}, tu responsabilidad es brindar información precisa y útil sobre detalles generales de nuestro establecimiento, y facilitar que el cliente acceda a nuestra carta completa a través del enlace proporcionado.
 

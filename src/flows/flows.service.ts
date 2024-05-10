@@ -108,11 +108,12 @@ export class FlowsService {
       } else if (response === 'ORDENAR') {
         Logger.log('ORDERNAR', 'INTENCION');
         await this.sendPayLink(ctx, messageEntry, historyParsed, businessInfo);
-      } else if (response === 'HELP') {
-        await this.sendHelpFlow(ctx, messageEntry, historyParsed, businessInfo);
-      } else {
+      } else if (response === 'COBERTURA') {
         Logger.log('COBERTURA', 'INTENCION');
         this.sendCoverageInfo(ctx, messageEntry, historyParsed, businessInfo);
+      } else {
+        Logger.log('INFO', 'INTENCION');
+        await this.sendInfoFlow(ctx, messageEntry, historyParsed, businessInfo);
       }
     } catch (err) {
       console.log(`[ERROR]:`, err);

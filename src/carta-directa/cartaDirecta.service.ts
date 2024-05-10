@@ -5,6 +5,7 @@ import { BusinessService } from 'src/business/business.service';
 import { statusEquals } from './utils/StatusEquals';
 import { AiService } from 'src/ai/ai.service';
 import { getMenuKeyWordsPrompt } from './utils/prompts';
+import { map } from 'rxjs';
 
 @Injectable()
 export class CartaDirectaService {
@@ -142,33 +143,38 @@ export class CartaDirectaService {
   }
 
   async parseMenuFromApiResponse(id: string, question: string) {
-    const menu = {};
+    const menu = [];
     const memuFromApi = await this.getMenuFromApi(id);
-    console.log(question);
+    /* Get keywords with ia */
+    const prompt = getMenuKeyWordsPrompt.replace(/{CLIENT_ANSWER}/g, question);
+    const keyWords = await this.aiService.createChat([
+      { role: 'system', content: prompt },
+    ]);
+    let keyWordsArray = keyWords.trim().replace('.', '').split(',');
+    keyWordsArray = keyWordsArray.map((e) => e.trim());
     /* Parse Menu */
     memuFromApi.forEach((element) => {
       if (element[0]) {
-        const categoryName = element[0].category_name;
-        menu[categoryName] = [];
         element.forEach((item) => {
-          menu[categoryName].push({
-            name: item.name,
-            description: item.description,
-            price: item.price,
-          });
+          const regex = new RegExp(
+            '\\b(' + keyWordsArray.join('|') + ')\\b',
+            'i',
+          );
+          const nameContainKeyWord = item.name.toLowerCase().match(regex);
+          const descriptionContainKeyWord = item.description
+            .toLowerCase()
+            .match(regex);
+          if (nameContainKeyWord || descriptionContainKeyWord) {
+            menu.push({
+              name: item.name,
+              description: item.description,
+              price: item.price,
+            });
+          }
         });
       }
     });
-    const menuKeys = Object.keys(menu).join('|');
-    /* Get keysword with ia */
-    const prompt = getMenuKeyWordsPrompt
-      .replace(/{KEY_WORDS}/g, menuKeys)
-      .replace(/{CLIENT_ANSWER}/g, question);
 
-    let keyWord = await this.aiService.createChat([
-      { role: 'system', content: prompt },
-    ]);
-    keyWord = keyWord.replace(/\(|\)/g, '');
-    return menu[keyWord];
+    return menu;
   }
 }
