@@ -10,6 +10,7 @@ import {
   FindDeliveriesByClientDto,
   UpdateDeliveryDto,
 } from '../dto';
+import { DELIVERIES_STATUS } from 'src/common/constants';
 
 @Injectable()
 export class MongoDbService implements IDeliveryDao {
@@ -20,7 +21,14 @@ export class MongoDbService implements IDeliveryDao {
 
   async create(body: CreateDeliveryDto) {
     try {
-      const createDelivery = new this._deliveryModel(body);
+      const createDelivery = new this._deliveryModel({
+        chatbotNumber: body.chatbotNumber,
+        deliveryNumber: body.deliveryNumber,
+        name: body.name,
+        status: DELIVERIES_STATUS.sin_orden,
+        currentOrderId: '',
+      });
+
       await createDelivery.save();
       return createDelivery;
     } catch (error) {
@@ -56,7 +64,11 @@ export class MongoDbService implements IDeliveryDao {
         deliveryNumber: body.deliveryNumber,
       });
 
-      delivery.deliveryNumber = body.newDeliveryNumber;
+      delivery.deliveryNumber =
+        body.newDeliveryNumber || delivery.deliveryNumber;
+      delivery.name = body.name || delivery.name;
+      delivery.status = body.status || delivery.status;
+      delivery.currentOrderId = body.currentOrderId || delivery.currentOrderId;
 
       await delivery.save();
       return delivery;

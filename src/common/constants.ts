@@ -64,3 +64,8 @@ export const ORDER_STATUS_BOT = {
   entregado: 6,
   rechazado: 9,
 };
+
+export const DELIVERIES_STATUS = {
+  sin_orden: 0,
+  con_orden: 1,
+};

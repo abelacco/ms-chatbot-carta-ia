@@ -8,6 +8,15 @@ export class Delivery extends Document {
 
   @Prop()
   deliveryNumber: string;
+
+  @Prop()
+  name: string;
+
+  @Prop()
+  status: number;
+
+  @Prop()
+  currentOrderId: string;
 }
 
 export const DeliverySchema = SchemaFactory.createForClass(Delivery);

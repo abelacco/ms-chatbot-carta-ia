@@ -31,6 +31,7 @@ export class DeliveryService {
       const delivery = await this._db.create({
         chatbotNumber: body.chatbotNumber,
         deliveryNumber: body.deliveryNumber,
+        name: body.name,
       });
       return delivery;
     } catch (error) {

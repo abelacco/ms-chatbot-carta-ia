@@ -6,4 +6,7 @@ export class CreateDeliveryDto {
 
   @IsString()
   deliveryNumber: string;
+
+  @IsString()
+  name: string;
 }
