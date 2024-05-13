@@ -16,14 +16,11 @@ import {
   PROMPT_COVERAGE,
   PROMPT_PAY_LINK,
   PROMPT_PRE_PAY_CONFIRMATION,
-  PROMPT_DECLINE_PAY,
-  PROMPT_ACCEPT_PAY,
   PROMPT_LOCATION,
   PROMPT_HELP,
+  PROMPT_INFO_WITH_ORDER,
 } from './Utils/prompts';
-import { string } from 'joi';
 import { filterOrderId } from './Utils/filterOrderId';
-import { measureMemory } from 'vm';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 import { statusOrderMessageList } from './Utils/orderStatusMessages';
 import {
@@ -174,6 +171,7 @@ export class FlowsService {
       );
     }
   }
+
   async checkPayFlow(
     ctx: Ctx,
     messageEntry: IParsedMessage,
@@ -185,6 +183,7 @@ export class FlowsService {
         messageEntry.content,
         historyParsed,
         businessInfo,
+        messageEntry,
       );
       const response = await this.aiService.createChat([
         {
@@ -224,6 +223,7 @@ export class FlowsService {
     question: string,
     history: string,
     businessInfo,
+    messageEntry: IParsedMessage,
   ) {
     const mainPrompt = PROMPT_PRE_PAY_CONFIRMATION.replace(
       '{chatHistory}',
@@ -251,6 +251,7 @@ export class FlowsService {
         messageEntry.content,
         historyParsed,
         businessInfo,
+        messageEntry,
       );
       const response = await this.aiService.createChat([
         {
@@ -282,7 +283,12 @@ export class FlowsService {
     }
   }
 
-  async generatePayLink(question: string, history: string, businessInfo) {
+  async generatePayLink(
+    question: string,
+    history: string,
+    businessInfo,
+    messageEntry: IParsedMessage,
+  ) {
     const mainPrompt = PROMPT_PAY_LINK.replace('{chatHistory}', history)
       .replace('{question}', question)
       .replace(/{restaurante}/g, businessInfo.businessName)
@@ -301,6 +307,7 @@ export class FlowsService {
         messageEntry.content,
         historyParsed,
         businessInfo,
+        messageEntry,
       );
       const response = await this.aiService.createChat([
         {
@@ -348,6 +355,7 @@ export class FlowsService {
     question: string,
     history: string,
     businessInfo,
+    messageEntry: IParsedMessage,
   ) {
     const mainPrompt = PROMPT_COVERAGE.replace('{chatHistory}', history)
       .replace('{question}', question)
@@ -364,6 +372,7 @@ export class FlowsService {
     question: string,
     history: string,
     businessInfo,
+    messageEntry: IParsedMessage,
   ) {
     const menu = await this.cartaDirectaService.parseMenuFromApiResponse(
       businessInfo.businessId,
@@ -371,6 +380,7 @@ export class FlowsService {
     );
     const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
       .replace('{question}', question)
+      .replace(/{clientName}/g, messageEntry.clientName)
       .replace(/{restaurante}/g, businessInfo.businessName)
       .replace('{direccion}', businessInfo.address)
       .replace('{horarios}', businessInfo.businessHours[0])
@@ -395,6 +405,69 @@ export class FlowsService {
         messageEntry.content,
         historyParsed,
         businessInfo,
+        messageEntry,
+      );
+      const response = await this.aiService.createChat([
+        {
+          role: 'system',
+          content: prompt,
+        },
+      ]);
+      const chunks = response.split(/(?<!\d)\.\s+/g);
+      for (const chunk of chunks) {
+        const newMessage =
+          await this.historyService.setAndCreateAssitantMessage(
+            messageEntry,
+            chunk,
+          );
+        await this.senderService.sendMessages(
+          this.builderTemplate.buildTextMessage(
+            messageEntry.clientPhone,
+            chunk,
+          ),
+          messageEntry.chatbotNumber,
+        );
+      }
+    } catch (err) {
+      console.log(`[ERROR]:`, err);
+      return;
+    }
+  };
+
+  async generateGeneralInfoFlowWithOrder(
+    question: string,
+    history: string,
+    businessInfo,
+    messageEntry: IParsedMessage,
+  ) {
+    const menu = await this.cartaDirectaService.parseMenuFromApiResponse(
+      businessInfo.businessId,
+      question,
+    );
+    const mainPrompt = PROMPT_INFO_WITH_ORDER.replace('{chatHistory}', history)
+      .replace('{question}', question)
+      .replace(/{restaurante}/g, businessInfo.businessName)
+      .replace(/{clientName}/g, messageEntry.clientName)
+      .replace('{direccion}', businessInfo.address)
+      .replace('{horarios}', businessInfo.businessHours[0])
+      .replace('{menu}', JSON.stringify(menu))
+      .replace('{slogan}', businessInfo.slogan);
+    console.log(mainPrompt);
+    return mainPrompt;
+  }
+
+  sendInfoFlowWithOrder = async (
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+    businessInfo,
+  ) => {
+    try {
+      const prompt = await this.generateGeneralInfoFlowWithOrder(
+        messageEntry.content,
+        historyParsed,
+        businessInfo,
+        messageEntry,
       );
       const response = await this.aiService.createChat([
         {

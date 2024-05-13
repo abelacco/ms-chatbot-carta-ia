@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UiResponsesService } from './UiResponses.service';
 import {
-  NotifyDeliveryDto,
   ResponseOrderStatusDto,
   ResponseToLocationDto,
   ResponseToVoucherDto,
@@ -46,19 +45,6 @@ export default class UiResponseController {
     } catch (error) {
       return ApiResponse.error(
         'An error occurred while changing order status',
-        error,
-      );
-    }
-  }
-
-  @Post('notify-delivery')
-  async notifyDelivery(@Body() body: NotifyDeliveryDto) {
-    try {
-      const response = await this.uiResponseService.notifyDelivery(body);
-      return ApiResponse.success('Successfully', response);
-    } catch (error) {
-      return ApiResponse.error(
-        'An error ocurred while notifying to deliverys',
         error,
       );
     }

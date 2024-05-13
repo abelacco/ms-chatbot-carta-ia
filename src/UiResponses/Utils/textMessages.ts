@@ -1,8 +1,5 @@
 export const nothing = '';
 
-export const notifyToDeliverysMessage =
-  'Pedido numero: {orderId}\nPara: {clientName}\nDirección: {addres}\nNumero del cliente: {clientPhone}\nCosto total: {total}\nCosto delivery: {deliveryCost}';
-
 export const justCreated =
   'Hemos recibido tu pedido numero: {orderId} y lo estamos analizando';
 
@@ -13,7 +10,7 @@ export const inCooking =
   'Tu pedido numero: {orderId} esta en preparación, te avisaremos cuando este listo';
 
 export const rejectedMessage =
-  'Hemos rechazado el comprobante de pago de tu pedido numero: {orderId}';
+  'Hemos rechazado el comprobante de pago de tu pedido numero: {orderId}\nPorfavor envianos un comprobante de pago valido';
 
 export const prepared = 'Tu pedido numero: {orderId} ya ha sido preparado';
 

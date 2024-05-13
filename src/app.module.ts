@@ -20,6 +20,7 @@ import BusinessController from './business/business.controller';
 import UiResponseController from './UiResponses/UiResponses.controller';
 import { UiResponseModule } from './UiResponses/UiResponses.module';
 import { CartaDirectaModule } from './carta-directa/cartaDirecta.module';
+import { DeliveryModule } from './delivery/delivery.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CartaDirectaModule } from './carta-directa/cartaDirecta.module';
     UiResponseModule,
     AuthModule,
     CartaDirectaModule,
+    DeliveryModule,
   ],
   controllers: [AppController, BusinessController],
   providers: [AppService],

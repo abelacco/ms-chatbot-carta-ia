@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import {
-  NotifyDeliveryDto,
   ResponseOrderStatusDto,
   ResponseToLocationDto,
   ResponseToVoucherDto,
@@ -8,10 +7,7 @@ import {
 import { SenderService } from 'src/sender/sender.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { HistoryService } from 'src/history/history.service';
-import {
-  createTemplateNotifyToDelivery,
-  createTemplateReponseMessage,
-} from './Utils/templateMessage';
+import { createTemplateReponseMessage } from './Utils/templateMessage';
 import {
   aceptedMessage,
   locationMessage,
@@ -21,7 +17,7 @@ import {
 import { CtxService } from 'src/context/ctx.service';
 import { STEPS } from 'src/context/helpers/constants';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
-import { ORDER_STATUS, ORDER_STATUS_BOT } from 'src/common/constants';
+import { ORDER_STATUS_BOT } from 'src/common/constants';
 
 @Injectable()
 export class UiResponsesService {
@@ -161,32 +157,6 @@ export class UiResponsesService {
     );
 
     await this.senderService.sendMessages(template, body.chatBotNumber);
-    return body;
-  }
-
-  async notifyDelivery(body: NotifyDeliveryDto) {
-    const ctx = await this.ctxService.findOrCreateCtx({
-      clientPhone: body.clientPhone,
-      chatbotNumber: body.chatBotNumber,
-    });
-    const messageContent = createTemplateNotifyToDelivery(ctx);
-
-    body.deliveryPhones.forEach(async (numberPhone) => {
-      const template = this.builderTemplate.buildTextMessage(
-        numberPhone,
-        messageContent,
-      );
-      await this.senderService.sendMessages(template, body.chatBotNumber);
-      if (ctx.lat && ctx.lng) {
-        const template = this.builderTemplate.buildLocationMessage(
-          numberPhone,
-          parseFloat(ctx.lng),
-          parseFloat(ctx.lat),
-        );
-        await this.senderService.sendMessages(template, body.chatBotNumber);
-      }
-    });
-
     return body;
   }
 }

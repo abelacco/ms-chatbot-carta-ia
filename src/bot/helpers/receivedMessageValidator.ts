@@ -17,23 +17,19 @@ export const receivedMessageValidator = (
     return 'sendHelpFlow';
   }
   switch (currentStep) {
-    case STEPS.INIT: // Respondo al primer saludo
-      //if (isTextMessage(entryMessage)) {
-      // Debo llamar al servicio para responder
+    case STEPS.INIT:
       return 'analyzeDataFlow';
-      //}
-      break;
     case STEPS.PRE_PAY:
       if (isImageMessage(entryMessage)) {
         return 'checkPayFlow';
       } else {
-        return 'analyzeDataFlow';
+        return 'sendInfoFlowWithOrder';
       }
     case STEPS.WAITING_LOCATION:
       if (isLocationMessage(entryMessage)) {
         return 'locationFlow';
       } else {
-        return 'analyzeDataFlow';
+        return 'sendInfoFlowWithOrder';
       }
     case STEPS.ORDERED:
       return 'orderStateFlow';
