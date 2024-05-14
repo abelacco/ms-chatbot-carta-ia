@@ -40,6 +40,12 @@ export class Ctx extends Document {
   deliveryCost: number;
 
   @Prop()
+  deliveryNumber: string;
+
+  @Prop()
+  deliveryName: string;
+
+  @Prop()
   total: number;
 
   @Prop()

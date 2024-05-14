@@ -8,6 +8,7 @@ import {
   CreateDeliveryDto,
   DeleteDeliveryDto,
   FindDeliveriesByClientDto,
+  FindOneDeliveryDto,
   UpdateDeliveryDto,
 } from '../dto';
 import { DELIVERIES_STATUS } from 'src/common/constants';
@@ -72,6 +73,18 @@ export class MongoDbService implements IDeliveryDao {
 
       await delivery.save();
       return delivery;
+    } catch (error) {
+      if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
+      else throw error;
+    }
+  }
+
+  async findOne(body: FindOneDeliveryDto) {
+    try {
+      return await this._deliveryModel.findOne({
+        chatbotNumber: body.chatbotNumber,
+        deliveryNumber: body.deliveryNumber,
+      });
     } catch (error) {
       if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
       else throw error;

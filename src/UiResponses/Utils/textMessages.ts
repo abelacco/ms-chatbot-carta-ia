@@ -20,7 +20,8 @@ export const locationMessage =
 export const orderDelivered =
   'Tu pedido numero: {orderId} ya ha sido entregado';
 
-export const orderShipped = 'Tu pedido numero: {orderId} esta en camino';
+export const orderShipped =
+  'Tu pedido numero: {orderId} esta en camino\nTu repartidor es: {deliveryName}\nEl numero de tu repartidor es: {deliveryNumber}';
 
 export const pickUp = 'Tu pedido numero: {orderId} ya ha sido entregado';
 

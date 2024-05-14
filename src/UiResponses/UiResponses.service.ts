@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ResponseOrderStatusDto,
   ResponseToLocationDto,
@@ -18,6 +22,7 @@ import { CtxService } from 'src/context/ctx.service';
 import { STEPS } from 'src/context/helpers/constants';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 import { ORDER_STATUS_BOT } from 'src/common/constants';
+import { DeliveryService } from 'src/delivery/delivery.service';
 
 @Injectable()
 export class UiResponsesService {
@@ -27,12 +32,15 @@ export class UiResponsesService {
     private readonly historyService: HistoryService,
     private readonly ctxService: CtxService,
     private readonly cartaDirectaService: CartaDirectaService,
+    private readonly deliveryService: DeliveryService,
   ) {}
 
   async responseToLocation(body: ResponseToLocationDto) {
     const messageContent = createTemplateReponseMessage(
       locationMessage,
       body.orderId,
+      null,
+      null,
     );
 
     const template = this.builderTemplate.buildTextMessage(
@@ -72,21 +80,29 @@ export class UiResponsesService {
     } else if (body.orderStatus === ORDER_STATUS_BOT.pidiendo) {
       ctx.step = STEPS.INIT;
       ctx.voucherUrl = '';
+    } else if (
+      body.orderStatus === ORDER_STATUS_BOT.enviado &&
+      !ctx.deliveryNumber
+    ) {
+      throw new BadRequestException('Delivery is not assigned in the context');
     }
+
     await this.ctxService.updateCtx(ctx._id, ctx);
     await this.cartaDirectaService.changeOrderStatus(
       body.orderId,
       body.chatBotNumber,
       body.orderStatus,
     );
+
     const messageContent = statusOrderMessageList[body.orderStatus];
     if (!messageContent) {
       return body;
     }
-    console.log(body.orderStatus);
     const templateMessage = createTemplateReponseMessage(
       messageContent,
       body.orderId,
+      body.orderStatus,
+      ctx,
     );
 
     const template = this.builderTemplate.buildTextMessage(
@@ -138,6 +154,8 @@ export class UiResponsesService {
     const templateMessage = createTemplateReponseMessage(
       messageContent,
       body.orderId,
+      body.action,
+      ctx,
     );
 
     const template = this.builderTemplate.buildTextMessage(

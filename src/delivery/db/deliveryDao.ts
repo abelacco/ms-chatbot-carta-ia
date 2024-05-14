@@ -4,6 +4,7 @@ import {
   CreateDeliveryDto,
   DeleteDeliveryDto,
   FindDeliveriesByClientDto,
+  FindOneDeliveryDto,
   UpdateDeliveryDto,
 } from '../dto';
 import { Delivery } from '../entity';
@@ -18,4 +19,6 @@ export interface IDeliveryDao {
   remove(deleteDelivery: DeleteDeliveryDto);
 
   update(deleteDelivery: UpdateDeliveryDto): Promise<Delivery>;
+
+  findOne(findOneDelivery: FindOneDeliveryDto): Promise<Delivery>;
 }

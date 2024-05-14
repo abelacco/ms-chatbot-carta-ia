@@ -4,6 +4,7 @@ import { CtxController } from './ctx.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Ctx, CtxSchema } from './entities/ctx.entity';
 import { MongoDbService } from './db/mongodb.service';
+import { DeliveryModule } from 'src/delivery/delivery.module';
 
 @Module({
   controllers: [CtxController],

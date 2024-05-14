@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { MongoDbService } from './db/mongodb.service';
 import { IDeliveryDao } from './db/deliveryDao';
 import {
+  AssignDeliveryDto,
   CreateDeliveryDto,
   DeleteDeliveryDto,
   FindDeliveriesByClientDto,
+  FindOneDeliveryDto,
   NotifyDeliveryDto,
   UpdateDeliveryDto,
 } from './dto';
@@ -12,6 +14,7 @@ import { createTemplateNotifyToDelivery } from './utils/templateMessages';
 import { CtxService } from 'src/context/ctx.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { SenderService } from 'src/sender/sender.service';
+import { error } from 'console';
 
 @Injectable()
 export class DeliveryService {
@@ -96,5 +99,39 @@ export class DeliveryService {
     });
 
     return body;
+  }
+
+  async findOne(query: FindOneDeliveryDto) {
+    try {
+      const delivery = await this._db.findOne({
+        chatbotNumber: query.chatbotNumber,
+        deliveryNumber: query.deliveryNumber,
+      });
+      if (!delivery) {
+        throw new NotFoundException('Delivery not found');
+      }
+      return delivery;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async assignDelivery(body: AssignDeliveryDto) {
+    try {
+      const ctx = await this.ctxService.findOrCreateCtx({
+        clientPhone: body.clientPhone,
+        chatbotNumber: body.chatbotNumber,
+      });
+      const delivery = await this.findOne({
+        chatbotNumber: body.chatbotNumber,
+        deliveryNumber: body.deliveryNumber,
+      });
+      ctx.deliveryNumber = delivery.deliveryNumber;
+      ctx.deliveryName = delivery.name;
+      await this.ctxService.updateCtx(ctx._id, ctx);
+      return ctx;
+    } catch (error) {
+      throw error;
+    }
   }
 }
