@@ -18,7 +18,7 @@ export class SenderService {
   ) {}
 
   async sendMessages(messageClient: any, chatbotNumber: string) {
-    messageClient.to = '54261156841080';
+    // messageClient.to = '54261156841080';
     const businessInfo = await this.businessService.getBusiness(chatbotNumber);
     const accessToken = businessInfo.accessToken;
 
