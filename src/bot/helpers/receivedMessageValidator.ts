@@ -1,6 +1,10 @@
 import { isInt } from 'class-validator';
 import { IParsedMessage } from '../entities/messageParsed';
-import { STATUS_BOT, WSP_MESSAGE_TYPES } from 'src/common/constants';
+import {
+  PAYMENT_METHODS,
+  STATUS_BOT,
+  WSP_MESSAGE_TYPES,
+} from 'src/common/constants';
 import { Ctx } from 'src/context/entities/ctx.entity';
 import { STEPS } from 'src/context/helpers/constants';
 
@@ -19,6 +23,13 @@ export const receivedMessageValidator = (
   switch (currentStep) {
     case STEPS.INIT:
       return 'analyzeDataFlow';
+
+    case STEPS.SELECT_PAY_METHOD:
+      if (!PAYMENT_METHODS.includes(entryMessage.content)) {
+        return 'invalidPayMethodFlow';
+      } else {
+        return 'sendPayFlow';
+      }
     case STEPS.PRE_PAY:
       if (isImageMessage(entryMessage)) {
         return 'checkPayFlow';

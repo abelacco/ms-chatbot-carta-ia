@@ -1,6 +1,11 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { BusinessService } from './business.service';
-import { CreateBusinessDto, LoginBusinessDto, UpdateMetaAccess } from './dto';
+import {
+  CreateBusinessDto,
+  LoginBusinessDto,
+  UpdateMetaAccess,
+  UpdatePaymentMethodDto,
+} from './dto';
 import { ApiResponse } from 'src/common/ApiResponses';
 
 @Controller('business')
@@ -58,6 +63,22 @@ export default class BusinessController {
     } catch (error) {
       return ApiResponse.error(
         'An error ocurred while updating meta access',
+        error,
+      );
+    }
+  }
+
+  @Put('change-payment-method')
+  async changePaymentMethod(@Body() body: UpdatePaymentMethodDto) {
+    try {
+      const response = await this.businessService.changePaymentMethod(body);
+      return ApiResponse.success(
+        'Change payment method successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while changing payment method',
         error,
       );
     }
