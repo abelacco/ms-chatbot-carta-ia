@@ -8,8 +8,15 @@ import {
   UpdateCtxDto,
   UpdateOrderStatusDto,
 } from './dto';
-import { HELP_STATUS, STATUS_BOT } from 'src/common/constants';
-import { CancelHelpDto } from './dto/switch-bot.dto copy';
+import {
+  HELP_STATUS,
+  ORDER_STATUS_BOT,
+  STATUS_BOT,
+} from 'src/common/constants';
+import { CancelHelpDto } from './dto/cancel-help.dto';
+import { ManualOrderDto } from './dto/manual-order.dto';
+import { orderCdDummy } from './helpers/orderCdDummy';
+import { STEPS } from './helpers/constants';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
 @Injectable()
@@ -102,5 +109,21 @@ export class CtxService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async manualOrder(body: ManualOrderDto) {
+    const ctx = await this.findOrCreateCtx({
+      clientPhone: body.clientPhone,
+      chatbotNumber: body.chatBotNumber,
+    });
+    ctx.orderStatus = ORDER_STATUS_BOT.pagado;
+    ctx.step = STEPS.ORDERED;
+    ctx.deliveryCost = body.deliveryCost;
+    ctx.currentOrderId = body.orderId;
+    ctx.total = body.price;
+    const orderCd = orderCdDummy;
+    orderCd.items[0].name = body.order;
+    ctx.currentOrder = orderCd;
+    return ctx;
   }
 }

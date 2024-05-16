@@ -2,7 +2,8 @@ import { Controller, Get, Query, Put, Body, Delete } from '@nestjs/common';
 import { CtxService } from './ctx.service';
 import { SwitchBotDto, SwitchBotGlobalDto, UpdateOrderStatusDto } from './dto';
 import { ApiResponse } from 'src/common/ApiResponses';
-import { CancelHelpDto } from './dto/switch-bot.dto copy';
+import { CancelHelpDto } from './dto/cancel-help.dto';
+import { ManualOrderDto } from './dto/manual-order.dto';
 
 @Controller('ctx')
 export class CtxController {
@@ -64,6 +65,16 @@ export class CtxController {
       return ApiResponse.success('Cancel help successfully', response);
     } catch (error) {
       return ApiResponse.error('An error ocurred while canceling help', error);
+    }
+  }
+
+  @Put('manual-order')
+  async manualOrder(@Body() body: ManualOrderDto) {
+    try {
+      const response = await this.ctxService.manualOrder(body);
+      return ApiResponse.success('Order create successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while creating order', error);
     }
   }
 
