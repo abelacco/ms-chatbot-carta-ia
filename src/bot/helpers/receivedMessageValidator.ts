@@ -1,10 +1,5 @@
-import { isInt } from 'class-validator';
 import { IParsedMessage } from '../entities/messageParsed';
-import {
-  PAYMENT_METHODS,
-  STATUS_BOT,
-  WSP_MESSAGE_TYPES,
-} from 'src/common/constants';
+import { PAYMENT_METHODS, WSP_MESSAGE_TYPES } from 'src/common/constants';
 import { Ctx } from 'src/context/entities/ctx.entity';
 import { STEPS } from 'src/context/helpers/constants';
 

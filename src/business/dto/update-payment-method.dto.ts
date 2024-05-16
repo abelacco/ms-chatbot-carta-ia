@@ -1,20 +1,5 @@
 import { IsString, IsObject, IsIn, IsBoolean } from 'class-validator';
-import { PAYMENT_METHODS } from 'src/common/constants';
-
-class PaymentDetailsDto {
-  @IsString()
-  @IsIn(PAYMENT_METHODS)
-  paymentMethodName: string;
-
-  @IsBoolean()
-  available: boolean;
-
-  @IsString()
-  accountNumber: string;
-
-  @IsString()
-  accountName: string;
-}
+import { PaymentDetailsDto } from './payment-details.dto';
 
 export class UpdatePaymentMethodDto {
   @IsString()

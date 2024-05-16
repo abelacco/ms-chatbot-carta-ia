@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import axios from 'axios';
 import {
@@ -16,7 +17,7 @@ import { IBusinessDao } from './db/businessDao';
 import { PAYMENT_METHODS } from 'src/common/constants';
 import { CartaDirectaDbService } from 'src/carta-directa-db/carta-directa-db.service';
 import { BusinessModel } from './model';
-import { parseHours } from './utils/parseFromCdDb';
+import { parseDeliveryArea, parseHours } from './utils/parseFromCdDb';
 
 @Injectable()
 export class BusinessService {
@@ -131,6 +132,7 @@ export class BusinessService {
       const coverage = await this.cartaDirectaDbService.findCompanyCoverage(
         restaurant.id,
       );
+      const parseCoverage = parseDeliveryArea(coverage);
       const user = await this.cartaDirectaDbService.findUser(
         restaurant.user_id,
       );
@@ -146,6 +148,7 @@ export class BusinessService {
         isActive: true,
         address: restaurant.address || '',
         slogan: '',
+        coverage: parseCoverage,
       });
       return business;
     });
@@ -154,6 +157,46 @@ export class BusinessService {
       const migrateRestaurant = await this._db.findOrCreateBusiness(element);
       return migrateRestaurant;
     });
-    return createdRestaurants;
+    return;
+  }
+
+  async updateCoverage(bussinesId: string) {
+    const business = await this._db.findOneByBusinesId(bussinesId);
+    if (!business) {
+      throw new NotFoundException(
+        `Bussines with business id: ${bussinesId} not found`,
+      );
+    }
+    const coverage = await this.cartaDirectaDbService.findCompanyCoverage(
+      parseInt(bussinesId),
+    );
+    const parseCoverage = parseDeliveryArea(coverage);
+    business.coverage = parseCoverage;
+    const updatedBussines = await this._db.updateBusiness(
+      business.id,
+      business,
+    );
+    console.log(updatedBussines);
+    return updatedBussines;
+  }
+
+  async updateOpeningHours(bussinesId: string) {
+    const business = await this._db.findOneByBusinesId(bussinesId);
+    if (!business) {
+      throw new NotFoundException(
+        `Bussines with business id: ${bussinesId} not found`,
+      );
+    }
+    const openingHours =
+      await this.cartaDirectaDbService.findCompanyOpeningHours(
+        parseInt(bussinesId),
+      );
+    const parseOpeningHours = parseHours(openingHours);
+    business.businessHours = parseOpeningHours;
+    const updatedBussines = await this._db.updateBusiness(
+      business.id,
+      business,
+    );
+    return updatedBussines;
   }
 }

@@ -19,4 +19,6 @@ export interface IBusinessDao {
   ): Promise<Business>;
 
   findOrCreateBusiness(createBusinessDto: CreateBusinessDto): Promise<Business>;
+
+  findOneByBusinesId(businessId: string): Promise<Business>;
 }

@@ -1,3 +1,5 @@
+import { CoverageDto } from '../dto/coverage.dto';
+
 export class BusinessModel {
   businessName: string;
   email: string;
@@ -11,6 +13,7 @@ export class BusinessModel {
   slogan: string;
   phoneId: string;
   accessToken: string;
+  coverage: any[];
   paymentDetails: {
     paymentMethodName: string;
     available: boolean;
@@ -30,6 +33,7 @@ export class BusinessModel {
     this.address = data.address;
     this.slogan = data.slogan;
     this.phoneId = '';
+    this.coverage = data.coverage;
     this.accessToken = '';
     this.paymentDetails = data.paymentDetails;
   }

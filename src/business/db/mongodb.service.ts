@@ -18,15 +18,20 @@ export class MongoDbService implements IBusinessDao {
 
   async create(createBusinessDto: CreateBusinessDto): Promise<Business> {
     try {
-      console.log(createBusinessDto);
       const createBusiness = new this._businessModel(createBusinessDto);
       await createBusiness.save();
-      console.log(createBusiness);
       return createBusiness;
     } catch (error) {
       if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
       else throw error;
     }
+  }
+
+  async findOneByBusinesId(businessId: string): Promise<Business> {
+    const business = await this._businessModel.findOne({
+      businessId: businessId,
+    });
+    return business;
   }
 
   async findOrCreateBusiness(
@@ -46,14 +51,11 @@ export class MongoDbService implements IBusinessDao {
         } catch (error) {
           if (error.keyPattern.chatbotNumber === 1) {
             createBusinessDto.chatbotNumber = createBusinessDto.businessId;
-            console.log(createBusinessDto.chatbotNumber);
             const newBusiness = new this._businessModel(createBusinessDto);
-            console.log('***********');
-            console.log(newBusiness);
             await newBusiness.save();
+            console.log(newBusiness);
             return newBusiness;
           } else {
-            console.log(error);
             throw new InternalServerErrorException('Error creating business');
           }
         }

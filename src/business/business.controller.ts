@@ -93,4 +93,33 @@ export default class BusinessController {
       );
     }
   }
+
+  @Put('update-coverage/:id')
+  async updateCoverage(@Param('id') id: string) {
+    try {
+      const response = await this.businessService.updateCoverage(id);
+      return ApiResponse.success('Updated coverage successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while updating coverage',
+        error,
+      );
+    }
+  }
+
+  @Put('update-opening-hours/:id')
+  async updateOpeningHours(@Param('id') id: string) {
+    try {
+      const response = await this.businessService.updateOpeningHours(id);
+      return ApiResponse.success(
+        'Updated opening hours successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while updating opening hours',
+        error,
+      );
+    }
+  }
 }

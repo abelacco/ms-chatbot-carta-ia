@@ -21,3 +21,13 @@ export function parseHours(hours: any) {
 
   return parsedHours;
 }
+
+export function parseDeliveryArea(area: any) {
+  area = area.map((e) => {
+    return {
+      area: e.name,
+      price: e.cost,
+    };
+  });
+  return area;
+}
