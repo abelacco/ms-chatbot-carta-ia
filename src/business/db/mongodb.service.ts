@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { IBusinessDao } from './businessDao';
@@ -18,9 +18,47 @@ export class MongoDbService implements IBusinessDao {
 
   async create(createBusinessDto: CreateBusinessDto): Promise<Business> {
     try {
+      console.log(createBusinessDto);
       const createBusiness = new this._businessModel(createBusinessDto);
       await createBusiness.save();
+      console.log(createBusiness);
       return createBusiness;
+    } catch (error) {
+      if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
+      else throw error;
+    }
+  }
+
+  async findOrCreateBusiness(
+    createBusinessDto: CreateBusinessDto,
+  ): Promise<Business> {
+    const { businessId } = createBusinessDto;
+    try {
+      const business = await this._businessModel.findOne({
+        businessId: businessId,
+      });
+
+      if (!business) {
+        try {
+          const newBusiness = new this._businessModel(createBusinessDto);
+          await newBusiness.save();
+          return newBusiness;
+        } catch (error) {
+          if (error.keyPattern.chatbotNumber === 1) {
+            createBusinessDto.chatbotNumber = createBusinessDto.businessId;
+            console.log(createBusinessDto.chatbotNumber);
+            const newBusiness = new this._businessModel(createBusinessDto);
+            console.log('***********');
+            console.log(newBusiness);
+            await newBusiness.save();
+            return newBusiness;
+          } else {
+            console.log(error);
+            throw new InternalServerErrorException('Error creating business');
+          }
+        }
+      }
+      return business;
     } catch (error) {
       if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
       else throw error;

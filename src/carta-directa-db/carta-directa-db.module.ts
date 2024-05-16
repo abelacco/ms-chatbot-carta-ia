@@ -3,9 +3,12 @@ import { CartaDirectaDbService } from './carta-directa-db.service';
 import { CartaDirectaDbController } from './carta-directa-db.controller';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CompanyEntity } from './entities';
+import { CompanyEntity, OpeningHoursEntity } from './entities';
+import { SimpleDeliveryAreasEntity } from './entities/simple-delivery-areas.entity';
+import { UserEntity } from './entities/user.entity';
 
 @Module({
+  exports: [CartaDirectaDbService],
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
@@ -20,7 +23,12 @@ import { CompanyEntity } from './entities';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([CompanyEntity]),
+    TypeOrmModule.forFeature([
+      CompanyEntity,
+      SimpleDeliveryAreasEntity,
+      OpeningHoursEntity,
+      UserEntity,
+    ]),
   ],
   controllers: [CartaDirectaDbController],
   providers: [CartaDirectaDbService],

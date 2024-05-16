@@ -6,10 +6,7 @@ export class Business extends Document {
   @Prop()
   businessName: string;
 
-  @Prop({
-    type: String,
-    unique: true,
-  })
+  @Prop()
   email: string;
 
   @Prop()
@@ -35,7 +32,7 @@ export class Business extends Document {
   businessHours: string[];
 
   @Prop()
-  isActive: string;
+  isActive: boolean;
 
   @Prop()
   address: string;
@@ -43,11 +40,7 @@ export class Business extends Document {
   @Prop()
   slogan: string;
 
-  @Prop({
-    type: String,
-    unique: true,
-    sparse: true,
-  })
+  @Prop()
   phoneId: string;
 
   @Prop()
@@ -66,6 +59,17 @@ export class Business extends Document {
     available: boolean;
     accountNumber: string;
     accountName: string;
+  }[];
+
+  @Prop([
+    {
+      area: String,
+      price: Number,
+    },
+  ])
+  coverage: {
+    area: string;
+    price: number;
   }[];
 }
 

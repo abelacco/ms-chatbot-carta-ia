@@ -17,4 +17,6 @@ export interface IBusinessDao {
     id: string,
     UupdateMetaAccess: UpdateMetaAccess,
   ): Promise<Business>;
+
+  findOrCreateBusiness(createBusinessDto: CreateBusinessDto): Promise<Business>;
 }

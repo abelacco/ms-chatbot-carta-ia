@@ -14,6 +14,9 @@ import { AuthService } from 'src/auth/auth.service';
 import { MongoDbService } from './db/mongodb.service';
 import { IBusinessDao } from './db/businessDao';
 import { PAYMENT_METHODS } from 'src/common/constants';
+import { CartaDirectaDbService } from 'src/carta-directa-db/carta-directa-db.service';
+import { BusinessModel } from './model';
+import { parseHours } from './utils/parseFromCdDb';
 
 @Injectable()
 export class BusinessService {
@@ -21,6 +24,7 @@ export class BusinessService {
 
   constructor(
     private authService: AuthService,
+    private readonly cartaDirectaDbService: CartaDirectaDbService,
     private readonly _mongoDbService: MongoDbService,
   ) {
     this._db = this._mongoDbService;
@@ -117,5 +121,39 @@ export class BusinessService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async migrateRestaurants() {
+    const restaurants = await this.cartaDirectaDbService.findAllCompanies();
+    const mapedRestaurants = restaurants.map(async (restaurant) => {
+      const openingHours =
+        await this.cartaDirectaDbService.findCompanyOpeningHours(restaurant.id);
+      const coverage = await this.cartaDirectaDbService.findCompanyCoverage(
+        restaurant.id,
+      );
+      const user = await this.cartaDirectaDbService.findUser(
+        restaurant.user_id,
+      );
+      const parsedHoures = parseHours(openingHours);
+      const business = new BusinessModel({
+        businessName: restaurant.subdomain || '',
+        email: user.email || '',
+        password: user.password || '',
+        businessId: restaurant.id || '',
+        chatbotNumber: restaurant.whatsapp_phone?.replace(/[^\d]/g, '') || '',
+        adminPhone: restaurant.phone?.replace(/[^\d]/g, '') || '',
+        businessHours: parsedHoures,
+        isActive: true,
+        address: restaurant.address || '',
+        slogan: '',
+      });
+      return business;
+    });
+    const resolvedRestaurants = await Promise.all(mapedRestaurants);
+    const createdRestaurants = resolvedRestaurants.map(async (element) => {
+      const migrateRestaurant = await this._db.findOrCreateBusiness(element);
+      return migrateRestaurant;
+    });
+    return createdRestaurants;
   }
 }

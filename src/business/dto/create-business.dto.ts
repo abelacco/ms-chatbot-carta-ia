@@ -8,6 +8,7 @@ import {
   MinLength,
   IsIn,
   IsObject,
+  IsArray,
 } from 'class-validator';
 import { PAYMENT_METHODS } from 'src/common/constants';
 
@@ -73,8 +74,8 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsObject()
-  paymentDetails: PaymentDetailsDto;
+  paymentDetails: PaymentDetailsDto[];
 
   @IsBoolean()
-  isActive: string;
+  isActive: boolean;
 }

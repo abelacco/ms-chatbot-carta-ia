@@ -25,6 +25,21 @@ export class CartaDirectaDbController {
     return this.cartaDirectaDbService.findAllCompanies();
   }
 
+  @Get('find-company-coverage/:id')
+  findCompanyCoverage(@Param('id') id: number) {
+    return this.cartaDirectaDbService.findCompanyCoverage(id);
+  }
+
+  @Get('find-company-opening-hours/:id')
+  findCompanyOpeningHours(@Param('id') id: number) {
+    return this.cartaDirectaDbService.findCompanyOpeningHours(id);
+  }
+
+  @Get('find-user/:id')
+  findUser(@Param('id') id: number) {
+    return this.cartaDirectaDbService.findUser(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.cartaDirectaDbService.findOne(+id);

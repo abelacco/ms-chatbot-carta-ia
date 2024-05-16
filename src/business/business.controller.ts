@@ -39,6 +39,16 @@ export default class BusinessController {
     }
   }
 
+  @Post('migrate-restaurants')
+  async migrateRestaurants() {
+    try {
+      const response = await this.businessService.migrateRestaurants();
+      return ApiResponse.success('Migrate successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while migrating', error);
+    }
+  }
+
   @Get('get-business/:term')
   async getBusiness(@Param('term') term: string) {
     try {
