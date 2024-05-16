@@ -69,12 +69,3 @@ export const DELIVERIES_STATUS = {
   sin_orden: 0,
   con_orden: 1,
 };
-
-export const PAYMENT_METHODS = [
-  'Efectivo',
-  'Yape',
-  'Plin',
-  'Bps',
-  'BBVA',
-  'Interbank',
-];

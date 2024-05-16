@@ -1,19 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
-import {
-  CreateBusinessDto,
-  LoginBusinessDto,
-  UpdateMetaAccess,
-  UpdatePaymentMethodDto,
-} from './dto';
+import { CreateBusinessDto, LoginBusinessDto, UpdateMetaAccess } from './dto';
 import { AuthService } from 'src/auth/auth.service';
 import { MongoDbService } from './db/mongodb.service';
 import { IBusinessDao } from './db/businessDao';
-import { PAYMENT_METHODS } from 'src/common/constants';
 
 @Injectable()
 export class BusinessService {
@@ -81,41 +71,5 @@ export class BusinessService {
   async getBusiness(term: string) {
     const business = await this._db.findOne(term);
     return business;
-  }
-
-  async changePaymentMethod(body: UpdatePaymentMethodDto) {
-    if (!PAYMENT_METHODS.includes(body.paymentDetails.paymentMethodName)) {
-      throw new BadRequestException(
-        `${body.paymentDetails.paymentMethodName} is not aviable payment method`,
-      );
-    }
-
-    try {
-      const business = await this.getBusiness(body.chatbotNumber);
-      let arrayChange = false;
-      const newMethodArray = business.paymentMethods.map((method) => {
-        if (
-          method.paymentMethodName === body.paymentDetails.paymentMethodName
-        ) {
-          arrayChange = true;
-          return body.paymentDetails;
-        } else {
-          return method;
-        }
-      });
-      if (!arrayChange) {
-        newMethodArray.push(body.paymentDetails);
-      }
-      business.paymentMethods = newMethodArray;
-
-      const actualizedBusiness = await this._db.updateBusiness(
-        business.id,
-        business,
-      );
-
-      return actualizedBusiness;
-    } catch (error) {
-      throw error;
-    }
   }
 }

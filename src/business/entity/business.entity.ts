@@ -52,21 +52,6 @@ export class Business extends Document {
 
   @Prop()
   accessToken: string;
-
-  @Prop([
-    {
-      paymentMethodName: String,
-      available: Boolean,
-      accountNumber: String,
-      accountName: String,
-    },
-  ])
-  paymentMethods: {
-    paymentMethodName: string;
-    available: boolean;
-    accountNumber: string;
-    accountName: string;
-  }[];
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);

@@ -177,10 +177,9 @@ export const SCHUDULE_LIST = [
 
 export const STEPS = {
   INIT: '0',
-  SELECT_PAY_METHOD: '1',
-  PRE_PAY: '2',
-  WAITING_LOCATION: '3',
-  ORDERED: '4',
+  PRE_PAY: '1',
+  WAITING_LOCATION: '2',
+  ORDERED: '3',
 };
 
 export const STATUS_APPOINTMENT = {

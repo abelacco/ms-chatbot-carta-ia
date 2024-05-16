@@ -21,7 +21,6 @@ import UiResponseController from './UiResponses/UiResponses.controller';
 import { UiResponseModule } from './UiResponses/UiResponses.module';
 import { CartaDirectaModule } from './carta-directa/cartaDirecta.module';
 import { DeliveryModule } from './delivery/delivery.module';
-import { CartaDirectaDbModule } from './carta-directa-db/carta-directa-db.module';
 
 @Module({
   imports: [
@@ -45,7 +44,6 @@ import { CartaDirectaDbModule } from './carta-directa-db/carta-directa-db.module
     AuthModule,
     CartaDirectaModule,
     DeliveryModule,
-    CartaDirectaDbModule,
   ],
   controllers: [AppController, BusinessController],
   providers: [AppService],
