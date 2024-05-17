@@ -126,4 +126,8 @@ export class CtxService {
     ctx.currentOrder = orderCd;
     return ctx;
   }
+
+  async resetAllCtx() {
+    await this._db.resetAllCtx();
+  }
 }

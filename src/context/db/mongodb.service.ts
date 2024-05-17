@@ -90,6 +90,34 @@ export class MongoDbService implements ICtxDao {
     }
   }
 
+  async resetAllCtx(): Promise<void> {
+    const defaultCtxValues = {
+      help: 0,
+      orderStatus: 0,
+      deliveryName: '',
+      deliveryNumber: '',
+      address: '',
+      currentOrder: null,
+      currentOrderId: '',
+      date: null,
+      deliveryCost: 0,
+      dni: '',
+      step: '',
+      total: 0,
+      paymentMethod: '',
+      voucherUrl: '',
+      statusBot: 1,
+      lat: null,
+      lng: null,
+    };
+
+    try {
+      await this._ctxModel.updateMany({}, { $set: defaultCtxValues });
+    } catch (error) {
+      throw mongoExceptionHandler(error);
+    }
+  }
+
   // async findMessageByterm(term: string): Promise<Ctx> {
   //   try{
   //     const message = await this._ctxModel.findOne({term});

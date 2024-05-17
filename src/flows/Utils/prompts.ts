@@ -92,7 +92,7 @@ INSTRUCCIONES:
 DATOS IMPORTANTES DEL NEGOCIO:
 Dirección: {direccion}
 Delivery: Sí
-Zonas donde tenemos envios y sus precios: Pachitea S/5.00, Santa Isabel S/6.00, Urb. Angamos S/6.00, Urb. San Felipe S/6.00, Vicús S/7.00, Santa María del Pinar S/7.00, Cocos del Chipe S/7.00, Condominio Palmeras del Chipe S/8.00, Condominio Garden 360 S/8.00, Los Ejidos S/10.00, Fundo Stewart S/12.00, Urb. Ignacio Merino S/7.00, Urb. Bello Horizonte S/8.00, Los Algarrobos S/10.00, Urb. Santa Ana S/7.00, Urb. San José S/8.00, Av. Don Bosco S/7.00, San Pedro S/8.00, Cons. de Velasco S/8.00, Urb. Piura S/10.00, Av. Marcavelica S/10.00, Av. Los Tallanes S/10.00, Urb. Las Mercedes S/8.00, Hospital Reategui S/7.00, Santa Margarita S/12.00, Universidad Cesar Vallejo S/12.00, Hospital Santa Rosa S/12.00, Municipalidad 26 de Octubre S/15.00, Miraflores S/3.00, Castilla (Av. Principales) S/6.00, Urb. El Bosque S/5.00, María Goretti S/5.00, Urb. 15 Set. S/5.00, La Primavera S/6.00, San Antonio S/6.00, Tacalá (Av. Principal) S/8.00, Miraflores Country Club S/7.00, Miraflores Country Boulevar S/10.00, San Bernardo S/8.00, Villa California S/10.00, Urb. Galilea S/12.00, Condominio Santa Rosa S/12.00.
+Zonas donde tenemos envios y sus precios: {coverage}
 ----------------
 [HISTORIAL_DE_CONVERSACIÓN]:
 {chatHistory}

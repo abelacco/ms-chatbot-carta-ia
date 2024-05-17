@@ -118,4 +118,108 @@ export class BusinessService {
       throw error;
     }
   }
+
+  async migrateRestaurants() {
+    const restaurants = await this.cartaDirectaDbService.findAllCompanies();
+    const mapedRestaurants = restaurants.map(async (restaurant) => {
+      const openingHours =
+        await this.cartaDirectaDbService.findCompanyOpeningHours(restaurant.id);
+      const coverage = await this.cartaDirectaDbService.findCompanyCoverage(
+        restaurant.id,
+      );
+      const parseCoverage = parseDeliveryArea(coverage);
+      const user = await this.cartaDirectaDbService.findUser(
+        restaurant.user_id,
+      );
+      const parsedHoures = parseHours(openingHours);
+      const business = new BusinessModel({
+        businessName: restaurant.subdomain || '',
+        email: user.email || '',
+        password: user.password || '',
+        businessId: restaurant.id || '',
+        chatbotNumber: '',
+        adminPhone: restaurant.phone?.replace(/[^\d]/g, '') || '',
+        businessHours: parsedHoures,
+        isActive: true,
+        address: restaurant.address || '',
+        slogan: '',
+        coverage: parseCoverage,
+      });
+      return business;
+    });
+    const resolvedRestaurants = await Promise.all(mapedRestaurants);
+    const createdRestaurants = resolvedRestaurants.map(async (element) => {
+      const migrateRestaurant = await this._db.findOrCreateBusiness(element);
+      return migrateRestaurant;
+    });
+    return;
+  }
+
+  async migrateOneRestaurant(id: number) {
+    const restaurant = await this.cartaDirectaDbService.findOneCompany(id);
+    const openingHours =
+      await this.cartaDirectaDbService.findCompanyOpeningHours(restaurant.id);
+    const coverage = await this.cartaDirectaDbService.findCompanyCoverage(
+      restaurant.id,
+    );
+    const parseCoverage = parseDeliveryArea(coverage);
+    const user = await this.cartaDirectaDbService.findUser(restaurant.user_id);
+    const parsedHoures = parseHours(openingHours);
+    const business = new BusinessModel({
+      businessName: restaurant.subdomain || '',
+      email: user.email || '',
+      password: user.password || '',
+      businessId: restaurant.id || '',
+      chatbotNumber: restaurant.phone?.replace(/[^\d]/g, '') || '',
+      adminPhone: restaurant.phone?.replace(/[^\d]/g, '') || '',
+      businessHours: parsedHoures,
+      isActive: true,
+      address: restaurant.address || '',
+      slogan: '',
+      coverage: parseCoverage,
+    });
+
+    const migrateRestaurant = await this._db.findOrCreateBusiness(business);
+    return migrateRestaurant;
+  }
+
+  async updateCoverage(bussinesId: string) {
+    const business = await this._db.findOneByBusinesId(bussinesId);
+    if (!business) {
+      throw new NotFoundException(
+        `Bussines with business id: ${bussinesId} not found`,
+      );
+    }
+    const coverage = await this.cartaDirectaDbService.findCompanyCoverage(
+      parseInt(bussinesId),
+    );
+    const parseCoverage = parseDeliveryArea(coverage);
+    business.coverage = parseCoverage;
+    const updatedBussines = await this._db.updateBusiness(
+      business.id,
+      business,
+    );
+    console.log(updatedBussines);
+    return updatedBussines;
+  }
+
+  async updateOpeningHours(bussinesId: string) {
+    const business = await this._db.findOneByBusinesId(bussinesId);
+    if (!business) {
+      throw new NotFoundException(
+        `Bussines with business id: ${bussinesId} not found`,
+      );
+    }
+    const openingHours =
+      await this.cartaDirectaDbService.findCompanyOpeningHours(
+        parseInt(bussinesId),
+      );
+    const parseOpeningHours = parseHours(openingHours);
+    business.businessHours = parseOpeningHours;
+    const updatedBussines = await this._db.updateBusiness(
+      business.id,
+      business,
+    );
+    return updatedBussines;
+  }
 }
