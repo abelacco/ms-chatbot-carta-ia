@@ -8,7 +8,6 @@ export const receivedMessageValidator = (
   entryMessage: IParsedMessage,
 ) => {
   const currentStep = ctx.step || STEPS.INIT;
-  console.log(currentStep);
   if (
     entryMessage.type === 'text' &&
     entryMessage.content.toUpperCase().includes('AYUDA')

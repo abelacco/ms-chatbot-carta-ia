@@ -30,6 +30,7 @@ import {
   reminderVoucherMessage,
 } from './Utils/messages';
 import { splitArray } from './Utils/splitArray';
+import { Business } from 'src/business/entity';
 
 @Injectable()
 export class FlowsService {
@@ -85,7 +86,6 @@ export class FlowsService {
     businessInfo,
   ) {
     try {
-      console.log(businessInfo);
       Logger.log('DEFINO INTENCION DEL CLIENTE', 'ANALYZE_PROMPT');
       let response = '';
       if (messageEntry.content.includes('Número de orden:')) {
@@ -456,13 +456,14 @@ export class FlowsService {
   async generateGeneralCovergaInfo(
     question: string,
     history: string,
-    businessInfo,
+    businessInfo: Business,
     messageEntry: IParsedMessage,
   ) {
     const mainPrompt = PROMPT_COVERAGE.replace('{chatHistory}', history)
       .replace('{question}', question)
       .replace(/{restaurante}/g, businessInfo.businessName)
       .replace('{direccion}', businessInfo.address)
+      .replace('{coverage}', JSON.stringify(businessInfo.coverage))
       .replace(
         '{link}',
         `https://menu.cartadirecta.com/restaurant/${businessInfo.businessName}`,
@@ -492,7 +493,6 @@ export class FlowsService {
       )
       .replace('{menu}', JSON.stringify(menu))
       .replace('{slogan}', businessInfo.slogan);
-    console.log(mainPrompt);
     return mainPrompt;
   }
 

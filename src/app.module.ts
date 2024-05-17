@@ -22,7 +22,9 @@ import { UiResponseModule } from './UiResponses/UiResponses.module';
 import { CartaDirectaModule } from './carta-directa/cartaDirecta.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { CartaDirectaDbModule } from './carta-directa-db/carta-directa-db.module';
-
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { SchedulerService } from './scheduler/scheduler.service';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,8 +48,9 @@ import { CartaDirectaDbModule } from './carta-directa-db/carta-directa-db.module
     CartaDirectaModule,
     DeliveryModule,
     CartaDirectaDbModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController, BusinessController],
-  providers: [AppService],
+  providers: [AppService, SchedulerService],
 })
 export class AppModule {}

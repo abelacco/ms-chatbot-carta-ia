@@ -87,7 +87,6 @@ export class BotService {
       type: '',
       content: {},
     };
-    // console.log( messageDto.entry[0].changes[0].value)
     if (
       messageDto.entry[0].changes[0].value?.statuses &&
       messageDto.entry[0].changes[0].value?.statuses[0].status

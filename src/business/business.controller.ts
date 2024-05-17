@@ -39,6 +39,16 @@ export default class BusinessController {
     }
   }
 
+  @Post('migrate-one-restaurant/:id')
+  async migrateOneRestaurant(@Param('id') id: number) {
+    try {
+      const response = await this.businessService.migrateOneRestaurant(id);
+      return ApiResponse.success('Migrate successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while migrating', error);
+    }
+  }
+
   @Post('migrate-restaurants')
   async migrateRestaurants() {
     try {

@@ -25,4 +25,5 @@ export interface ICtxDao {
 
   // remove(id: string): Promise<Doctor>;
   removeAll();
+  resetAllCtx(): Promise<void>;
 }

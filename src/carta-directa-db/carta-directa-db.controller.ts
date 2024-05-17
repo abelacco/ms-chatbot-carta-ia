@@ -40,9 +40,9 @@ export class CartaDirectaDbController {
     return this.cartaDirectaDbService.findUser(id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartaDirectaDbService.findOne(+id);
+  @Get('find-one-company/:id')
+  findOne(@Param('id') id: number) {
+    return this.cartaDirectaDbService.findOneCompany(id);
   }
 
   @Patch(':id')

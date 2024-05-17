@@ -142,7 +142,7 @@ export class BusinessService {
         email: user.email || '',
         password: user.password || '',
         businessId: restaurant.id || '',
-        chatbotNumber: restaurant.whatsapp_phone?.replace(/[^\d]/g, '') || '',
+        chatbotNumber: '',
         adminPhone: restaurant.phone?.replace(/[^\d]/g, '') || '',
         businessHours: parsedHoures,
         isActive: true,
@@ -158,6 +158,34 @@ export class BusinessService {
       return migrateRestaurant;
     });
     return;
+  }
+
+  async migrateOneRestaurant(id: number) {
+    const restaurant = await this.cartaDirectaDbService.findOneCompany(id);
+    const openingHours =
+      await this.cartaDirectaDbService.findCompanyOpeningHours(restaurant.id);
+    const coverage = await this.cartaDirectaDbService.findCompanyCoverage(
+      restaurant.id,
+    );
+    const parseCoverage = parseDeliveryArea(coverage);
+    const user = await this.cartaDirectaDbService.findUser(restaurant.user_id);
+    const parsedHoures = parseHours(openingHours);
+    const business = new BusinessModel({
+      businessName: restaurant.subdomain || '',
+      email: user.email || '',
+      password: user.password || '',
+      businessId: restaurant.id || '',
+      chatbotNumber: restaurant.phone?.replace(/[^\d]/g, '') || '',
+      adminPhone: restaurant.phone?.replace(/[^\d]/g, '') || '',
+      businessHours: parsedHoures,
+      isActive: true,
+      address: restaurant.address || '',
+      slogan: '',
+      coverage: parseCoverage,
+    });
+
+    const migrateRestaurant = await this._db.findOrCreateBusiness(business);
+    return migrateRestaurant;
   }
 
   async updateCoverage(bussinesId: string) {

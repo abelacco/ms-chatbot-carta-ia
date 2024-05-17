@@ -54,8 +54,13 @@ export class CartaDirectaDbService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cartaDirectaDb`;
+  async findOneCompany(id: number): Promise<CompanyEntity> {
+    const company = await this.companyRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    return company;
   }
 
   update(id: number) {
