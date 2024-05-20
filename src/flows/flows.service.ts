@@ -24,9 +24,12 @@ import { filterOrderId } from './Utils/filterOrderId';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 import { statusOrderMessageList } from './Utils/orderStatusMessages';
 import {
+  efectivePaymentMethodMessage,
+  paymentMethodMessage,
   reminderLocationMessage,
   reminderVoucherMessage,
-} from './Utils/reminderStepMessage';
+} from './Utils/messages';
+import { splitArray } from './Utils/splitArray';
 
 @Injectable()
 export class FlowsService {
@@ -104,7 +107,12 @@ export class FlowsService {
         await this.sendInfoFlow(ctx, messageEntry, historyParsed, businessInfo);
       } else if (response === 'ORDENAR') {
         Logger.log('ORDERNAR', 'INTENCION');
-        await this.sendPayLink(ctx, messageEntry, historyParsed, businessInfo);
+        await this.sendPaymentMethods(
+          ctx,
+          messageEntry,
+          historyParsed,
+          businessInfo,
+        );
       } else if (response === 'COBERTURA') {
         Logger.log('COBERTURA', 'INTENCION');
         this.sendCoverageInfo(ctx, messageEntry, historyParsed, businessInfo);
@@ -116,6 +124,71 @@ export class FlowsService {
       console.log(`[ERROR]:`, err);
       return;
     }
+  }
+
+  async sendPaymentMethods(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    history: string,
+    businessInfo,
+  ) {
+    const orderId = messageEntry.content.split(' ')[3].replace('*', '');
+    ctx.currentOrderId = filterOrderId(orderId);
+    ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
+      ctx,
+      ctx.chatbotNumber,
+    );
+    ctx.orderStatus = 1;
+    ctx.step = STEPS.SELECT_PAY_METHOD;
+    this.ctxService.updateCtx(ctx._id, ctx);
+    const aviablePaymentMethods = businessInfo.paymentMethods.filter(
+      (method) => {
+        return method.available;
+      },
+    );
+    const rows = aviablePaymentMethods.map((e) => {
+      return {
+        id: e.paymentMethodName,
+        title: e.paymentMethodName,
+      };
+    });
+    const template = await this.builderTemplate.buildInteractiveListMessage(
+      messageEntry.clientPhone,
+      'Elegir metodo',
+      [
+        {
+          title: 'Sección 1',
+          rows,
+        },
+      ],
+      'Selecciona tu metodo de pago',
+      'Muchas gracias por elegirnos 😊',
+      '‎ ',
+    );
+    await this.historyService.setAndCreateAssitantMessage(
+      messageEntry,
+      'Selecciona tu metodo de pago',
+    );
+    await this.senderService.sendMessages(template, messageEntry.chatbotNumber);
+  }
+
+  async invalidPayMethodFlow(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    history: string,
+    businessInfo,
+  ) {
+    const message = 'Porfavor selecciona un metodo de pago valido';
+    const template = this.builderTemplate.buildTextMessage(
+      messageEntry.clientPhone,
+      message,
+    );
+    await this.senderService.sendMessages(template, messageEntry.chatbotNumber);
+    await this.historyService.setAndCreateAssitantMessage(
+      messageEntry,
+      message,
+    );
+    await this.sendPaymentMethods(ctx, messageEntry, history, businessInfo);
   }
 
   async orderStateFlow(ctx: Ctx, messageEntry: IParsedMessage) {
@@ -232,55 +305,84 @@ export class FlowsService {
     return mainPrompt;
   }
 
-  async sendPayLink(
+  async sendPayFlow(
     ctx: Ctx,
     messageEntry: IParsedMessage,
     historyParsed: string,
     businessInfo,
   ) {
+    ctx.paymentMethod = messageEntry.content;
     try {
-      const orderId = messageEntry.content.split(' ')[3].replace('*', '');
-      ctx.currentOrderId = filterOrderId(orderId);
-      ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
-        ctx,
-        ctx.chatbotNumber,
-      );
-      ctx.orderStatus = 1;
-      this.ctxService.updateCtx(ctx._id, ctx);
-      const prompt = await this.generatePayLink(
-        messageEntry.content,
-        historyParsed,
-        businessInfo,
-        messageEntry,
-      );
-      const response = await this.aiService.createChat([
-        {
-          role: 'system',
-          content: prompt,
-        },
-      ]);
-      const chunks = response.split(/(?<!\d)\.\s+/g);
-      for (const chunk of chunks) {
-        const newMessage =
-          await this.historyService.setAndCreateAssitantMessage(
-            messageEntry,
-            chunk,
-          );
+      messageEntry.type = 'text';
+      if (messageEntry.content === 'Efectivo') {
+        await this.efectivePayFlow(
+          ctx,
+          messageEntry,
+          historyParsed,
+          businessInfo,
+        );
+      } else {
+        const paymentMethodSelected = businessInfo.paymentMethods.find(
+          (paymentMethod) => {
+            return paymentMethod.paymentMethodName === messageEntry.content;
+          },
+        );
+        let message = paymentMethodMessage(
+          paymentMethodSelected.paymentMethodName,
+          paymentMethodSelected.accountNumber,
+          paymentMethodSelected.accountName,
+        );
+        let template = await this.builderTemplate.buildTextMessage(
+          messageEntry.clientPhone,
+          message,
+        );
         await this.senderService.sendMessages(
-          this.builderTemplate.buildTextMessage(
-            messageEntry.clientPhone,
-            chunk,
-          ),
+          template,
           messageEntry.chatbotNumber,
         );
+        await this.historyService.setAndCreateAssitantMessage(
+          messageEntry,
+          message,
+        );
+        message = reminderVoucherMessage;
+        template = await this.builderTemplate.buildTextMessage(
+          messageEntry.clientPhone,
+          message,
+        );
+        await this.senderService.sendMessages(
+          template,
+          messageEntry.chatbotNumber,
+        );
+        await this.historyService.setAndCreateAssitantMessage(
+          messageEntry,
+          message,
+        );
       }
-      // Actualizar paso
+
       ctx.step = STEPS.PRE_PAY;
       await this.ctxService.updateCtx(ctx._id, ctx);
     } catch (err) {
       console.log(`[ERROR]:`, err);
       return;
     }
+  }
+
+  async efectivePayFlow(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+    businessInfo,
+  ) {
+    const message = efectivePaymentMethodMessage;
+    const template = await this.builderTemplate.buildTextMessage(
+      messageEntry.clientPhone,
+      message,
+    );
+    await this.senderService.sendMessages(template, messageEntry.chatbotNumber);
+    await this.historyService.setAndCreateAssitantMessage(
+      messageEntry,
+      message,
+    );
   }
 
   async generatePayLink(
@@ -331,7 +433,7 @@ export class FlowsService {
         );
       }
       let reminderMessage = '';
-      if (ctx.step === STEPS.PRE_PAY) {
+      if (ctx.step === STEPS.PRE_PAY && ctx.paymentMethod !== 'Efectivo') {
         reminderMessage = reminderVoucherMessage;
       } else if (ctx.step === STEPS.WAITING_LOCATION) {
         reminderMessage = reminderLocationMessage;
@@ -491,7 +593,7 @@ export class FlowsService {
         );
       }
       let reminderMessage = '';
-      if (ctx.step === STEPS.PRE_PAY) {
+      if (ctx.step === STEPS.PRE_PAY && ctx.paymentMethod !== 'Efectivo') {
         reminderMessage = reminderVoucherMessage;
       } else if (ctx.step === STEPS.WAITING_LOCATION) {
         reminderMessage = reminderLocationMessage;
