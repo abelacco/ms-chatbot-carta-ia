@@ -10,11 +10,15 @@ import {
   NotifyDeliveryDto,
   UpdateDeliveryDto,
 } from './dto';
-import { createTemplateNotifyToDelivery } from './utils/templateMessages';
+import {
+  createTemplateAssignDelivery,
+  createTemplateNotifyToDelivery,
+} from './utils/templateMessages';
 import { CtxService } from 'src/context/ctx.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { SenderService } from 'src/sender/sender.service';
 import { error } from 'console';
+import { assignMessage } from './utils/textMessages';
 
 @Injectable()
 export class DeliveryService {
@@ -129,6 +133,13 @@ export class DeliveryService {
       ctx.deliveryNumber = delivery.deliveryNumber;
       ctx.deliveryName = delivery.name;
       await this.ctxService.updateCtx(ctx._id, ctx);
+
+      const messageTemplate = createTemplateAssignDelivery(ctx);
+      const wspTemplate = this.builderTemplate.buildTextMessage(
+        body.deliveryNumber,
+        messageTemplate,
+      );
+      await this.senderService.sendMessages(wspTemplate, body.chatbotNumber);
       return ctx;
     } catch (error) {
       throw error;

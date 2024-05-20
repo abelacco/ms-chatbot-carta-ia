@@ -10,10 +10,19 @@ export class Ctx extends Document {
   clientname: string;
 
   @Prop()
+  orderName: string;
+
+  @Prop()
   dni: string;
 
   @Prop()
   clientPhone: string;
+
+  @Prop({ default: false })
+  isManual: boolean;
+
+  @Prop({ default: [] })
+  orders: string[];
 
   @Prop({ type: Object })
   currentOrder: Record<any, any>;

@@ -68,16 +68,6 @@ export class CtxController {
     }
   }
 
-  @Put('manual-order')
-  async manualOrder(@Body() body: ManualOrderDto) {
-    try {
-      const response = await this.ctxService.manualOrder(body);
-      return ApiResponse.success('Order create successfully', response);
-    } catch (error) {
-      return ApiResponse.error('An error ocurred while creating order', error);
-    }
-  }
-
   @Delete('delete-ctx')
   async deleteCtx() {
     try {

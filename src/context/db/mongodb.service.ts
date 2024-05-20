@@ -1,15 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { Ctx } from '../entities/ctx.entity';
 import { ICtxDao } from './ctxDao';
-// import { PaginationMessageDto } from '../dto/pagination.dto';
 import { mongoExceptionHandler } from 'src/common/exceptions';
-import { PAYMENTSTATUS } from '../helpers/constants';
 import { UpdateCtxDto } from 'src/bot/dto';
 
 @Injectable()
@@ -109,6 +103,7 @@ export class MongoDbService implements ICtxDao {
       statusBot: 1,
       lat: null,
       lng: null,
+      isManual: false,
     };
 
     try {
