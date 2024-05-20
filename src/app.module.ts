@@ -25,6 +25,7 @@ import { CartaDirectaDbModule } from './carta-directa-db/carta-directa-db.module
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { SchedulerService } from './scheduler/scheduler.service';
 import { ScheduleModule } from '@nestjs/schedule';
+import { OrderModule } from './order/order.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -49,6 +50,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     DeliveryModule,
     CartaDirectaDbModule,
     ScheduleModule.forRoot(),
+    OrderModule,
   ],
   controllers: [AppController, BusinessController],
   providers: [AppService, SchedulerService],

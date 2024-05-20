@@ -116,7 +116,9 @@ export class CtxService {
       clientPhone: body.clientPhone,
       chatbotNumber: body.chatBotNumber,
     });
-    ctx.orderStatus = ORDER_STATUS_BOT.pagado;
+    ctx.clientname = ctx.clientname || body.clientName;
+    ctx.orderName = body.clientName;
+    ctx.orderStatus = ORDER_STATUS_BOT.cocina;
     ctx.step = STEPS.ORDERED;
     ctx.deliveryCost = body.deliveryCost;
     ctx.currentOrderId = body.orderId;
@@ -124,6 +126,12 @@ export class CtxService {
     const orderCd = orderCdDummy;
     orderCd.items[0].name = body.order;
     ctx.currentOrder = orderCd;
+    ctx.lng = body.longitude;
+    ctx.lat = body.latitude;
+    ctx.paymentMethod = body.paymentMethod;
+    ctx.address = body.address;
+    ctx.isManual = true;
+    await this.updateCtx(ctx._id, ctx);
     return ctx;
   }
 

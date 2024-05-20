@@ -1,7 +1,7 @@
-import { IsNumber, IsString, IsIn } from 'class-validator';
+import { IsNumber, IsString, IsIn, IsOptional } from 'class-validator';
 import { PAYMENT_METHODS } from 'src/common/constants';
 
-export class ManualOrderDto {
+export class CreateOrderDto {
   @IsString()
   chatBotNumber: string;
 
@@ -10,6 +10,10 @@ export class ManualOrderDto {
 
   @IsString()
   order: string;
+
+  @IsString()
+  @IsOptional()
+  orderId: string;
 
   @IsNumber()
   price: number;
@@ -30,9 +34,9 @@ export class ManualOrderDto {
   clientName: string;
 
   @IsString()
-  orderId: string;
-
-  @IsString()
   @IsIn(PAYMENT_METHODS)
   paymentMethod: string;
+
+  @IsString()
+  note: string;
 }
