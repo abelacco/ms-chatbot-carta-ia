@@ -12,7 +12,7 @@ export class OrderController {
   async create(@Body() createOrderDto: CreateOrderDto) {
     try {
       const response = await this.orderService.create(createOrderDto);
-      return ApiResponse.success('Order created successfuly', response);
+      return ApiResponse.success('Order created successfully', response);
     } catch (error) {
       return ApiResponse.error('An error ocurred while creating order', error);
     }
