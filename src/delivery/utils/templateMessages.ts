@@ -1,4 +1,9 @@
-import { notifyToDeliverysMessage } from './textMessages';
+import { Business } from 'src/business/entity';
+import {
+  createDeliveryMessage,
+  notifyToDeliverysMessage,
+} from './textMessages';
+import { Delivery } from '../entity';
 
 export function createTemplateNotifyToDelivery(ctx: any) {
   const message = notifyToDeliverysMessage
@@ -25,5 +30,15 @@ export function createTemplateAssignDelivery(ctx: any) {
     )
     .replace('{deliveryCost}', ctx.deliveryCost)
     .replace('{addres}', ctx.address);
+  return message;
+}
+
+export function createTemplateCreateDelivery(
+  business: Business,
+  delivery: Delivery,
+) {
+  const message = createDeliveryMessage
+    .replace('{deliveryName}', delivery.name)
+    .replace('{restaurantName}', business.businessName);
   return message;
 }

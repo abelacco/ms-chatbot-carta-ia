@@ -55,6 +55,9 @@ export class Ctx extends Document {
   deliveryName: string;
 
   @Prop()
+  deliveryConfirmationByDelivery: true;
+
+  @Prop()
   total: number;
 
   @Prop()

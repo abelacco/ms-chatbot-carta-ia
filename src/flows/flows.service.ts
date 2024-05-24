@@ -1,5 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { HELP_STATUS, ORDER_STATUS, STATUS_BOT } from 'src/common/constants';
+import {
+  HELP_STATUS,
+  ORDER_STATUS,
+  ORDER_STATUS_BOT,
+  STATUS_BOT,
+} from 'src/common/constants';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { CtxService } from 'src/context/ctx.service';
 import { HistoryService } from 'src/history/history.service';
@@ -24,13 +29,16 @@ import { filterOrderId } from './Utils/filterOrderId';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 import { statusOrderMessageList } from './Utils/orderStatusMessages';
 import {
+  confirmDeliveryMessage,
   efectivePaymentMethodMessage,
   paymentMethodMessage,
   reminderLocationMessage,
   reminderVoucherMessage,
+  responseConfirmDeliveryByClientMessage,
 } from './Utils/messages';
 import { splitArray } from './Utils/splitArray';
 import { Business } from 'src/business/entity';
+import { Delivery } from 'src/delivery/entity';
 
 @Injectable()
 export class FlowsService {
@@ -556,6 +564,60 @@ export class FlowsService {
       .replace('{slogan}', businessInfo.slogan);
     console.log(mainPrompt);
     return mainPrompt;
+  }
+
+  async clientConfirmDelivery(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+    businessInfo,
+  ) {
+    ctx.orderStatus = ORDER_STATUS_BOT.entregado;
+    ctx.orders.push(ctx.currentOrderId);
+    ctx.step = STEPS.INIT;
+    ctx.voucherUrl = '';
+    await this.ctxService.updateCtx(ctx._id, ctx);
+
+    await this.historyService.setAndCreateAssitantMessage(
+      messageEntry,
+      responseConfirmDeliveryByClientMessage,
+    );
+    const template = await this.builderTemplate.buildTextMessage(
+      messageEntry.clientPhone,
+      responseConfirmDeliveryByClientMessage,
+    );
+    await this.senderService.sendMessages(template, messageEntry.chatbotNumber);
+  }
+
+  async deliveryConfirmOrder(
+    ctxDelivery: Ctx,
+    parsedMessage: IParsedMessage,
+    delivery: Delivery,
+  ) {
+    const clientCtx = await this.ctxService.findOrCreateCtx({
+      clientPhone: parsedMessage.content,
+      chatbotNumber: parsedMessage.chatbotNumber,
+    });
+
+    clientCtx.deliveryConfirmationByDelivery = true;
+    await this.ctxService.updateCtx(clientCtx._id, clientCtx);
+
+    /* send request confirm delivery to the client */
+    const buttonTemplate = this.builderTemplate.buildInteractiveButtonMessage(
+      clientCtx.clientPhone,
+      confirmDeliveryMessage,
+      [{ id: 'confirm', title: 'Confirmar entrega' }],
+    );
+
+    await this.historyService.setAndCreateAssitantMessage(
+      { ...parsedMessage, clientPhone: clientCtx.clientPhone },
+      responseConfirmDeliveryByClientMessage,
+    );
+
+    await this.senderService.sendMessages(
+      buttonTemplate,
+      parsedMessage.chatbotNumber,
+    );
   }
 
   sendInfoFlowWithOrder = async (

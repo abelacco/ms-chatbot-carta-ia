@@ -2,6 +2,7 @@ import { IParsedMessage } from '../entities/messageParsed';
 import { PAYMENT_METHODS, WSP_MESSAGE_TYPES } from 'src/common/constants';
 import { Ctx } from 'src/context/entities/ctx.entity';
 import { STEPS } from 'src/context/helpers/constants';
+import { Delivery } from 'src/delivery/entity';
 
 export const receivedMessageValidator = (
   ctx: Ctx,
@@ -37,9 +38,25 @@ export const receivedMessageValidator = (
         return 'sendInfoFlowWithOrder';
       }
     case STEPS.ORDERED:
-      return 'orderStateFlow';
+      if (isInteractiveMessage(entryMessage)) {
+        return 'clientConfirmDelivery';
+      } else {
+        return 'orderStateFlow';
+      }
     default:
       return 'NOT_VALID';
+  }
+};
+
+export const receivedMessageDeliveryValidator = (
+  ctx: Ctx,
+  entryMessage: IParsedMessage,
+  delivery: Delivery,
+) => {
+  if (isInteractiveMessage(entryMessage)) {
+    return 'deliveryConfirmOrder';
+  } else {
+    undefined;
   }
 };
 

@@ -46,6 +46,12 @@ export class Business extends Document {
   @Prop()
   accessToken: string;
 
+  @Prop()
+  whatsappId: string;
+
+  @Prop()
+  appId: string;
+
   @Prop([
     {
       paymentMethodName: String,

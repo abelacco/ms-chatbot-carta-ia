@@ -8,6 +8,7 @@ import { DeliveryService } from './delivery.service';
 import { CtxModule } from 'src/context/ctx.module';
 import { BuilderTemplatesModule } from 'src/builder-templates/builder-templates.module';
 import { SenderModule } from 'src/sender/sender.module';
+import { BusinessModule } from 'src/business/business.module';
 
 @Module({
   controllers: [Deliverycontroller],
@@ -15,6 +16,7 @@ import { SenderModule } from 'src/sender/sender.module';
   exports: [DeliveryService],
   imports: [
     CtxModule,
+    BusinessModule,
     BuilderTemplatesModule,
     SenderModule,
     MongooseModule.forFeature([

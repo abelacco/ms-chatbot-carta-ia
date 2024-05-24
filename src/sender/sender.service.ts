@@ -18,7 +18,11 @@ export class SenderService {
   ) {}
 
   async sendMessages(messageClient: any, chatbotNumber: string) {
-    // messageClient.to = '54261156841080';
+    /* if (messageClient.to === '5492616107398') {
+      messageClient.to = '54261156107398';
+    } else {
+      messageClient.to = '54261156841080';
+    } */
     const businessInfo = await this.businessService.getBusiness(chatbotNumber);
     const accessToken = businessInfo.accessToken;
 
@@ -39,6 +43,7 @@ export class SenderService {
       );
       Logger.log(`STATUS ${response.status}`, 'SENDER SERVICE');
       this.gatewayService.server.emit('newMessage');
+      return response.status;
     } catch (error) {
       Logger.error(
         `Mensaje: ${error.response.data.error.message}`,

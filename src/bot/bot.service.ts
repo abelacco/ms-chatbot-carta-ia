@@ -6,16 +6,22 @@ import {
   WSP_MESSAGE_TYPES,
   STATUS_BOT,
 } from 'src/common/constants';
-import { receivedMessageValidator } from './helpers/receivedMessageValidator';
+import {
+  receivedMessageDeliveryValidator,
+  receivedMessageValidator,
+} from './helpers/receivedMessageValidator';
 import { FlowsService } from 'src/flows/flows.service';
 import { CtxService } from 'src/context/ctx.service';
 import { HistoryService } from 'src/history/history.service';
 import { AiValidator } from './helpers/aiValidator';
 import { AiService } from 'src/ai/ai.service';
-import { Ctx } from 'src/context/entities/ctx.entity';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
+import { Ctx } from 'src/context/entities/ctx.entity';
 import { any } from 'joi';
 import { BusinessService } from 'src/business/business.service';
+import { DeliveryService } from 'src/delivery/delivery.service';
+import { Delivery } from 'src/delivery/entity';
+import { parse } from 'path';
 
 @Injectable()
 export class BotService {
@@ -26,6 +32,7 @@ export class BotService {
     private readonly aiValidatorService: AiValidator,
     private aiService: AiService,
     private gatewayService: WhatsappGateway,
+    private readonly deliveryService: DeliveryService,
     private readonly businessService: BusinessService,
   ) {}
 
@@ -51,10 +58,21 @@ export class BotService {
       ctx.clientname = parsedMessage.clientName;
       await this.ctxService.updateCtx(ctx._id, ctx);
     }
+
     Logger.log(`CTX  ${JSON.stringify(ctx)} `, 'BOT SERVICE');
     const history = await this.historyService.createAndGetHistoryParsed(
       parsedMessage,
     );
+
+    /* Verifica si el numero es de un delivery */
+    try {
+      const delivery = await this.deliveryService.findOne({
+        chatbotNumber: parsedMessage.chatbotNumber,
+        deliveryNumber: parsedMessage.clientPhone,
+      });
+      this.deliveryNumbManage(ctx, parsedMessage, delivery);
+      return;
+    } catch (error) {}
 
     const globalContext = await this.ctxService.findOrCreateCtx({
       clientPhone: parsedMessage.chatbotNumber,
@@ -77,6 +95,19 @@ export class BotService {
     Logger.log(`THE FLOW : ${action} WAS EXCUTED`, 'BOT SERVICE');
 
     return 'OK';
+  }
+
+  private async deliveryNumbManage(
+    ctxDelivery: Ctx,
+    parsedMessage: IParsedMessage,
+    delivery: Delivery,
+  ) {
+    const action = receivedMessageDeliveryValidator(
+      ctxDelivery,
+      parsedMessage,
+      delivery,
+    );
+    await this.flowsService[action](ctxDelivery, parsedMessage, delivery);
   }
 
   private async messageDestructurer(messageDto: WspReceivedMessageDto) {

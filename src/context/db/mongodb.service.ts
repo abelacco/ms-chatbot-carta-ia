@@ -84,6 +84,19 @@ export class MongoDbService implements ICtxDao {
     }
   }
 
+  async getCtxesByChatbotNumber(chatbotNumber: string): Promise<Array<Ctx>> {
+    try {
+      const ctx = await this._ctxModel.find({
+        chatbotNumber: chatbotNumber,
+      });
+
+      return ctx;
+    } catch (error) {
+      if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
+      else throw error;
+    }
+  }
+
   async resetAllCtx(): Promise<void> {
     const defaultCtxValues = {
       help: 0,
@@ -96,6 +109,7 @@ export class MongoDbService implements ICtxDao {
       date: null,
       deliveryCost: 0,
       dni: '',
+      deliveryConfirmationByDelivery: false,
       step: '',
       total: 0,
       paymentMethod: '',

@@ -138,4 +138,9 @@ export class CtxService {
   async resetAllCtx() {
     await this._db.resetAllCtx();
   }
+
+  async getCtxesByChatbotNumber(chatbotNumber: string) {
+    const ctxes = await this._db.getCtxesByChatbotNumber(chatbotNumber);
+    return ctxes;
+  }
 }

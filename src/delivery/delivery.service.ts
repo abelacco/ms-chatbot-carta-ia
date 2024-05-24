@@ -12,13 +12,14 @@ import {
 } from './dto';
 import {
   createTemplateAssignDelivery,
+  createTemplateCreateDelivery,
   createTemplateNotifyToDelivery,
 } from './utils/templateMessages';
 import { CtxService } from 'src/context/ctx.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { SenderService } from 'src/sender/sender.service';
-import { error } from 'console';
-import { assignMessage } from './utils/textMessages';
+import { DELIVERIES_STATUS } from 'src/common/constants';
+import { BusinessService } from 'src/business/business.service';
 
 @Injectable()
 export class DeliveryService {
@@ -29,17 +30,36 @@ export class DeliveryService {
     private readonly ctxService: CtxService,
     private readonly builderTemplate: BuilderTemplatesService,
     private readonly senderService: SenderService,
+    private readonly businessService: BusinessService,
   ) {
     this._db = this._mongoDbService;
   }
 
   async createDelivery(body: CreateDeliveryDto) {
     try {
+      const business = await this.businessService.getBusiness(
+        body.chatbotNumber,
+      );
+      if (!business) {
+        throw new NotFoundException(
+          `Business with chatbot number ${body.chatbotNumber} not exist`,
+        );
+      }
+
       const delivery = await this._db.create({
         chatbotNumber: body.chatbotNumber,
         deliveryNumber: body.deliveryNumber,
         name: body.name,
       });
+
+      /* Message to delivery */
+      const messageTemplate = createTemplateCreateDelivery(business, delivery);
+      const wspTemplate = this.builderTemplate.buildTextMessage(
+        body.deliveryNumber,
+        messageTemplate,
+      );
+      await this.senderService.sendMessages(wspTemplate, body.chatbotNumber);
+
       return delivery;
     } catch (error) {
       throw error;
@@ -122,6 +142,7 @@ export class DeliveryService {
 
   async assignDelivery(body: AssignDeliveryDto) {
     try {
+      /* Find ctx y delivery */
       const ctx = await this.ctxService.findOrCreateCtx({
         clientPhone: body.clientPhone,
         chatbotNumber: body.chatbotNumber,
@@ -130,17 +151,42 @@ export class DeliveryService {
         chatbotNumber: body.chatbotNumber,
         deliveryNumber: body.deliveryNumber,
       });
+
+      /* update  ctx y delivery */
+      await this._db.update({
+        chatbotNumber: body.chatbotNumber,
+        deliveryNumber: body.deliveryNumber,
+        status: DELIVERIES_STATUS.con_orden,
+        currentOrderId: ctx.currentOrderId,
+        newDeliveryNumber: '',
+        name: '',
+      });
+
       ctx.deliveryNumber = delivery.deliveryNumber;
       ctx.deliveryName = delivery.name;
       await this.ctxService.updateCtx(ctx._id, ctx);
 
+      /* Message to delivery */
       const messageTemplate = createTemplateAssignDelivery(ctx);
-      const wspTemplate = this.builderTemplate.buildTextMessage(
+
+      const locationTemplate = this.builderTemplate.buildLocationMessage(
+        body.deliveryNumber,
+        parseFloat(ctx.lng),
+        parseFloat(ctx.lat),
+      );
+      await this.senderService.sendMessages(
+        locationTemplate,
+        body.chatbotNumber,
+      );
+
+      const buttonTemplate = this.builderTemplate.buildInteractiveButtonMessage(
         body.deliveryNumber,
         messageTemplate,
+        [{ id: ctx.clientPhone, title: 'Confirmar entrega' }],
       );
-      await this.senderService.sendMessages(wspTemplate, body.chatbotNumber);
-      return ctx;
+      await this.senderService.sendMessages(buttonTemplate, body.chatbotNumber);
+
+      return delivery;
     } catch (error) {
       throw error;
     }

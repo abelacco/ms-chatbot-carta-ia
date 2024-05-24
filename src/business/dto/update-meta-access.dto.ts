@@ -6,4 +6,10 @@ export class UpdateMetaAccess {
 
   @IsString()
   accessToken: string;
+
+  @IsString()
+  whatsappId: string;
+
+  @IsString()
+  appId: string;
 }

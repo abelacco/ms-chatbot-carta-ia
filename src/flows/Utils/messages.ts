@@ -4,6 +4,11 @@ export const reminderLocationMessage =
   'Por favor, no te olvides de enviarnos compartirnos tu ubicación por whatsapp';
 export const efectivePaymentMethodMessage =
   'Has elegido: Efectivo, en unos minutos confimaremos tu pedido';
+export const confirmDeliveryMessage =
+  'Porfavor confirma que hayas recibido tu pedido';
+
+export const responseConfirmDeliveryByClientMessage =
+  'Muchas gracias por confirmar, que disfrutes tu pedido 😊';
 export const paymentMethodMessage = (
   paymentMethod: string,
   accountNumber: string,
