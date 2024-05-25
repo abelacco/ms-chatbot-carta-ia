@@ -18,7 +18,11 @@ import {
 import { CtxService } from 'src/context/ctx.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { SenderService } from 'src/sender/sender.service';
-import { DELIVERIES_STATUS } from 'src/common/constants';
+import {
+  DELIVERIES_STATUS,
+  ORDER_STATUS_BOT,
+  STATUS_BOT,
+} from 'src/common/constants';
 import { BusinessService } from 'src/business/business.service';
 
 @Injectable()
@@ -165,6 +169,7 @@ export class DeliveryService {
 
       ctx.deliveryNumber = delivery.deliveryNumber;
       ctx.deliveryName = delivery.name;
+      ctx.statusBot = ORDER_STATUS_BOT.enviado;
       await this.ctxService.updateCtx(ctx._id, ctx);
 
       /* Message to delivery */

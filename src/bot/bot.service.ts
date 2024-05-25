@@ -70,7 +70,9 @@ export class BotService {
         chatbotNumber: parsedMessage.chatbotNumber,
         deliveryNumber: parsedMessage.clientPhone,
       });
-      this.deliveryNumbManage(ctx, parsedMessage, delivery);
+      if (delivery) {
+        this.deliveryNumbManage(ctx, parsedMessage, delivery);
+      }
       return;
     } catch (error) {}
 
