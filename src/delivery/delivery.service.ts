@@ -169,7 +169,6 @@ export class DeliveryService {
 
       ctx.deliveryNumber = delivery.deliveryNumber;
       ctx.deliveryName = delivery.name;
-      ctx.statusBot = ORDER_STATUS_BOT.enviado;
       await this.ctxService.updateCtx(ctx._id, ctx);
 
       /* Message to delivery */
