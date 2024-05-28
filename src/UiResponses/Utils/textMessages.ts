@@ -32,9 +32,8 @@ export const statusOrderMessageList = {
   0: nothing,
   1: justCreated,
   2: aceptedMessage,
-  3: inCooking,
-  4: prepared,
-  5: orderShipped,
-  6: pickUp,
+  3: prepared,
+  4: orderShipped,
+  5: pickUp,
   9: generalDecline,
 };

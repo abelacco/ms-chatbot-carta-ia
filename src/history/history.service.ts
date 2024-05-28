@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHistoryDto } from './dto';
 import { IHistoryDao } from './db/historyDao';
 import { MongoDbService } from './db/mongodb.service';
@@ -137,5 +137,9 @@ export class HistoryService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async findLastLocationMessage(clientPhone: string, chatbotNumber: string) {
+    return await this._db.findLastLocationMessage(clientPhone, chatbotNumber);
   }
 }

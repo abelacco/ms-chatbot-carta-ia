@@ -16,6 +16,10 @@ export class UpdateOrderDto {
 
   @IsString()
   @IsOptional()
+  deliveryZone: string;
+
+  @IsString()
+  @IsOptional()
   address: string;
 
   @IsString()

@@ -8,5 +8,10 @@ export interface IHistoryDao {
 
   findAll(clientPhone: string, chatbotNumber: string): Promise<Array<History>>;
 
+  findLastLocationMessage(
+    clientPhone: string,
+    chatbotNumber: string,
+  ): Promise<History>;
+
   removeAll();
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { IHistoryDao } from './historyDao';
@@ -44,5 +44,19 @@ export class MongoDbService implements IHistoryDao {
       if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
       else throw error;
     }
+  }
+
+  findLastLocationMessage(
+    clientPhone: string,
+    chatbotNumber: string,
+  ): Promise<History> {
+    return this._historyModel
+      .findOne({
+        type: 'location',
+        chatbotNumber: chatbotNumber,
+        clientPhone: clientPhone,
+        role: 'user',
+      })
+      .sort({ _id: -1 });
   }
 }

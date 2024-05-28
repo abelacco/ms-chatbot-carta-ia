@@ -109,7 +109,9 @@ export class BotService {
       parsedMessage,
       delivery,
     );
-    await this.flowsService[action](ctxDelivery, parsedMessage, delivery);
+    if (action) {
+      await this.flowsService[action](ctxDelivery, parsedMessage, delivery);
+    }
   }
 
   private async messageDestructurer(messageDto: WspReceivedMessageDto) {

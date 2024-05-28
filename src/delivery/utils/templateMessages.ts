@@ -1,5 +1,6 @@
 import { Business } from 'src/business/entity';
 import {
+  assignMessage,
   createDeliveryMessage,
   notifyToDeliverysMessage,
 } from './textMessages';
@@ -19,11 +20,13 @@ export function createTemplateNotifyToDelivery(ctx: any) {
   return message;
 }
 
-export function createTemplateAssignDelivery(ctx: any) {
-  const message = notifyToDeliverysMessage
+export function createTemplateAssignDelivery(ctx: any, delivery: any) {
+  const message = assignMessage
     .replace('{orderId}', ctx.currentOrderId)
     .replace('{clientName}', ctx.clientname)
     .replace('{clientPhone}', ctx.clientPhone)
+    .replace('{time}', delivery.timeToRestaurant)
+    .replace('{clientNote}', delivery.note)
     .replace(
       '{total}',
       (parseFloat(ctx.total) + parseFloat(ctx.deliveryCost)).toString(),

@@ -24,4 +24,12 @@ export class UpdateDeliveryDto {
   @IsString()
   @IsOptional()
   currentOrderId: string;
+
+  @IsNumber()
+  @IsOptional()
+  timeToRestaurant: number;
+
+  @IsString()
+  @IsOptional()
+  note: string;
 }

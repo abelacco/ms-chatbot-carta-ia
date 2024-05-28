@@ -47,6 +47,7 @@ export class MongoDbService implements IOrderDao {
           ? body.deliveryCost
           : order.deliveryCost;
       order.address = body.address || order.address;
+      order.deliveryZone = body.deliveryZone || order.deliveryZone;
       order.latitude = body.latitude || order.latitude;
       order.longitude = body.longitude || order.longitude;
       order.clientName = body.clientName || order.clientName;

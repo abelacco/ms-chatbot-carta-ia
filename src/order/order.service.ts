@@ -5,6 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { CtxService } from 'src/context/ctx.service';
 import { IOrderDao } from './db/orderDao';
 import { MongoDbService } from './db/mongodb.service';
+import { HistoryService } from 'src/history/history.service';
+import { CartaDirectaController } from 'src/carta-directa/cartaDirecta.controller';
+import { BusinessModule } from 'src/business/business.module';
+import { BusinessService } from 'src/business/business.service';
 
 console.log(uuidv4());
 
@@ -14,14 +18,52 @@ export class OrderService {
   constructor(
     private readonly _mongoDbService: MongoDbService,
     private readonly ctxService: CtxService,
+    private readonly historyService: HistoryService,
+    private readonly businessService: BusinessService,
   ) {
     this._db = this._mongoDbService;
   }
 
   async create(createOrderDto: CreateOrderDto) {
+    const locationMessage = await this.historyService.findLastLocationMessage(
+      createOrderDto.clientPhone,
+      createOrderDto.chatBotNumber,
+    );
+
+    const business = await this.businessService.getBusiness(
+      createOrderDto.chatBotNumber,
+    );
+
+    const deliveryZoneFinded = business.coverage.find(
+      (area) => area.area === createOrderDto.deliveryZone,
+    );
+
+    /* Manejo de errores */
+    if (!business) {
+      throw new NotFoundException(
+        `Business with chatbotnumber ${createOrderDto.chatBotNumber} not exist`,
+      );
+    }
+
+    if (!deliveryZoneFinded) {
+      throw new NotFoundException(
+        `Delivery zone ${createOrderDto.deliveryZone} not found in business with chatbotnumber ${createOrderDto.chatBotNumber}`,
+      );
+    } else {
+      createOrderDto.deliveryCost = deliveryZoneFinded.price;
+    }
+
+    if (!locationMessage) {
+      throw new NotFoundException('The user has not provided their location.');
+    }
+
+    const coordinatesArray = locationMessage.content.split(',');
+
     const order = {
       ...createOrderDto,
       orderId: uuidv4(),
+      latitude: coordinatesArray[0],
+      longitude: coordinatesArray[1],
     };
 
     const ctx = await this.ctxService.manualOrder(order);

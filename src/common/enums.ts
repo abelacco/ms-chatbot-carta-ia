@@ -11,10 +11,9 @@ export enum EnumOrderStatusCD {
 }
 
 export enum EnumOrderStatusBot {
-  'pidiendo',
-  'orden',
-  'pagado',
-  'cocina',
+  'sin_pedido',
+  'orden_sin_pago',
+  'orden_con_pago',
   'preparado',
   'enviado',
   'entregado',

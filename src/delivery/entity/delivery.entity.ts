@@ -16,6 +16,12 @@ export class Delivery extends Document {
   status: number;
 
   @Prop()
+  timeToRestaurant: number;
+
+  @Prop()
+  note: string;
+
+  @Prop()
   currentOrderId: string;
 }
 

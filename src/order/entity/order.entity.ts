@@ -25,6 +25,9 @@ export class Order {
   address: string;
 
   @Prop({ required: true })
+  deliveryZone: string;
+
+  @Prop({ required: true })
   latitude: string;
 
   @Prop({ required: true })

@@ -118,7 +118,7 @@ export class CtxService {
     });
     ctx.clientname = ctx.clientname || body.clientName;
     ctx.orderName = body.clientName;
-    ctx.orderStatus = ORDER_STATUS_BOT.cocina;
+    ctx.orderStatus = ORDER_STATUS_BOT.orden_con_pago;
     ctx.step = STEPS.ORDERED;
     ctx.deliveryCost = body.deliveryCost;
     ctx.currentOrderId = body.orderId;

@@ -19,15 +19,21 @@ export class CreateOrderDto {
   price: number;
 
   @IsNumber()
+  @IsOptional()
   deliveryCost: number;
+
+  @IsString()
+  deliveryZone: string;
 
   @IsString()
   address: string;
 
   @IsString()
+  @IsOptional()
   latitude: string;
 
   @IsString()
+  @IsOptional()
   longitude: string;
 
   @IsString()

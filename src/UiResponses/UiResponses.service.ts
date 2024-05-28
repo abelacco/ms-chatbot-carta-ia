@@ -78,7 +78,7 @@ export class UiResponsesService {
     } else if (body.orderStatus === ORDER_STATUS_BOT.rechazado) {
       ctx.step = STEPS.INIT;
       ctx.voucherUrl = '';
-    } else if (body.orderStatus === ORDER_STATUS_BOT.pidiendo) {
+    } else if (body.orderStatus === ORDER_STATUS_BOT.sin_pedido) {
       ctx.step = STEPS.INIT;
       ctx.voucherUrl = '';
     } else if (

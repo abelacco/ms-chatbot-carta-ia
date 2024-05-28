@@ -152,17 +152,24 @@ export class DeliveryService {
         clientPhone: body.clientPhone,
         chatbotNumber: body.chatbotNumber,
       });
-      const delivery = await this.findOne({
+
+      if (!ctx.lat || !ctx.lng) {
+        throw new NotFoundException(`Ctx dont have longitude and location`);
+      }
+
+      let delivery = await this.findOne({
         chatbotNumber: body.chatbotNumber,
         deliveryNumber: body.deliveryNumber,
       });
 
       /* update  ctx y delivery */
-      await this._db.update({
+      delivery = await this._db.update({
         chatbotNumber: body.chatbotNumber,
         deliveryNumber: body.deliveryNumber,
         status: DELIVERIES_STATUS.con_orden,
         currentOrderId: ctx.currentOrderId,
+        note: body.note,
+        timeToRestaurant: body.timeToRestaurant,
         newDeliveryNumber: '',
         name: '',
       });
@@ -172,7 +179,8 @@ export class DeliveryService {
       await this.ctxService.updateCtx(ctx._id, ctx);
 
       /* Message to delivery */
-      const messageTemplate = createTemplateAssignDelivery(ctx);
+      const messageTemplate = createTemplateAssignDelivery(ctx, delivery);
+      console.log(messageTemplate);
 
       const locationTemplate = this.builderTemplate.buildLocationMessage(
         body.deliveryNumber,
