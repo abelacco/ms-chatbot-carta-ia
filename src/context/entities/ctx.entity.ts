@@ -73,6 +73,9 @@ export class Ctx extends Document {
   step: string;
 
   @Prop()
+  nameOrCorporateName: string;
+
+  @Prop()
   attempts: number;
 
   @Prop()

@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsIn } from 'class-validator';
+import { IsNumber, IsString, IsIn, IsOptional } from 'class-validator';
 import { PAYMENT_METHODS } from 'src/common/constants';
 
 export class ManualOrderDto {
@@ -35,4 +35,12 @@ export class ManualOrderDto {
   @IsString()
   @IsIn(PAYMENT_METHODS)
   paymentMethod: string;
+
+  @IsString()
+  @IsOptional()
+  nameOrCorporateName: string;
+
+  @IsString()
+  @IsOptional()
+  dni: string;
 }

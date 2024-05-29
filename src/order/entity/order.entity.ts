@@ -41,6 +41,12 @@ export class Order {
 
   @Prop()
   note: string;
+
+  @Prop()
+  nameOrCorporateName: string;
+
+  @Prop()
+  dni: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

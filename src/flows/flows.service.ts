@@ -142,10 +142,12 @@ export class FlowsService {
   ) {
     const orderId = messageEntry.content.split(' ')[3].replace('*', '');
     ctx.currentOrderId = filterOrderId(orderId);
+
     ctx = await this.cartaDirectaService.parseCtxWithOrderInfo(
       ctx,
       ctx.chatbotNumber,
     );
+
     ctx.orderStatus = 1;
     ctx.step = STEPS.SELECT_PAY_METHOD;
     this.ctxService.updateCtx(ctx._id, ctx);

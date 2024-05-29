@@ -1,60 +1,94 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { CartaDirectaDbService } from './carta-directa-db.service';
-import { CreateCartaDirectaDbDto } from './dto/create-carta-directa-db.dto';
-import { UpdateCartaDirectaDbDto } from './dto/update-carta-directa-db.dto';
+import { CoverageFromXlsxToDbDto } from './dto';
+import { ApiResponse } from 'src/common/ApiResponses';
 
 @Controller('carta-directa-db')
 export class CartaDirectaDbController {
   constructor(private readonly cartaDirectaDbService: CartaDirectaDbService) {}
 
-  @Post()
-  create(@Body() createCartaDirectaDbDto: CreateCartaDirectaDbDto) {
-    return this.cartaDirectaDbService.create();
-  }
-
   @Get('find-all-companies')
-  findAllCompanies() {
-    return this.cartaDirectaDbService.findAllCompanies();
+  async findAllCompanies() {
+    try {
+      const response = await this.cartaDirectaDbService.findAllCompanies();
+      return ApiResponse.success('Finded all companies successfully', response);
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while finding all companies',
+        error,
+      );
+    }
   }
 
   @Get('find-company-coverage/:id')
-  findCompanyCoverage(@Param('id') id: number) {
-    return this.cartaDirectaDbService.findCompanyCoverage(id);
+  async findCompanyCoverage(@Param('id') id: number) {
+    try {
+      const response = await this.cartaDirectaDbService.findCompanyCoverage(id);
+      return ApiResponse.success(
+        'Finded company coverage successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while finding company coverage',
+        error,
+      );
+    }
   }
 
   @Get('find-company-opening-hours/:id')
-  findCompanyOpeningHours(@Param('id') id: number) {
-    return this.cartaDirectaDbService.findCompanyOpeningHours(id);
+  async findCompanyOpeningHours(@Param('id') id: number) {
+    try {
+      const response = await this.cartaDirectaDbService.findCompanyOpeningHours(
+        id,
+      );
+      return ApiResponse.success(
+        'Finded company opening hours successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while finding company opening hours',
+        error,
+      );
+    }
   }
 
   @Get('find-user/:id')
-  findUser(@Param('id') id: number) {
-    return this.cartaDirectaDbService.findUser(id);
+  async findUser(@Param('id') id: number) {
+    try {
+      const response = await this.cartaDirectaDbService.findUser(id);
+      return ApiResponse.success('Finded user successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while finding user', error);
+    }
   }
 
   @Get('find-one-company/:id')
-  findOne(@Param('id') id: number) {
-    return this.cartaDirectaDbService.findOneCompany(id);
+  async findOne(@Param('id') id: number) {
+    try {
+      const response = await this.cartaDirectaDbService.findOneCompany(id);
+      return ApiResponse.success('Finded company successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while finding company', error);
+    }
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCartaDirectaDbDto: UpdateCartaDirectaDbDto,
-  ) {
-    return this.cartaDirectaDbService.update(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartaDirectaDbService.remove(+id);
+  @Post('coverage-from-xlsx-to-db')
+  async coverageFromXlsxToDb(@Body() body: CoverageFromXlsxToDbDto) {
+    try {
+      const response = await this.cartaDirectaDbService.coverageFromXlsxToDb(
+        body,
+      );
+      return ApiResponse.success(
+        'Migrated coverage from xlsx to db successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while migrating coverage from xlsx to db',
+        error,
+      );
+    }
   }
 }

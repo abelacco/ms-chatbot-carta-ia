@@ -45,4 +45,12 @@ export class CreateOrderDto {
 
   @IsString()
   note: string;
+
+  @IsString()
+  @IsOptional()
+  nameOrCorporateName: string;
+
+  @IsString()
+  @IsOptional()
+  dni: string;
 }

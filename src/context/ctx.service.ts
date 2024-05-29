@@ -122,6 +122,8 @@ export class CtxService {
     ctx.step = STEPS.ORDERED;
     ctx.deliveryCost = body.deliveryCost;
     ctx.currentOrderId = body.orderId;
+    ctx.nameOrCorporateName = body.nameOrCorporateName;
+    ctx.dni = body.dni;
     ctx.total = body.price;
     const orderCd = orderCdDummy;
     orderCd.items[0].name = body.order;

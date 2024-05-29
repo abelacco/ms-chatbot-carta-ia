@@ -106,6 +106,7 @@ export class CartaDirectaService {
       chatbotNumber,
     );
     if (order) {
+      ctx['nameOrCorporateName'] = order.configs['Nombre o Razón Social'];
       ctx['total'] = order.order_price;
       ctx['dni'] = order.configs['DNI Cliente'];
       ctx['orderName'] = order.configs.client_name;

@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CompanyEntity, OpeningHoursEntity } from './entities';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SimpleDeliveryAreasEntity } from './entities/simple-delivery-areas.entity';
 import { UserEntity } from './entities/user.entity';
+import { read, utils } from 'xlsx';
+import { CoverageFromXlsxToDbDto } from './dto';
+import { xlsxToJson } from './helpers/readXlsx';
 
 @Injectable()
 export class CartaDirectaDbService {
@@ -17,10 +24,6 @@ export class CartaDirectaDbService {
     @InjectRepository(UserEntity)
     private readonly userEntityRepository: Repository<UserEntity>,
   ) {}
-
-  create() {
-    return 'This action adds a new cartaDirectaDb';
-  }
 
   async findAllCompanies(): Promise<CompanyEntity[]> {
     return await this.companyRepository.find();
@@ -63,11 +66,34 @@ export class CartaDirectaDbService {
     return company;
   }
 
-  update(id: number) {
-    return `This action updates a #${id} cartaDirectaDb`;
-  }
+  async coverageFromXlsxToDb(body: CoverageFromXlsxToDbDto) {
+    const jsonData = xlsxToJson(body.xlsxFile);
 
-  remove(id: number) {
-    return `This action removes a #${id} cartaDirectaDb`;
+    if (jsonData.length === 0) {
+      throw new BadRequestException('File xlsx is invalid');
+    }
+
+    const allHasAreaAndPrice = jsonData.every(
+      (objeto: any) => 'area' in objeto && 'price' in objeto,
+    );
+
+    if (!allHasAreaAndPrice) {
+      throw new BadRequestException("File xlsx don't has price or area cell ");
+    }
+
+    try {
+      jsonData.forEach(async (item: any) => {
+        const newDeliveryArea = new SimpleDeliveryAreasEntity();
+        newDeliveryArea.name = item.area;
+        newDeliveryArea.cost = item.price;
+        newDeliveryArea.restaurant_id = body.restaurantId;
+        newDeliveryArea.created_at = new Date();
+        newDeliveryArea.updated_at = new Date();
+        await this.deliveryAreasRepository.save(newDeliveryArea);
+      });
+      return 'sucess';
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

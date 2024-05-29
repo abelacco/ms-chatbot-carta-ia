@@ -42,4 +42,12 @@ export class UpdateOrderDto {
   @IsString()
   @IsOptional()
   note: string;
+
+  @IsString()
+  @IsOptional()
+  nameOrCorporateName: string;
+
+  @IsString()
+  @IsOptional()
+  dni: string;
 }
