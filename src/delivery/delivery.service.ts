@@ -40,7 +40,7 @@ export class DeliveryService {
   }
 
   async createDelivery(body: CreateDeliveryDto) {
-    body.deliveryNumber = '52' + body.deliveryNumber;
+    body.deliveryNumber = '51' + body.deliveryNumber;
     try {
       const business = await this.businessService.getBusiness(
         body.chatbotNumber,
