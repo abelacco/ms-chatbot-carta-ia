@@ -17,16 +17,16 @@ import { JoiValidationSchema } from './config/joi.validation';
 import { BusinessModule } from './business/business.module';
 import { AuthModule } from './auth/auth.module';
 import BusinessController from './business/business.controller';
-import UiResponseController from './UiResponses/UiResponses.controller';
 import { UiResponseModule } from './UiResponses/UiResponses.module';
 import { CartaDirectaModule } from './carta-directa/cartaDirecta.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { CartaDirectaDbModule } from './carta-directa-db/carta-directa-db.module';
-import { SchedulerModule } from './scheduler/scheduler.module';
 import { SchedulerService } from './scheduler/scheduler.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OrderModule } from './order/order.module';
 import { CrmModule } from './crm/crm.module';
+import { RouterModule } from '@nestjs/core';
+
 @Module({
   imports: [
     ConfigModule.forRoot({

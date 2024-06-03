@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { CartaDirectaDbService } from './carta-directa-db.service';
-import { CoverageFromXlsxToDbDto } from './dto';
+import { CoverageFromXlsxToDbDto } from '../dto';
 import { ApiResponse } from 'src/common/ApiResponses';
 
 @Controller('carta-directa-db')

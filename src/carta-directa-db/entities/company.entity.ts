@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { VariantsGroupEntity } from './variant-group.entity';
+import { CategoryEntity } from './category.entity';
 
 @Entity('companies')
 export class CompanyEntity {
@@ -100,4 +102,13 @@ export class CompanyEntity {
 
   @Column({ type: 'int' })
   can_dinein: number;
+
+  @OneToMany(
+    () => VariantsGroupEntity,
+    (variantsGroup) => variantsGroup.company,
+  )
+  variantsGroups: VariantsGroupEntity[];
+
+  @OneToMany(() => CategoryEntity, (category) => category.company)
+  categories: CategoryEntity[];
 }

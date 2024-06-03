@@ -4,7 +4,6 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
-import axios from 'axios';
 import {
   CreateBusinessDto,
   LoginBusinessDto,
@@ -15,7 +14,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { MongoDbService } from './db/mongodb.service';
 import { IBusinessDao } from './db/businessDao';
 import { PAYMENT_METHODS } from 'src/common/constants';
-import { CartaDirectaDbService } from 'src/carta-directa-db/carta-directa-db.service';
+import { CartaDirectaDbService } from 'src/carta-directa-db/controllers&service/carta-directa-db.service';
 import { BusinessModel } from './model';
 import { parseDeliveryArea, parseHours } from './utils/parseFromCdDb';
 

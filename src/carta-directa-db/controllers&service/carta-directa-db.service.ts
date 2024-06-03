@@ -3,14 +3,14 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CompanyEntity, OpeningHoursEntity } from './entities';
+import { CompanyEntity, OpeningHoursEntity } from '../entities';
+
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SimpleDeliveryAreasEntity } from './entities/simple-delivery-areas.entity';
-import { UserEntity } from './entities/user.entity';
-import { read, utils } from 'xlsx';
-import { CoverageFromXlsxToDbDto } from './dto';
-import { xlsxToJson } from './helpers/readXlsx';
+import { SimpleDeliveryAreasEntity } from '../entities/simple-delivery-areas.entity';
+import { UserEntity } from '../entities/user.entity';
+import { CoverageFromXlsxToDbDto } from '../dto';
+import { xlsxToJson } from '../helpers/readXlsx';
 
 @Injectable()
 export class CartaDirectaDbService {
