@@ -74,7 +74,6 @@ export class UiResponsesService {
     if (body.orderStatus === ORDER_STATUS_BOT.entregado) {
       ctx.orders.push(ctx.currentOrderId);
       ctx.step = STEPS.INIT;
-      ctx.voucherUrl = '';
     } else if (body.orderStatus === ORDER_STATUS_BOT.rechazado) {
       ctx.step = STEPS.INIT;
       ctx.voucherUrl = '';

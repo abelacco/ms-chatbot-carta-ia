@@ -24,6 +24,7 @@ import {
   STATUS_BOT,
 } from 'src/common/constants';
 import { BusinessService } from 'src/business/business.service';
+import { HistoryService } from 'src/history/history.service';
 
 @Injectable()
 export class DeliveryService {
@@ -35,12 +36,13 @@ export class DeliveryService {
     private readonly builderTemplate: BuilderTemplatesService,
     private readonly senderService: SenderService,
     private readonly businessService: BusinessService,
+    private readonly historyService: HistoryService,
   ) {
     this._db = this._mongoDbService;
   }
 
   async createDelivery(body: CreateDeliveryDto) {
-    body.deliveryNumber = '52' + body.deliveryNumber;
+    body.deliveryNumber = '51' + body.deliveryNumber;
     try {
       const business = await this.businessService.getBusiness(
         body.chatbotNumber,
@@ -57,6 +59,17 @@ export class DeliveryService {
         name: body.name,
       });
 
+      let deliveryCtx = await this.ctxService.findOrCreateCtx({
+        clientPhone: body.deliveryNumber,
+        chatbotNumber: body.chatbotNumber,
+      });
+
+      deliveryCtx.isDelivery = true;
+      deliveryCtx = await this.ctxService.updateCtx(
+        deliveryCtx._id,
+        deliveryCtx,
+      );
+
       /* Message to delivery */
       const messageTemplate = createTemplateCreateDelivery(business, delivery);
       const wspTemplate = this.builderTemplate.buildTextMessage(
@@ -64,6 +77,13 @@ export class DeliveryService {
         messageTemplate,
       );
       await this.senderService.sendMessages(wspTemplate, body.chatbotNumber);
+      await this.historyService.createAndGetHistoryParsed({
+        chatbotNumber: body.chatbotNumber,
+        clientName: body.name,
+        clientPhone: body.deliveryNumber,
+        type: 'text',
+        content: messageTemplate,
+      });
 
       return delivery;
     } catch (error) {
@@ -136,9 +156,6 @@ export class DeliveryService {
         chatbotNumber: query.chatbotNumber,
         deliveryNumber: query.deliveryNumber,
       });
-      if (!delivery) {
-        throw new NotFoundException('Delivery not found');
-      }
       return delivery;
     } catch (error) {
       throw error;
@@ -162,6 +179,14 @@ export class DeliveryService {
         deliveryNumber: body.deliveryNumber,
       });
 
+      if (!delivery) {
+        await this.createDelivery({
+          chatbotNumber: body.chatbotNumber,
+          deliveryNumber: body.deliveryNumber,
+          name: body.deliveryName,
+        });
+      }
+
       /* update  ctx y delivery */
       delivery = await this._db.update({
         chatbotNumber: body.chatbotNumber,
@@ -180,7 +205,6 @@ export class DeliveryService {
 
       /* Message to delivery */
       const messageTemplate = createTemplateAssignDelivery(ctx, delivery);
-      console.log(messageTemplate);
 
       const locationTemplate = this.builderTemplate.buildLocationMessage(
         body.deliveryNumber,
@@ -192,12 +216,27 @@ export class DeliveryService {
         body.chatbotNumber,
       );
 
+      await this.historyService.createAndGetHistoryParsed({
+        chatbotNumber: body.chatbotNumber,
+        clientName: body.deliveryName,
+        clientPhone: body.deliveryNumber,
+        type: 'location',
+        content: `${ctx.lat}, ${ctx.lng}`,
+      });
+
       const buttonTemplate = this.builderTemplate.buildInteractiveButtonMessage(
         body.deliveryNumber,
         messageTemplate,
         [{ id: ctx.clientPhone, title: 'Confirmar entrega' }],
       );
       await this.senderService.sendMessages(buttonTemplate, body.chatbotNumber);
+      await this.historyService.createAndGetHistoryParsed({
+        chatbotNumber: body.chatbotNumber,
+        clientName: body.deliveryName,
+        clientPhone: body.deliveryNumber,
+        type: 'text',
+        content: `${buttonTemplate.interactive.body.text}`,
+      });
 
       return delivery;
     } catch (error) {

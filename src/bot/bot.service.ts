@@ -73,7 +73,6 @@ export class BotService {
       if (delivery) {
         this.deliveryNumbManage(ctx, parsedMessage, delivery);
       }
-      return;
     } catch (error) {}
 
     const globalContext = await this.ctxService.findOrCreateCtx({

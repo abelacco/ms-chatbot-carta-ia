@@ -6,8 +6,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './entity/order.entity';
 import { MongoDbService } from './db/mongodb.service';
 import { HistoryModule } from 'src/history/history.module';
-import { Business } from 'src/business/entity';
 import { BusinessModule } from 'src/business/business.module';
+import { SenderModule } from 'src/sender/sender.module';
+import { BuilderTemplatesModule } from 'src/builder-templates/builder-templates.module';
 
 @Module({
   controllers: [OrderController],
@@ -15,7 +16,9 @@ import { BusinessModule } from 'src/business/business.module';
   imports: [
     CtxModule,
     HistoryModule,
+    SenderModule,
     BusinessModule,
+    BuilderTemplatesModule,
     MongooseModule.forFeature([
       {
         name: Order.name,

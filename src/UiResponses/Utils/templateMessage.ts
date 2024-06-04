@@ -1,5 +1,4 @@
 import { ORDER_STATUS_BOT } from 'src/common/constants';
-import { measureMemory } from 'vm';
 
 export function createTemplateReponseMessage(
   message: string,
@@ -16,6 +15,5 @@ export function createTemplateReponseMessage(
   } else {
     message = message.replace('{orderId}', orderId);
   }
-  console.log(measureMemory);
   return message;
 }

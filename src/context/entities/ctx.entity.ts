@@ -21,6 +21,9 @@ export class Ctx extends Document {
   @Prop({ default: false })
   isManual: boolean;
 
+  @Prop({ default: false })
+  isDelivery: boolean;
+
   @Prop({ default: [] })
   orders: string[];
 
