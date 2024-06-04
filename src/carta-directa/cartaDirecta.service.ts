@@ -110,6 +110,7 @@ export class CartaDirectaService {
       ctx['total'] = order.order_price;
       ctx['dni'] = order.configs['DNI Cliente'];
       ctx['orderName'] = order.configs.client_name;
+      ctx['deliveryMethod'] = order.delivery_method;
       ctx[
         'address'
       ] = `${order.configs.delivery_area_name}, ${order.whatsapp_address}`;
