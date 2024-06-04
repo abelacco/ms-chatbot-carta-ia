@@ -10,6 +10,9 @@ export class AssignDeliveryDto {
   @IsString()
   deliveryNumber: string;
 
+  @IsString()
+  deliveryName: string;
+
   @IsNumber()
   timeToRestaurant: number;
 
