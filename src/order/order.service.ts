@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Body, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,6 +9,8 @@ import { HistoryService } from 'src/history/history.service';
 import { CartaDirectaController } from 'src/carta-directa/cartaDirecta.controller';
 import { BusinessModule } from 'src/business/business.module';
 import { BusinessService } from 'src/business/business.service';
+import { SenderService } from 'src/sender/sender.service';
+import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 
 console.log(uuidv4());
 
@@ -20,6 +22,8 @@ export class OrderService {
     private readonly ctxService: CtxService,
     private readonly historyService: HistoryService,
     private readonly businessService: BusinessService,
+    private readonly senderService: SenderService,
+    private readonly builderTemplateService: BuilderTemplatesService,
   ) {
     this._db = this._mongoDbService;
   }
@@ -65,6 +69,16 @@ export class OrderService {
       latitude: coordinatesArray[0],
       longitude: coordinatesArray[1],
     };
+
+    const messageTemplate = await this.builderTemplateService.buildTextMessage(
+      createOrderDto.clientPhone,
+      `Ya hemos tomado tu pedido de: ${createOrderDto.order}\n\nEl costo total es de: S/${createOrderDto.price}\nY el costo del delivery es de S/${createOrderDto.deliveryCost}`,
+    );
+
+    await this.senderService.sendMessages(
+      messageTemplate,
+      createOrderDto.chatBotNumber,
+    );
 
     const ctx = await this.ctxService.manualOrder(order);
     const createdOrder = this._db.create(order);
