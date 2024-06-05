@@ -65,15 +65,14 @@ export class BotService {
     );
 
     /* Verifica si el numero es de un delivery */
-    try {
-      const delivery = await this.deliveryService.findOne({
-        chatbotNumber: parsedMessage.chatbotNumber,
-        deliveryNumber: parsedMessage.clientPhone,
-      });
-      if (delivery) {
-        this.deliveryNumbManage(ctx, parsedMessage, delivery);
-      }
-    } catch (error) {}
+    const delivery = await this.deliveryService.findOne({
+      chatbotNumber: parsedMessage.chatbotNumber,
+      deliveryNumber: parsedMessage.clientPhone,
+    });
+    if (delivery) {
+      this.deliveryNumbManage(ctx, parsedMessage, delivery);
+      return;
+    }
 
     const globalContext = await this.ctxService.findOrCreateCtx({
       clientPhone: parsedMessage.chatbotNumber,
