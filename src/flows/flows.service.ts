@@ -16,14 +16,17 @@ import { STEPS } from 'src/context/helpers/constants';
 import { BusinessService } from 'src/business/business.service';
 import { GeneralServicesService } from 'src/general-services/general-services.service';
 import {
-  PROMPT_INFO,
   PROMPT_ANALYZE_DATA,
-  PROMPT_COVERAGE,
   PROMPT_PAY_LINK,
   PROMPT_PRE_PAY_CONFIRMATION,
   PROMPT_LOCATION,
   PROMPT_HELP,
   PROMPT_INFO_WITH_ORDER,
+  PROMPT_MESSAGE_CONTAINTS_GREETINGS,
+  PROMPT_INFO_WITH_GREETINGS,
+  PROMPT_INFO_WITHOUT_GREETINGS,
+  PROMPT_COVERAGE_WITH_GREETINGS,
+  PROMPT_COVERAGE_WITHOUT_GREETINGS,
 } from './Utils/prompts';
 import { filterOrderId } from './Utils/filterOrderId';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
@@ -39,6 +42,7 @@ import {
 import { splitArray } from './Utils/splitArray';
 import { Business } from 'src/business/entity';
 import { Delivery } from 'src/delivery/entity';
+import { parseRestaurantHours } from './Utils/parseRestaurantHours';
 
 @Injectable()
 export class FlowsService {
@@ -469,7 +473,25 @@ export class FlowsService {
     businessInfo: Business,
     messageEntry: IParsedMessage,
   ) {
-    const mainPrompt = PROMPT_COVERAGE.replace('{chatHistory}', history)
+    const splitStory = history.split(/Cliente:|Vendedor:/);
+    const messageContaintsGreetings = await this.aiService.createChat([
+      {
+        role: 'system',
+        content: PROMPT_MESSAGE_CONTAINTS_GREETINGS.replace(
+          '{MENSAJE}',
+          splitStory[splitStory.length - 1],
+        ),
+      },
+    ]);
+    let selectedPrompt: string;
+    if (messageContaintsGreetings === 'SI') {
+      selectedPrompt = PROMPT_COVERAGE_WITH_GREETINGS;
+    } else {
+      selectedPrompt = PROMPT_COVERAGE_WITHOUT_GREETINGS;
+    }
+
+    const mainPrompt = selectedPrompt
+      .replace('{chatHistory}', history)
       .replace('{question}', question)
       .replace(/{restaurante}/g, businessInfo.businessName)
       .replace('{direccion}', businessInfo.address)
@@ -491,12 +513,34 @@ export class FlowsService {
       businessInfo.businessId,
       question,
     );
-    const mainPrompt = PROMPT_INFO.replace('{chatHistory}', history)
+
+    const splitStory = history.split(/Cliente:|Vendedor:/);
+    const messageContaintsGreetings = await this.aiService.createChat([
+      {
+        role: 'system',
+        content: PROMPT_MESSAGE_CONTAINTS_GREETINGS.replace(
+          '{MENSAJE}',
+          splitStory[splitStory.length - 1],
+        ),
+      },
+    ]);
+    let selectedPrompt: string;
+    if (messageContaintsGreetings === 'SI') {
+      selectedPrompt = PROMPT_INFO_WITH_GREETINGS;
+    } else {
+      selectedPrompt = PROMPT_INFO_WITHOUT_GREETINGS;
+    }
+
+    const mainPrompt = selectedPrompt
+      .replace('{chatHistory}', history)
       .replace('{question}', question)
       .replace(/{clientName}/g, messageEntry.clientName)
       .replace(/{restaurante}/g, businessInfo.businessName)
       .replace('{direccion}', businessInfo.address)
-      .replace('{horarios}', businessInfo.businessHours[0])
+      .replace(
+        '{horarios}',
+        JSON.stringify(parseRestaurantHours(businessInfo.businessHours)),
+      )
       .replace(
         /{link}/g,
         `https://menu.cartadirecta.com/restaurant/${businessInfo.businessName}`,
@@ -561,7 +605,10 @@ export class FlowsService {
       .replace(/{restaurante}/g, businessInfo.businessName)
       .replace(/{clientName}/g, messageEntry.clientName)
       .replace('{direccion}', businessInfo.address)
-      .replace('{horarios}', businessInfo.businessHours[0])
+      .replace(
+        '{horarios}',
+        JSON.stringify(parseRestaurantHours(businessInfo.businessHours)),
+      )
       .replace('{menu}', JSON.stringify(menu))
       .replace('{slogan}', businessInfo.slogan);
     console.log(mainPrompt);
