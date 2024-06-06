@@ -11,6 +11,8 @@ import { SimpleDeliveryAreasEntity } from '../entities/simple-delivery-areas.ent
 import { UserEntity } from '../entities/user.entity';
 import { CoverageFromXlsxToDbDto } from '../dto';
 import { xlsxToJson } from '../helpers/readXlsx';
+import { readFile } from 'xlsx';
+import { readFileSync } from 'fs';
 
 @Injectable()
 export class CartaDirectaDbService {
@@ -67,7 +69,13 @@ export class CartaDirectaDbService {
   }
 
   async coverageFromXlsxToDb(body: CoverageFromXlsxToDbDto) {
+    /* Si se va a leer desde archivos locales comentar esta linea y descomentar las comentadas */
     const jsonData = xlsxToJson(body.xlsxFile);
+
+    /*     const fileBuffer = readFileSync(
+      process.cwd() + '/src/carta-directa-db/franki.xlsx',
+    );
+    const jsonData = xlsxToJson(Buffer.from(fileBuffer).toString('base64')); */
 
     if (jsonData.length === 0) {
       throw new BadRequestException('File xlsx is invalid');
@@ -83,13 +91,28 @@ export class CartaDirectaDbService {
 
     try {
       jsonData.forEach(async (item: any) => {
-        const newDeliveryArea = new SimpleDeliveryAreasEntity();
-        newDeliveryArea.name = item.area;
-        newDeliveryArea.cost = item.price;
-        newDeliveryArea.restaurant_id = body.restaurantId;
-        newDeliveryArea.created_at = new Date();
-        newDeliveryArea.updated_at = new Date();
-        await this.deliveryAreasRepository.save(newDeliveryArea);
+        const existingDeliveryArea = await this.deliveryAreasRepository.findOne(
+          {
+            where: {
+              name: item.area,
+              restaurant_id: body.restaurantId,
+            },
+          },
+        );
+
+        if (existingDeliveryArea) {
+          existingDeliveryArea.cost = item.price;
+          existingDeliveryArea.updated_at = new Date();
+          await this.deliveryAreasRepository.save(existingDeliveryArea);
+        } else {
+          const newDeliveryArea = new SimpleDeliveryAreasEntity();
+          newDeliveryArea.name = item.area;
+          newDeliveryArea.cost = item.price;
+          newDeliveryArea.restaurant_id = body.restaurantId;
+          newDeliveryArea.created_at = new Date();
+          newDeliveryArea.updated_at = new Date();
+          await this.deliveryAreasRepository.save(newDeliveryArea);
+        }
       });
       return 'sucess';
     } catch (error) {
