@@ -739,7 +739,7 @@ export class FlowsService {
     businessInfo,
   ) {
     const templateMessage = this.builderTemplate.buildTextMessage(
-      messageEntry.clientName,
+      messageEntry.clientPhone,
       userOverFlowMessage,
     );
 
