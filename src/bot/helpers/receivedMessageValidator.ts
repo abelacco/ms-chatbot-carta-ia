@@ -3,11 +3,16 @@ import { PAYMENT_METHODS, WSP_MESSAGE_TYPES } from 'src/common/constants';
 import { Ctx } from 'src/context/entities/ctx.entity';
 import { STEPS } from 'src/context/helpers/constants';
 import { Delivery } from 'src/delivery/entity';
+import { History } from 'src/history/entities/history.entity';
 
 export const receivedMessageValidator = (
   ctx: Ctx,
   entryMessage: IParsedMessage,
+  lastMessage: History,
 ) => {
+  if (lastMessage && isLastMessageOverFlow(lastMessage)) {
+    return 'userOverFlow';
+  }
   const currentStep = ctx.step || STEPS.INIT;
   if (
     entryMessage.type === 'text' &&
@@ -59,6 +64,19 @@ export const receivedMessageDeliveryValidator = (
     undefined;
   }
 };
+
+function isLastMessageOverFlow(lastMessage: any) {
+  const isBotMessage = lastMessage.role === 'assistant';
+  if (isBotMessage) {
+    return !isBotMessage;
+  } else {
+    const now = new Date();
+    const lastMessageDate = new Date(lastMessage.createdAt);
+    const secondsAfterLastMessage =
+      (now.getTime() - lastMessageDate.getTime()) / 1000;
+    return !(secondsAfterLastMessage > 15);
+  }
+}
 
 // export const isResetMessage = (infoMessage: IParsedMessage): boolean => infoMessage.content.id === ID.RESET;
 

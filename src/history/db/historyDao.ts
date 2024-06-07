@@ -13,5 +13,7 @@ export interface IHistoryDao {
     chatbotNumber: string,
   ): Promise<History>;
 
+  findLastMessage(clientPhone: string, chatbotNumber: string): Promise<History>;
+
   removeAll();
 }

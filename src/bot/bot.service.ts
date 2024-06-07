@@ -59,6 +59,11 @@ export class BotService {
       await this.ctxService.updateCtx(ctx._id, ctx);
     }
 
+    const lastMessage = await this.historyService.findLastMessage(
+      parsedMessage.clientPhone,
+      parsedMessage.chatbotNumber,
+    );
+
     Logger.log(`CTX  ${JSON.stringify(ctx)} `, 'BOT SERVICE');
     const history = await this.historyService.createAndGetHistoryParsed(
       parsedMessage,
@@ -88,7 +93,7 @@ export class BotService {
       parsedMessage.chatbotNumber,
     );
 
-    const action = receivedMessageValidator(ctx, parsedMessage);
+    const action = receivedMessageValidator(ctx, parsedMessage, lastMessage);
     Logger.log(`THE ACTION IS: ${action} `, 'BOT SERVICE');
 
     await this.flowsService[action](ctx, parsedMessage, history, businessInfo);

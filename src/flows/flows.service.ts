@@ -38,6 +38,7 @@ import {
   reminderLocationMessage,
   reminderVoucherMessage,
   responseConfirmDeliveryByClientMessage,
+  userOverFlowMessage,
 } from './Utils/messages';
 import { splitArray } from './Utils/splitArray';
 import { Business } from 'src/business/entity';
@@ -730,4 +731,26 @@ export class FlowsService {
       question,
     );
   };
+
+  async userOverFlow(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+    businessInfo,
+  ) {
+    const templateMessage = this.builderTemplate.buildTextMessage(
+      messageEntry.clientName,
+      userOverFlowMessage,
+    );
+
+    const newMessage = await this.historyService.setAndCreateAssitantMessage(
+      messageEntry,
+      userOverFlowMessage,
+    );
+
+    await this.senderService.sendMessages(
+      templateMessage,
+      messageEntry.chatbotNumber,
+    );
+  }
 }
