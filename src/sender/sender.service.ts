@@ -50,6 +50,7 @@ export class SenderService {
         'SENDER SERVICE',
       );
       // Logger.error(`Detalle: ${error.response.data.error.error_data.details}`, 'SENDER SERVICE');
+      console.error(error.response.data.error.message);
       throw new Error(error.response.data.error.message);
     }
   }
