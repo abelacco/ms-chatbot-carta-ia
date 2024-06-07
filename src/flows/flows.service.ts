@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  DELIVERIES_STATUS,
   HELP_STATUS,
   ORDER_STATUS,
   ORDER_STATUS_BOT,
@@ -44,6 +45,7 @@ import { splitArray } from './Utils/splitArray';
 import { Business } from 'src/business/entity';
 import { Delivery } from 'src/delivery/entity';
 import { parseRestaurantHours } from './Utils/parseRestaurantHours';
+import { DeliveryService } from 'src/delivery/delivery.service';
 
 @Injectable()
 export class FlowsService {
@@ -56,6 +58,7 @@ export class FlowsService {
     private readonly aiService: AiService,
     private readonly generalService: GeneralServicesService,
     private readonly cartaDirectaService: CartaDirectaService,
+    private readonly deliveryService: DeliveryService,
   ) {}
 
   async locationFlow(
@@ -647,6 +650,17 @@ export class FlowsService {
     const clientCtx = await this.ctxService.findOrCreateCtx({
       clientPhone: parsedMessage.content,
       chatbotNumber: parsedMessage.chatbotNumber,
+    });
+
+    await this.deliveryService.update({
+      ...delivery,
+      chatbotNumber: parsedMessage.chatbotNumber,
+      deliveryNumber: delivery.deliveryNumber,
+      status: DELIVERIES_STATUS.sin_orden,
+      timeToRestaurant: null,
+      note: null,
+      currentOrderId: null,
+      newDeliveryNumber: null,
     });
 
     clientCtx.deliveryConfirmationByDelivery = true;

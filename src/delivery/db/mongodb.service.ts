@@ -67,12 +67,11 @@ export class MongoDbService implements IDeliveryDao {
 
       delivery.deliveryNumber =
         body.newDeliveryNumber || delivery.deliveryNumber;
-      delivery.name = body.name || delivery.name;
-      delivery.note = body.note || delivery.note;
-      delivery.timeToRestaurant =
-        body.timeToRestaurant || delivery.timeToRestaurant;
-      delivery.status = body.status || delivery.status;
-      delivery.currentOrderId = body.currentOrderId || delivery.currentOrderId;
+      delivery.name = body.name;
+      delivery.note = body.note;
+      delivery.timeToRestaurant = body.timeToRestaurant;
+      delivery.status = body.status;
+      delivery.currentOrderId = body.currentOrderId;
 
       await delivery.save();
       return delivery;
