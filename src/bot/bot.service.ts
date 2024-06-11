@@ -59,21 +59,25 @@ export class BotService {
       await this.ctxService.updateCtx(ctx._id, ctx);
     }
 
+    const lastMessage = await this.historyService.findLastMessage(
+      parsedMessage.clientPhone,
+      parsedMessage.chatbotNumber,
+    );
+
     Logger.log(`CTX  ${JSON.stringify(ctx)} `, 'BOT SERVICE');
     const history = await this.historyService.createAndGetHistoryParsed(
       parsedMessage,
     );
 
     /* Verifica si el numero es de un delivery */
-    try {
-      const delivery = await this.deliveryService.findOne({
-        chatbotNumber: parsedMessage.chatbotNumber,
-        deliveryNumber: parsedMessage.clientPhone,
-      });
-      if (delivery) {
-        this.deliveryNumbManage(ctx, parsedMessage, delivery);
-      }
-    } catch (error) {}
+    const delivery = await this.deliveryService.findOne({
+      chatbotNumber: parsedMessage.chatbotNumber,
+      deliveryNumber: parsedMessage.clientPhone,
+    });
+    if (delivery) {
+      this.deliveryNumbManage(ctx, parsedMessage, delivery);
+      return;
+    }
 
     const globalContext = await this.ctxService.findOrCreateCtx({
       clientPhone: parsedMessage.chatbotNumber,
@@ -89,7 +93,7 @@ export class BotService {
       parsedMessage.chatbotNumber,
     );
 
-    const action = receivedMessageValidator(ctx, parsedMessage);
+    const action = receivedMessageValidator(ctx, parsedMessage, lastMessage);
     Logger.log(`THE ACTION IS: ${action} `, 'BOT SERVICE');
 
     await this.flowsService[action](ctx, parsedMessage, history, businessInfo);

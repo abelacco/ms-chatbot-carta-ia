@@ -37,6 +37,9 @@ export class Ctx extends Document {
   help: number;
 
   @Prop()
+  deliveryMethod: number;
+
+  @Prop()
   orderStatus: number;
 
   @Prop()

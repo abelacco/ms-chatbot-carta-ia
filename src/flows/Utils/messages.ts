@@ -7,6 +7,9 @@ export const efectivePaymentMethodMessage =
 export const confirmDeliveryMessage =
   'Porfavor confirma que hayas recibido tu pedido';
 
+export const userOverFlowMessage =
+  'Porfavor, manda tus mensajes uno por uno y espera a que te respondamos antes de enviar el siguiente. No podemos procesar varios mensajes a la vez. 😊';
+
 export const responseConfirmDeliveryByClientMessage =
   'Muchas gracias por confirmar, que disfrutes tu pedido 😊';
 export const paymentMethodMessage = (

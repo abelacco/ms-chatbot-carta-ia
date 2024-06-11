@@ -19,3 +19,13 @@ export enum EnumOrderStatusBot {
   'entregado',
   'rechazado' = 9,
 }
+
+export enum Days {
+  Lunes,
+  Martes,
+  Miercoles,
+  Jueves,
+  Viernes,
+  Sabado,
+  Domingo,
+}
