@@ -6,8 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  JoinColumn,
 } from 'typeorm';
-import { ItemEntity } from './item.entity'; // Asegúrate de que la ruta sea correcta
+import { ItemEntity } from './item.entity';
 
 @Entity({ name: 'extras' })
 export class ExtraEntity {
@@ -36,5 +37,6 @@ export class ExtraEntity {
   extra_for_all_variants: number;
 
   @ManyToOne(() => ItemEntity, (item) => item.extras)
+  @JoinColumn({ name: 'item_id' })
   item: ItemEntity;
 }

@@ -1,14 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtrasListEntity } from '../entities/extra.list.entity';
 import { CreateExtraInListDto } from '../dto/create-extra-in-list.dto';
-import { error } from 'console';
 
 @Injectable()
 export class ExtraListService {

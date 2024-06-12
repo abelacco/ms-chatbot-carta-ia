@@ -22,7 +22,7 @@ export class CategoryService {
         restorant_id: companyId,
         deleted_at: IsNull(),
       },
-      relations: ['items'],
+      relations: ['items', 'items.extras'],
     });
 
     return categories;

@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   CategoryEntity,
   CompanyEntity,
+  ExtraEntity,
   ItemEntity,
   OpeningHoursEntity,
   VariantsGroupEntity,
@@ -22,6 +23,8 @@ import { CategoryController } from './controllers&service/category.controller';
 import { ExtraListService } from './controllers&service/extras-list.service';
 import { ExtrasListController } from './controllers&service/extras-list.controller';
 import { ExtrasListEntity } from './entities/extra.list.entity';
+import { ExtrasController } from './controllers&service/extras.controller';
+import { ExtraService } from './controllers&service/extras.service';
 
 @Module({
   exports: [CartaDirectaDbService],
@@ -48,6 +51,7 @@ import { ExtrasListEntity } from './entities/extra.list.entity';
       ItemEntity,
       CategoryEntity,
       ExtrasListEntity,
+      ExtraEntity,
     ]),
   ],
   controllers: [
@@ -56,6 +60,7 @@ import { ExtrasListEntity } from './entities/extra.list.entity';
     ItemController,
     CategoryController,
     ExtrasListController,
+    ExtrasController,
   ],
   providers: [
     CartaDirectaDbService,
@@ -63,6 +68,7 @@ import { ExtrasListEntity } from './entities/extra.list.entity';
     ItemService,
     CategoryService,
     ExtraListService,
+    ExtraService,
   ],
 })
 export class CartaDirectaDbModule {}
