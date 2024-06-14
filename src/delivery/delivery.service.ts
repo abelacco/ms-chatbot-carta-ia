@@ -182,7 +182,7 @@ export class DeliveryService {
       if (!delivery) {
         await this.createDelivery({
           chatbotNumber: body.chatbotNumber,
-          deliveryNumber: body.deliveryNumber,
+          deliveryNumber: body.deliveryNumber.slice(2),
           name: body.deliveryName,
         });
       }
@@ -240,6 +240,7 @@ export class DeliveryService {
 
       return delivery;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   }
