@@ -20,3 +20,6 @@ export const paymentMethodMessage = (
   const message = `Has elegido: ${paymentMethod}\nRealiza tu pago a la cuenta numero: ${accountNumber} a nombre de: ${accountName} `;
   return message;
 };
+
+export const invalidMessageFormatMessage =
+  'Por el momento no aceptamos este tipo de formato de mensaje, porfavor envía mensajes de texto, imagen o ubicación en el caso que te lo pidamos 😊';

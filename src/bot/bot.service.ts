@@ -189,7 +189,8 @@ export class BotService {
         parsedMessage.content = `${message.location.latitude},${message.location.longitude}`;
         break;
       default:
-        return;
+        parsedMessage.content = message.type;
+        return parsedMessage;
     }
 
     return parsedMessage;

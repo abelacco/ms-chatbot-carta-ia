@@ -35,6 +35,7 @@ import { statusOrderMessageList } from './Utils/orderStatusMessages';
 import {
   confirmDeliveryMessage,
   efectivePaymentMethodMessage,
+  invalidMessageFormatMessage,
   paymentMethodMessage,
   reminderLocationMessage,
   reminderVoucherMessage,
@@ -746,6 +747,28 @@ export class FlowsService {
       question,
     );
   };
+
+  async typeMessageIsInvalid(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+    businessInfo,
+  ) {
+    const templateMessage = this.builderTemplate.buildTextMessage(
+      messageEntry.clientPhone,
+      invalidMessageFormatMessage,
+    );
+
+    const newMessage = await this.historyService.setAndCreateAssitantMessage(
+      messageEntry,
+      invalidMessageFormatMessage,
+    );
+
+    await this.senderService.sendMessages(
+      templateMessage,
+      messageEntry.chatbotNumber,
+    );
+  }
 
   async userOverFlow(
     ctx: Ctx,

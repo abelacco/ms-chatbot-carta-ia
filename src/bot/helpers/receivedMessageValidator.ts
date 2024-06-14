@@ -10,16 +10,25 @@ export const receivedMessageValidator = (
   entryMessage: IParsedMessage,
   lastMessage: History,
 ) => {
+  if (!typeMessageIsValid(entryMessage)) {
+    return 'typeMessageIsInvalid';
+  }
+
+  /* Verify user overflow */
   if (lastMessage && isLastMessageOverFlow(lastMessage)) {
     return 'userOverFlow';
   }
   const currentStep = ctx.step || STEPS.INIT;
+
+  /* Verify if user needs help */
   if (
     entryMessage.type === 'text' &&
     entryMessage.content.toUpperCase().includes('AYUDA')
   ) {
     return 'sendHelpFlow';
   }
+
+  /* Conversation steps switch */
   switch (currentStep) {
     case STEPS.INIT:
       return 'analyzeDataFlow';
@@ -75,6 +84,22 @@ function isLastMessageOverFlow(lastMessage: any) {
     const secondsAfterLastMessage =
       (now.getTime() - lastMessageDate.getTime()) / 1000;
     return !(secondsAfterLastMessage > 15);
+  }
+}
+
+function typeMessageIsValid(infoMessage: IParsedMessage): boolean {
+  if (isInteractiveMessage(infoMessage)) {
+    return true;
+  } else if (isLocationMessage(infoMessage)) {
+    return true;
+  } else if (isButtonMessage(infoMessage)) {
+    return true;
+  } else if (isTextMessage(infoMessage)) {
+    return true;
+  } else if (isImageMessage(infoMessage)) {
+    return true;
+  } else {
+    return false;
   }
 }
 

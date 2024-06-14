@@ -81,6 +81,17 @@ export class OrderService {
     );
 
     const ctx = await this.ctxService.manualOrder(order);
+
+    await this.historyService.setAndCreateAssitantMessage(
+      {
+        chatbotNumber: ctx.chatbotNumber,
+        clientName: '',
+        clientPhone: ctx.clientPhone,
+        type: 'text',
+        content: `Ya hemos tomado tu pedido de: ${createOrderDto.order}\n\nEl costo total es de: S/${createOrderDto.price}\nY el costo del delivery es de S/${createOrderDto.deliveryCost}`,
+      },
+      `Ya hemos tomado tu pedido de: ${createOrderDto.order}\n\nEl costo total es de: S/${createOrderDto.price}\nY el costo del delivery es de S/${createOrderDto.deliveryCost}`,
+    );
     const createdOrder = this._db.create(order);
     return createdOrder;
   }
