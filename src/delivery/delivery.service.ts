@@ -64,6 +64,8 @@ export class DeliveryService {
         chatbotNumber: body.chatbotNumber,
       });
 
+      deliveryCtx.clientname = body.name;
+      deliveryCtx.orderName = body.name;
       deliveryCtx.isDelivery = true;
       deliveryCtx = await this.ctxService.updateCtx(
         deliveryCtx._id,
@@ -196,11 +198,11 @@ export class DeliveryService {
         note: body.note,
         timeToRestaurant: body.timeToRestaurant,
         newDeliveryNumber: '',
-        name: '',
+        name: body.deliveryName,
       });
 
       ctx.deliveryNumber = delivery.deliveryNumber;
-      ctx.deliveryName = delivery.name;
+      ctx.deliveryName = body.deliveryName;
       await this.ctxService.updateCtx(ctx._id, ctx);
 
       /* Message to delivery */
