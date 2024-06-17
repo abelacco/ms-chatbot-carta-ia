@@ -677,7 +677,7 @@ export class FlowsService {
 
     await this.historyService.setAndCreateAssitantMessage(
       { ...parsedMessage, clientPhone: clientCtx.clientPhone },
-      responseConfirmDeliveryByClientMessage,
+      confirmDeliveryMessage,
     );
 
     await this.senderService.sendMessages(

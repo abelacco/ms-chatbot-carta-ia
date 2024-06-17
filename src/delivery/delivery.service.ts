@@ -79,13 +79,17 @@ export class DeliveryService {
         messageTemplate,
       );
       await this.senderService.sendMessages(wspTemplate, body.chatbotNumber);
-      await this.historyService.createAndGetHistoryParsed({
-        chatbotNumber: body.chatbotNumber,
-        clientName: body.name,
-        clientPhone: body.deliveryNumber,
-        type: 'text',
-        content: messageTemplate,
-      });
+
+      await this.historyService.setAndCreateAssitantMessage(
+        {
+          chatbotNumber: body.chatbotNumber,
+          clientName: body.name,
+          clientPhone: body.deliveryNumber,
+          type: 'text',
+          content: messageTemplate,
+        },
+        messageTemplate,
+      );
 
       return delivery;
     } catch (error) {
@@ -218,13 +222,17 @@ export class DeliveryService {
         body.chatbotNumber,
       );
 
-      await this.historyService.createAndGetHistoryParsed({
-        chatbotNumber: body.chatbotNumber,
-        clientName: body.deliveryName,
-        clientPhone: body.deliveryNumber,
-        type: 'location',
-        content: `${ctx.lat}, ${ctx.lng}`,
-      });
+      const messageLocationContent = `${ctx.lat}, ${ctx.lng}`;
+      await this.historyService.setAndCreateAssitantMessage(
+        {
+          chatbotNumber: body.chatbotNumber,
+          clientName: body.deliveryName,
+          clientPhone: body.deliveryNumber,
+          type: 'location',
+          content: messageLocationContent,
+        },
+        messageLocationContent,
+      );
 
       const buttonTemplate = this.builderTemplate.buildInteractiveButtonMessage(
         body.deliveryNumber,
@@ -232,13 +240,18 @@ export class DeliveryService {
         [{ id: ctx.clientPhone, title: 'Confirmar entrega' }],
       );
       await this.senderService.sendMessages(buttonTemplate, body.chatbotNumber);
-      await this.historyService.createAndGetHistoryParsed({
-        chatbotNumber: body.chatbotNumber,
-        clientName: body.deliveryName,
-        clientPhone: body.deliveryNumber,
-        type: 'text',
-        content: `${buttonTemplate.interactive.body.text}`,
-      });
+
+      const textMessageContent = `${buttonTemplate.interactive.body.text}`;
+      await this.historyService.setAndCreateAssitantMessage(
+        {
+          chatbotNumber: body.chatbotNumber,
+          clientName: body.deliveryName,
+          clientPhone: body.deliveryNumber,
+          type: 'text',
+          content: textMessageContent,
+        },
+        textMessageContent,
+      );
 
       return delivery;
     } catch (error) {
