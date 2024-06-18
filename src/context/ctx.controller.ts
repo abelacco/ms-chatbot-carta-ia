@@ -1,4 +1,12 @@
-import { Controller, Get, Query, Put, Body, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Put,
+  Body,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { CtxService } from './ctx.service';
 import { SwitchBotDto, SwitchBotGlobalDto, UpdateOrderStatusDto } from './dto';
 import { ApiResponse } from 'src/common/ApiResponses';
@@ -76,6 +84,22 @@ export class CtxController {
     } catch (error) {
       return ApiResponse.error(
         'An error ocurred while deleting all ctx',
+        error,
+      );
+    }
+  }
+
+  @Get('ctx-by-chatbot-number/:id')
+  async getCtxByChatbotNumber(@Param('id') orderId: string) {
+    try {
+      const response = await this.ctxService.getCtxesByChatbotNumber(orderId);
+      return ApiResponse.success(
+        'Get all ctx by chatbot number successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while geting all ctx by chatbot number',
         error,
       );
     }
