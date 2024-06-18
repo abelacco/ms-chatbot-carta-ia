@@ -67,7 +67,7 @@ export class MongoDbService implements IDeliveryDao {
 
       delivery.deliveryNumber =
         body.newDeliveryNumber || delivery.deliveryNumber;
-      delivery.name = body.name;
+      delivery.name = body.name || delivery.name;
       delivery.note = body.note;
       delivery.timeToRestaurant = body.timeToRestaurant;
       delivery.status = body.status;
