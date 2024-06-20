@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   DELIVERIES_STATUS,
   HELP_STATUS,
+  NO_VOUCHER_PAYMENT_METHODS,
   ORDER_STATUS,
   ORDER_STATUS_BOT,
   STATUS_BOT,
@@ -34,8 +35,8 @@ import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 import { statusOrderMessageList } from './Utils/orderStatusMessages';
 import {
   confirmDeliveryMessage,
-  efectivePaymentMethodMessage,
   invalidMessageFormatMessage,
+  noVoucherPaymentMethodMessage,
   paymentMethodMessage,
   reminderLocationMessage,
   reminderVoucherMessage,
@@ -334,7 +335,7 @@ export class FlowsService {
     ctx.paymentMethod = messageEntry.content;
     try {
       messageEntry.type = 'text';
-      if (messageEntry.content === 'Efectivo') {
+      if (NO_VOUCHER_PAYMENT_METHODS.includes(messageEntry.content)) {
         await this.efectivePayFlow(
           ctx,
           messageEntry,
@@ -393,7 +394,7 @@ export class FlowsService {
     historyParsed: string,
     businessInfo,
   ) {
-    const message = efectivePaymentMethodMessage;
+    const message = noVoucherPaymentMethodMessage(ctx.paymentMethod);
     const template = await this.builderTemplate.buildTextMessage(
       messageEntry.clientPhone,
       message,
@@ -453,7 +454,10 @@ export class FlowsService {
         );
       }
       let reminderMessage = '';
-      if (ctx.step === STEPS.PRE_PAY && ctx.paymentMethod !== 'Efectivo') {
+      if (
+        ctx.step === STEPS.PRE_PAY &&
+        !NO_VOUCHER_PAYMENT_METHODS.includes(ctx.paymentMethod)
+      ) {
         reminderMessage = reminderVoucherMessage;
       } else if (ctx.step === STEPS.WAITING_LOCATION) {
         reminderMessage = reminderLocationMessage;
@@ -721,7 +725,10 @@ export class FlowsService {
         );
       }
       let reminderMessage = '';
-      if (ctx.step === STEPS.PRE_PAY && ctx.paymentMethod !== 'Efectivo') {
+      if (
+        ctx.step === STEPS.PRE_PAY &&
+        !NO_VOUCHER_PAYMENT_METHODS.includes(ctx.paymentMethod)
+      ) {
         reminderMessage = reminderVoucherMessage;
       } else if (ctx.step === STEPS.WAITING_LOCATION) {
         reminderMessage = reminderLocationMessage;

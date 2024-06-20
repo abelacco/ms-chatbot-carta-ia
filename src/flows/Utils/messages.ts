@@ -2,8 +2,11 @@ export const reminderVoucherMessage =
   'Por favor, no te olvides de enviarnos foto de tu comprobante de pago';
 export const reminderLocationMessage =
   'Por favor, no te olvides de enviarnos compartirnos tu ubicación por whatsapp';
-export const efectivePaymentMethodMessage =
-  'Has elegido: Efectivo, en unos minutos confimaremos tu pedido';
+
+export const noVoucherPaymentMethodMessage = (paymentMethod: string) => {
+  return `Has elegido: ${paymentMethod}, en unos minutos confimaremos tu pedido`;
+};
+
 export const confirmDeliveryMessage =
   'Porfavor confirma que hayas recibido tu pedido';
 

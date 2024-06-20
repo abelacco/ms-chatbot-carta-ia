@@ -90,7 +90,7 @@ export class BusinessService {
   async changePaymentMethod(body: UpdatePaymentMethodDto) {
     if (!PAYMENT_METHODS.includes(body.paymentDetails.paymentMethodName)) {
       throw new BadRequestException(
-        `${body.paymentDetails.paymentMethodName} is not aviable payment method`,
+        `${body.paymentDetails.paymentMethodName} is not aviable payment method. Payments Methods aviable: ${PAYMENT_METHODS}`,
       );
     }
 
