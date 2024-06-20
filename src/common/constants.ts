@@ -77,3 +77,8 @@ export const PAYMENT_METHODS = [
   'BBVA',
   'Interbank',
 ];
+
+export const DELIVERY_METHOD = {
+  delivery: 1,
+  pick_up: 2,
+};

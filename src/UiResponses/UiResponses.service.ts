@@ -14,6 +14,7 @@ import { HistoryService } from 'src/history/history.service';
 import { createTemplateReponseMessage } from './Utils/templateMessage';
 import {
   aceptedMessage,
+  aceptedMessageWithoutLocation,
   locationMessage,
   rejectedMessage,
   statusOrderMessageList,
@@ -21,7 +22,7 @@ import {
 import { CtxService } from 'src/context/ctx.service';
 import { STEPS } from 'src/context/helpers/constants';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
-import { ORDER_STATUS_BOT } from 'src/common/constants';
+import { DELIVERY_METHOD, ORDER_STATUS_BOT } from 'src/common/constants';
 import { DeliveryService } from 'src/delivery/delivery.service';
 
 @Injectable()
@@ -136,6 +137,17 @@ export class UiResponsesService {
       messageContent = rejectedMessage;
       ctx.voucherUrl = '';
       await this.cartaDirectaService.rejectorder(
+        body.orderId,
+        body.chatBotNumber,
+      );
+    } else if (
+      body.action === 1 &&
+      ctx.deliveryMethod === DELIVERY_METHOD.pick_up
+    ) {
+      messageContent = aceptedMessageWithoutLocation;
+      ctx.orderStatus = ORDER_STATUS_BOT.orden_con_pago;
+      ctx.step = STEPS.ORDERED;
+      await this.cartaDirectaService.acceptOrder(
         body.orderId,
         body.chatBotNumber,
       );

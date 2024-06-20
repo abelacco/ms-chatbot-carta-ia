@@ -6,6 +6,9 @@ export const justCreated =
 export const aceptedMessage =
   'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}\nPorfavor compartenos tu ubicación por whatsapp';
 
+export const aceptedMessageWithoutLocation =
+  'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}\nTe avisaremos cuando tu pedido estre preparado';
+
 export const inCooking =
   'Tu pedido numero: {orderId} esta en preparación, te avisaremos cuando este listo';
 

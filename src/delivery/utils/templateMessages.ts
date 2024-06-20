@@ -27,6 +27,7 @@ export function createTemplateAssignDelivery(ctx: any, delivery: any) {
     .replace('{clientPhone}', ctx.clientPhone)
     .replace('{time}', delivery.timeToRestaurant)
     .replace('{clientNote}', delivery.note)
+    .replace('{orderPrice}', ctx.total)
     .replace(
       '{total}',
       (parseFloat(ctx.total) + parseFloat(ctx.deliveryCost)).toString(),
