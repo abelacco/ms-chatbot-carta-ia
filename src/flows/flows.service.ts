@@ -48,6 +48,7 @@ import { Business } from 'src/business/entity';
 import { Delivery } from 'src/delivery/entity';
 import { parseRestaurantHours } from './Utils/parseRestaurantHours';
 import { DeliveryService } from 'src/delivery/delivery.service';
+import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
 
 @Injectable()
 export class FlowsService {
@@ -61,6 +62,7 @@ export class FlowsService {
     private readonly generalService: GeneralServicesService,
     private readonly cartaDirectaService: CartaDirectaService,
     private readonly deliveryService: DeliveryService,
+    private gatewayService: WhatsappGateway,
   ) {}
 
   async locationFlow(
@@ -342,6 +344,8 @@ export class FlowsService {
           historyParsed,
           businessInfo,
         );
+        ctx.step = STEPS.ORDERED;
+        ctx.orderStatus = ORDER_STATUS_BOT.orden_con_pago;
       } else {
         const paymentMethodSelected = businessInfo.paymentMethods.find(
           (paymentMethod) => {
@@ -378,10 +382,11 @@ export class FlowsService {
           messageEntry,
           message,
         );
+        ctx.step = STEPS.PRE_PAY;
       }
 
-      ctx.step = STEPS.PRE_PAY;
       await this.ctxService.updateCtx(ctx._id, ctx);
+      this.gatewayService.server.emit('newMessage');
     } catch (err) {
       console.log(`[ERROR]:`, err);
       return;

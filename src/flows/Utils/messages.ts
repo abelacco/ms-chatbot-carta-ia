@@ -4,7 +4,7 @@ export const reminderLocationMessage =
   'Por favor, no te olvides de enviarnos compartirnos tu ubicación por whatsapp';
 
 export const noVoucherPaymentMethodMessage = (paymentMethod: string) => {
-  return `Has elegido: ${paymentMethod}, en unos minutos confimaremos tu pedido`;
+  return `Has elegido: ${paymentMethod}\nYa confirmamos tu pedido y lo estamos preparando, te avisaremos cuando este listo`;
 };
 
 export const confirmDeliveryMessage =

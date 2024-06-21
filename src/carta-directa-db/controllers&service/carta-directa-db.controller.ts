@@ -91,4 +91,20 @@ export class CartaDirectaDbController {
       );
     }
   }
+
+  @Post('menu-from-xlsx-to-db/:id')
+  async menuFromXlsxToDb(@Param('id') id: number) {
+    try {
+      const response = await this.cartaDirectaDbService.menuFromXlsxToDb(id);
+      return ApiResponse.success(
+        'Migrated menu from xlsx to db successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while migrating menu from xlsx to db',
+        error,
+      );
+    }
+  }
 }

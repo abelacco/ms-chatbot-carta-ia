@@ -41,6 +41,30 @@ export class ItemService {
     return items;
   }
 
+  async findItem(body: { category_id; restaurant_id; itemName }) {
+    const foundedCategory =
+      await this.categoryService.findByCategoryIdAndCompanyId(
+        body.category_id,
+        body.restaurant_id,
+      );
+
+    if (!foundedCategory) {
+      throw new NotFoundException(
+        `Category with id ${body.category_id} not exist in restaurant with id ${body.restaurant_id}`,
+      );
+    }
+
+    const items = await this.itemRepository.findOne({
+      where: {
+        category_id: body.category_id,
+        name: body.itemName,
+        deleted_at: IsNull(),
+      },
+    });
+
+    return items;
+  }
+
   async create(body: CreateItemDto) {
     const foundedCategory =
       await this.categoryService.findByCategoryIdAndCompanyId(

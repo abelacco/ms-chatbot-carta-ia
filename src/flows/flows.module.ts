@@ -10,6 +10,7 @@ import { BusinessModule } from 'src/business/business.module';
 import { GeneralServicesModule } from 'src/general-services/general-services.module';
 import { CartaDirectaModule } from 'src/carta-directa/cartaDirecta.module';
 import { DeliveryModule } from 'src/delivery/delivery.module';
+import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module';
 
 @Module({
   controllers: [FlowsController],
@@ -20,6 +21,7 @@ import { DeliveryModule } from 'src/delivery/delivery.module';
     BusinessModule,
     BuilderTemplatesModule,
     SenderModule,
+    WspWebGatewayModule,
     AiModule,
     CartaDirectaModule,
     HistoryModule,

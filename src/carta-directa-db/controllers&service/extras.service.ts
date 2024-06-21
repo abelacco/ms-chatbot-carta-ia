@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtraEntity } from '../entities';
 import { CreateExtraDto } from '../dto/create-extra.dto';
@@ -15,6 +15,16 @@ export class ExtraService {
 
   async findByItemId(itemId: number) {
     return this.extrasRepository.find();
+  }
+
+  async findOneExtra(itemId: number, extraName: string) {
+    return this.extrasRepository.findOne({
+      where: {
+        item_id: itemId,
+        deleted_at: IsNull(),
+        name: extraName,
+      },
+    });
   }
 
   async createExtra(createExtraDto: CreateExtraDto) {
