@@ -11,6 +11,7 @@ import { GeneralServicesModule } from 'src/general-services/general-services.mod
 import { CartaDirectaModule } from 'src/carta-directa/cartaDirecta.module';
 import { DeliveryModule } from 'src/delivery/delivery.module';
 import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module';
+import { UiResponseModule } from 'src/UiResponses/UiResponses.module';
 
 @Module({
   controllers: [FlowsController],
@@ -22,6 +23,7 @@ import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module'
     BuilderTemplatesModule,
     SenderModule,
     WspWebGatewayModule,
+    UiResponseModule,
     AiModule,
     CartaDirectaModule,
     HistoryModule,

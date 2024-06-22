@@ -4,16 +4,16 @@ export const justCreated =
   'Hemos recibido tu pedido numero: {orderId} y lo estamos analizando';
 
 export const aceptedMessage =
-  'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}\nPorfavor compartenos tu ubicación por whatsapp';
+  'Hemos aceptado el pago de tu pedido numero: {orderId}\nPorfavor compartenos tu ubicación por whatsapp';
 
 export const aceptedMessageWithoutLocation =
-  'Hemos aceptado el comprobante de pago de tu pedido numero: {orderId}\nTe avisaremos cuando tu pedido estre preparado';
+  'Hemos aceptado el pago de tu pedido numero: {orderId}\nTe avisaremos cuando tu pedido estre preparado';
 
 export const inCooking =
   'Tu pedido numero: {orderId} esta en preparación, te avisaremos cuando este listo';
 
 export const rejectedMessage =
-  'Hemos rechazado el comprobante de pago de tu pedido numero: {orderId}\nPorfavor envianos un comprobante de pago valido';
+  'Hemos rechazado el pago de tu pedido numero: {orderId}\nPorfavor envianos un comprobante de pago valido';
 
 export const prepared = 'Tu pedido numero: {orderId} ya ha sido preparado';
 

@@ -49,6 +49,7 @@ import { Delivery } from 'src/delivery/entity';
 import { parseRestaurantHours } from './Utils/parseRestaurantHours';
 import { DeliveryService } from 'src/delivery/delivery.service';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
+import { UiResponsesService } from 'src/UiResponses/UiResponses.service';
 
 @Injectable()
 export class FlowsService {
@@ -62,6 +63,7 @@ export class FlowsService {
     private readonly generalService: GeneralServicesService,
     private readonly cartaDirectaService: CartaDirectaService,
     private readonly deliveryService: DeliveryService,
+    private readonly uiResponseService: UiResponsesService,
     private gatewayService: WhatsappGateway,
   ) {}
 
@@ -338,14 +340,12 @@ export class FlowsService {
     try {
       messageEntry.type = 'text';
       if (NO_VOUCHER_PAYMENT_METHODS.includes(messageEntry.content)) {
-        await this.efectivePayFlow(
-          ctx,
-          messageEntry,
-          historyParsed,
-          businessInfo,
-        );
-        ctx.step = STEPS.ORDERED;
-        ctx.orderStatus = ORDER_STATUS_BOT.orden_con_pago;
+        await this.uiResponseService.responseToVoucher({
+          chatBotNumber: messageEntry.chatbotNumber,
+          clientPhone: messageEntry.clientPhone,
+          orderId: ctx.currentOrderId,
+          action: 1,
+        });
       } else {
         const paymentMethodSelected = businessInfo.paymentMethods.find(
           (paymentMethod) => {
@@ -383,9 +383,9 @@ export class FlowsService {
           message,
         );
         ctx.step = STEPS.PRE_PAY;
+        await this.ctxService.updateCtx(ctx._id, ctx);
       }
 
-      await this.ctxService.updateCtx(ctx._id, ctx);
       this.gatewayService.server.emit('newMessage');
     } catch (err) {
       console.log(`[ERROR]:`, err);
