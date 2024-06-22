@@ -73,6 +73,9 @@ export class Ctx extends Document {
   date: Date;
 
   @Prop()
+  lastMessageDate: Date;
+
+  @Prop()
   statusBot: number;
 
   @Prop()
