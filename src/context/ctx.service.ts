@@ -17,6 +17,7 @@ import { CancelHelpDto } from './dto/cancel-help.dto';
 import { ManualOrderDto } from './dto/manual-order.dto';
 import { orderCdDummy } from './helpers/orderCdDummy';
 import { STEPS } from './helpers/constants';
+import { GetCtxByChatbotNumberDto } from './dto/get-ctx-by-chatbotnumber.dto';
 // import { UpdateCtxDto } from '../bot/dto/update-message.dto';
 
 @Injectable()
@@ -141,8 +142,11 @@ export class CtxService {
     await this._db.resetAllCtx();
   }
 
-  async getCtxesByChatbotNumber(chatbotNumber: string) {
-    const ctxes = await this._db.getCtxesByChatbotNumber(chatbotNumber);
+  async getCtxesByChatbotNumber(
+    chatbotNumber: string,
+    query?: GetCtxByChatbotNumberDto,
+  ) {
+    const ctxes = await this._db.getCtxesByChatbotNumber(chatbotNumber, query);
     return ctxes;
   }
 }

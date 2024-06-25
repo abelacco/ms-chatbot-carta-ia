@@ -1,4 +1,25 @@
 export * from './utils';
+
+/* Parse date from dd-mm-yyyy */
+export function parseDateToTheLastHour(dateStr: string): Date {
+  const [day, month, year] = dateStr
+    .split('-')
+    .map((part) => parseInt(part, 10));
+  const date = new Date(year, month - 1, day);
+  date.setHours(23, 59, 59, 999);
+  return date;
+}
+
+/* Parse date from dd-mm-yyyy */
+export function parseDateToTheFirstHour(dateStr: string): Date {
+  const [day, month, year] = dateStr
+    .split('-')
+    .map((part) => parseInt(part, 10));
+  const date = new Date(year, month - 1, day);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
 /* import { InteractiveListSection } from "src/builder-templates/interface";
 import { MODALITY, PACK, PACK_ID, PLAN } from "./constants";
 const moment = require('moment-timezone');

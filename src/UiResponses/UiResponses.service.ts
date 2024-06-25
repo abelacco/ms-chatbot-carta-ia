@@ -148,7 +148,7 @@ export class UiResponsesService {
       ctx.deliveryMethod === DELIVERY_METHOD.pick_up
     ) {
       messageContent = aceptedMessageWithoutLocation;
-      ctx.orderStatus = ORDER_STATUS_BOT.orden_con_pago;
+      ctx.orderStatus = ORDER_STATUS_BOT.en_preparacion;
       ctx.step = STEPS.ORDERED;
       await this.cartaDirectaService.acceptOrder(
         body.orderId,
@@ -157,7 +157,7 @@ export class UiResponsesService {
     } else if (body.action === 1) {
       messageContent = aceptedMessage;
       ctx.step = STEPS.WAITING_LOCATION;
-      ctx.orderStatus = 2;
+      ctx.orderStatus = ORDER_STATUS_BOT.en_preparacion;
       await this.cartaDirectaService.acceptOrder(
         body.orderId,
         body.chatBotNumber,

@@ -5,6 +5,12 @@ import { Ctx } from '../entities/ctx.entity';
 import { ICtxDao } from './ctxDao';
 import { mongoExceptionHandler } from 'src/common/exceptions';
 import { UpdateCtxDto } from 'src/bot/dto';
+import { GetCtxByChatbotNumberDto } from '../dto/get-ctx-by-chatbotnumber.dto';
+import {
+  parseDateToTheFirstHour,
+  parseDateToTheLastHour,
+} from '../helpers/utils';
+import { start } from 'repl';
 
 @Injectable()
 export class MongoDbService implements ICtxDao {
@@ -84,10 +90,25 @@ export class MongoDbService implements ICtxDao {
     }
   }
 
-  async getCtxesByChatbotNumber(chatbotNumber: string): Promise<Array<Ctx>> {
+  async getCtxesByChatbotNumber(
+    chatbotNumber: string,
+    query: GetCtxByChatbotNumberDto,
+  ): Promise<Array<Ctx>> {
+    let startDate: Date;
+    let endDate: Date;
+    startDate = parseDateToTheFirstHour(query.startDate || '01-01-2000');
+    if (query.endDate) {
+      endDate = parseDateToTheLastHour(query.endDate);
+    }
+    console.log(startDate);
+    console.log(endDate);
     try {
       const ctx = await this._ctxModel.find({
         chatbotNumber: chatbotNumber,
+        lastMessageDate: {
+          $gte: startDate,
+          $lte: endDate || new Date(),
+        },
       });
 
       return ctx;

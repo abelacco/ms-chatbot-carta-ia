@@ -1,6 +1,7 @@
 // import { PaginationMessageDto } from '../dto/pagination.dto';
 import { UpdateCtxDto } from 'src/bot/dto';
 import { Ctx } from '../entities/ctx.entity';
+import { GetCtxByChatbotNumberDto } from '../dto/get-ctx-by-chatbotnumber.dto';
 
 export interface ICtxDao {
   // create(createDoctoDto: CreateDoctorDto): Promise<Doctor>;
@@ -27,5 +28,8 @@ export interface ICtxDao {
   removeAll();
   resetAllCtx(): Promise<void>;
 
-  getCtxesByChatbotNumber(chatbotNumber: string): Promise<Array<Ctx>>;
+  getCtxesByChatbotNumber(
+    chatbotNumber: string,
+    query: GetCtxByChatbotNumberDto,
+  ): Promise<Array<Ctx>>;
 }

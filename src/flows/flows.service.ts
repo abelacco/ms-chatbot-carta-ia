@@ -290,6 +290,7 @@ export class FlowsService {
         },
       ]);
       ctx.voucherUrl = messageEntry.content;
+      ctx.orderStatus = ORDER_STATUS_BOT.orden_con_pago;
       await this.ctxService.updateCtx(ctx._id, ctx);
       const chunks = response.split(/(?<!\d)\.\s+/g);
       messageEntry.type = 'text';
@@ -311,6 +312,7 @@ export class FlowsService {
       // Actualizar paso
       ctx.step = STEPS.PRE_PAY;
       await this.ctxService.updateCtx(ctx._id, ctx);
+      this.gatewayService.server.emit('newMessage');
     } catch (err) {
       console.log(`[ERROR]:`, err);
       return;
@@ -676,6 +678,7 @@ export class FlowsService {
     });
 
     clientCtx.deliveryConfirmationByDelivery = true;
+    clientCtx.orderStatus = ORDER_STATUS_BOT.entregado;
     await this.ctxService.updateCtx(clientCtx._id, clientCtx);
 
     /* send request confirm delivery to the client */
@@ -694,6 +697,8 @@ export class FlowsService {
       buttonTemplate,
       parsedMessage.chatbotNumber,
     );
+
+    this.gatewayService.server.emit('newMessage');
   }
 
   sendInfoFlowWithOrder = async (

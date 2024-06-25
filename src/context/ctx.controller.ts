@@ -12,6 +12,8 @@ import { SwitchBotDto, SwitchBotGlobalDto, UpdateOrderStatusDto } from './dto';
 import { ApiResponse } from 'src/common/ApiResponses';
 import { CancelHelpDto } from './dto/cancel-help.dto';
 import { ManualOrderDto } from './dto/manual-order.dto';
+import { query } from 'express';
+import { GetCtxByChatbotNumberDto } from './dto/get-ctx-by-chatbotnumber.dto';
 
 @Controller('ctx')
 export class CtxController {
@@ -90,9 +92,15 @@ export class CtxController {
   }
 
   @Get('ctx-by-chatbot-number/:id')
-  async getCtxByChatbotNumber(@Param('id') orderId: string) {
+  async getCtxByChatbotNumber(
+    @Param('id') orderId: string,
+    @Query() query: GetCtxByChatbotNumberDto,
+  ) {
     try {
-      const response = await this.ctxService.getCtxesByChatbotNumber(orderId);
+      const response = await this.ctxService.getCtxesByChatbotNumber(
+        orderId,
+        query,
+      );
       return ApiResponse.success(
         'Get all ctx by chatbot number successfully',
         response,

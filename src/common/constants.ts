@@ -56,9 +56,9 @@ export const GENERAL_STATUS = {
 
 export const ORDER_STATUS_BOT = {
   sin_pedido: 0,
-  orden_sin_pago: 1,
+  con_pedido: 1,
   orden_con_pago: 2,
-  preparado: 3,
+  en_preparacion: 3,
   enviado: 4,
   entregado: 5,
   rechazado: 9,

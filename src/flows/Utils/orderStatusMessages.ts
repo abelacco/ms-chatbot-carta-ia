@@ -1,13 +1,13 @@
-const justCreated = 'Hemos recibido tu pedido y lo estamos analizando';
+const justCreated = 'Hemos recibido tu pedido y lo estamos analizando. 😊';
 
 const inCooking =
-  'Tu pedido esta en preparación, te avisaremos cuando este listo';
+  'Tu pedido esta en preparación, te avisaremos cuando este listo. 😊';
 
-const prepared = 'Tu pedido ya ha sido preparado';
+const prepared = 'Tu pedido esta siendo preparado 😊.';
 
-const orderShipped = 'Tu pedido esta en camino';
+const orderShipped = 'Tu pedido esta en camino. 😊';
 
-const pickUp = 'Tu pedido ya ha sido entregado';
+const pickUp = 'Tu pedido ya ha sido entregado. 😊';
 
 export const statusOrderMessageList = {
   1: justCreated,
