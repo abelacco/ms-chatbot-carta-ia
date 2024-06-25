@@ -13,8 +13,10 @@ import { BuilderTemplatesService } from 'src/builder-templates/builder-templates
 import { HistoryService } from 'src/history/history.service';
 import { createTemplateReponseMessage } from './Utils/templateMessage';
 import {
+  acceptedMessageWithoutLocation,
   aceptedMessage,
   aceptedMessageWithoutLocation,
+  isOtherLocationMessage,
   locationMessage,
   rejectedMessage,
   statusOrderMessageList,
@@ -24,6 +26,7 @@ import { STEPS } from 'src/context/helpers/constants';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
 import { DELIVERY_METHOD, ORDER_STATUS_BOT } from 'src/common/constants';
 import { DeliveryService } from 'src/delivery/delivery.service';
+import { Ctx } from 'src/context/entities/ctx.entity';
 
 @Injectable()
 export class UiResponsesService {
@@ -162,7 +165,109 @@ export class UiResponsesService {
     }
 
     await this.ctxService.updateCtx(ctx._id, ctx);
+    if (ctx.lat && ctx.lng && body.action === 1) {
+      await this.sendAcceptVocuherWithoutPreviusLocation(body, ctx);
+    } else {
+      await this.sendAcceptVoucherWithPreviusLocation(
+        body,
+        ctx,
+        messageContent,
+      );
+    }
+    return body;
+  }
 
+  async sendAcceptVocuherWithoutPreviusLocation(
+    body: ResponseToVoucherDto,
+    ctx: Ctx,
+  ) {
+    let template = this.builderTemplate.buildTextMessage(
+      body.clientPhone,
+      createTemplateReponseMessage(
+        acceptedMessageWithoutLocation,
+        ctx.currentOrderId,
+        ctx.orderStatus,
+        ctx,
+      ),
+    );
+
+    await this.senderService.sendMessages(template, body.chatBotNumber);
+
+    await this.historyService.setAndCreateAssitantMessage(
+      {
+        chatbotNumber: body.chatBotNumber,
+        clientPhone: body.clientPhone,
+        content: template,
+        type: 'text',
+        clientName: '',
+      },
+      template.text.body,
+    );
+
+    const locationTemplate = this.builderTemplate.buildLocationMessage(
+      body.clientPhone,
+      parseFloat(ctx.lng),
+      parseFloat(ctx.lat),
+    );
+    await this.senderService.sendMessages(locationTemplate, body.chatBotNumber);
+
+    const messageLocationContent = `${ctx.lat}, ${ctx.lng}`;
+    await this.historyService.setAndCreateAssitantMessage(
+      {
+        chatbotNumber: body.chatBotNumber,
+        clientName: ctx.clientname,
+        clientPhone: body.clientPhone,
+        type: 'location',
+        content: messageLocationContent,
+      },
+      messageLocationContent,
+    );
+
+    const message =
+      'Porfavor confirma con el boton de abajo que esta sea tu ubicación actual.';
+    const buttonTemplate = this.builderTemplate.buildInteractiveButtonMessage(
+      body.clientPhone,
+      message,
+      [{ id: `${ctx.lat},${ctx.lng}`, title: 'Confirmar ubicación' }],
+    );
+
+    await this.historyService.setAndCreateAssitantMessage(
+      {
+        chatbotNumber: body.chatBotNumber,
+        clientName: ctx.clientname,
+        clientPhone: body.clientPhone,
+        type: 'interactive',
+        content: message,
+      },
+      message,
+    );
+
+    await this.senderService.sendMessages(buttonTemplate, body.chatBotNumber);
+
+    template = this.builderTemplate.buildTextMessage(
+      body.clientPhone,
+      isOtherLocationMessage,
+    );
+
+    await this.senderService.sendMessages(template, body.chatBotNumber);
+
+    await this.historyService.setAndCreateAssitantMessage(
+      {
+        chatbotNumber: body.chatBotNumber,
+        clientPhone: body.clientPhone,
+        content: template,
+        type: 'text',
+        clientName: '',
+      },
+      template.text.body,
+    );
+  }
+
+  async sendAcceptVoucherWithPreviusLocation(
+    body: ResponseToVoucherDto,
+    ctx: Ctx,
+    messageContent: string,
+  ) {
     const templateMessage = createTemplateReponseMessage(
       messageContent,
       body.orderId,
@@ -187,6 +292,5 @@ export class UiResponsesService {
     );
 
     await this.senderService.sendMessages(template, body.chatBotNumber);
-    return body;
   }
 }

@@ -352,6 +352,7 @@ export class FlowsService {
             return paymentMethod.paymentMethodName === messageEntry.content;
           },
         );
+
         let message = paymentMethodMessage(
           paymentMethodSelected.paymentMethodName,
           paymentMethodSelected.accountNumber,

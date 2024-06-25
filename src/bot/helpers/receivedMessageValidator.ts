@@ -46,7 +46,9 @@ export const receivedMessageValidator = (
         return 'sendInfoFlowWithOrder';
       }
     case STEPS.WAITING_LOCATION:
-      if (isLocationMessage(entryMessage)) {
+      if (isInteractiveMessage(entryMessage)) {
+        return 'locationFlow';
+      } else if (isLocationMessage(entryMessage)) {
         return 'locationFlow';
       } else {
         return 'sendInfoFlowWithOrder';

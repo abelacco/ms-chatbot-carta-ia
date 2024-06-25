@@ -6,6 +6,9 @@ export const justCreated =
 export const aceptedMessage =
   'Hemos aceptado el pago de tu pedido numero: {orderId}\nPorfavor compartenos tu ubicación por whatsapp';
 
+export const acceptedMessageWithoutLocation =
+  'Hemos aceptado el pago de tu pedido numero: {orderId}';
+
 export const aceptedMessageWithoutLocation =
   'Hemos aceptado el pago de tu pedido numero: {orderId}\nTe avisaremos cuando tu pedido estre preparado';
 
@@ -30,6 +33,9 @@ export const pickUp = 'Tu pedido numero: {orderId} ya ha sido entregado';
 
 export const generalDecline =
   'Hemos rechazo tu pedido, porfavor vuelve a realizar tu pedido';
+
+export const isOtherLocationMessage =
+  'En caso de esta no sea tu ubicación, enviamos tu nueva ubicación. 😊';
 
 export const statusOrderMessageList = {
   0: nothing,

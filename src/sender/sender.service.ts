@@ -45,7 +45,10 @@ export class SenderService {
       this.gatewayService.server.emit('newMessage');
       return response.status;
     } catch (error) {
-      Logger.error(`Mensaje: ${error.response.data.error}`, 'SENDER SERVICE');
+      Logger.error(
+        `Mensaje: ${error.response.data.error.message}`,
+        'SENDER SERVICE',
+      );
       // Logger.error(`Detalle: ${error.response.data.error.error_data.details}`, 'SENDER SERVICE');
       throw new Error(error.response.data.error.message);
     }
