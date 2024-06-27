@@ -14,4 +14,8 @@ export class GetCtxByChatbotNumberDto {
     message: 'endDate must be in the format dd-mm-yyyy',
   })
   endDate: string;
+
+  @IsOptional()
+  @IsString()
+  step: string;
 }

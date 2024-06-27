@@ -65,6 +65,7 @@ export class BotService {
     );
 
     ctx.lastMessageDate = new Date();
+    ctx.remindersCount = 0;
     await this.ctxService.updateCtx(ctx._id, ctx);
 
     Logger.log(`CTX  ${JSON.stringify(ctx)} `, 'BOT SERVICE');

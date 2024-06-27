@@ -78,7 +78,7 @@ export class Ctx extends Document {
   @Prop()
   statusBot: number;
 
-  @Prop()
+  @Prop({ default: '0' })
   step: string;
 
   @Prop()
@@ -86,6 +86,9 @@ export class Ctx extends Document {
 
   @Prop()
   attempts: number;
+
+  @Prop({ default: 0 })
+  remindersCount: number;
 
   @Prop()
   voucherUrl: string;

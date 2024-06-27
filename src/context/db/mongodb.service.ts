@@ -100,16 +100,21 @@ export class MongoDbService implements ICtxDao {
     if (query.endDate) {
       endDate = parseDateToTheLastHour(query.endDate);
     }
-    console.log(startDate);
-    console.log(endDate);
     try {
-      const ctx = await this._ctxModel.find({
-        chatbotNumber: chatbotNumber,
+      const mongoQuery: any = {
         lastMessageDate: {
           $gte: startDate,
           $lte: endDate || new Date(),
         },
-      });
+      };
+
+      if (chatbotNumber) {
+        mongoQuery.chatbotNumber = chatbotNumber;
+      }
+      if (query.step) {
+        mongoQuery.step = query.step;
+      }
+      const ctx = await this._ctxModel.find(mongoQuery);
 
       return ctx;
     } catch (error) {
