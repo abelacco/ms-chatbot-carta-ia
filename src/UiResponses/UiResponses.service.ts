@@ -18,6 +18,7 @@ import {
   aceptedMessageWithoutLocation,
   isOtherLocationMessage,
   locationMessage,
+  orderReadyToPickUp,
   rejectedMessage,
   statusOrderMessageList,
 } from './Utils/textMessages';
@@ -86,7 +87,8 @@ export class UiResponsesService {
       ctx.voucherUrl = '';
     } else if (
       body.orderStatus === ORDER_STATUS_BOT.enviado &&
-      !ctx.deliveryNumber
+      !ctx.deliveryNumber &&
+      ctx.deliveryMethod === DELIVERY_METHOD.delivery
     ) {
       throw new BadRequestException('Delivery is not assigned in the context');
     }
@@ -97,8 +99,15 @@ export class UiResponsesService {
       body.chatBotNumber,
       body.orderStatus,
     );
-
-    const messageContent = statusOrderMessageList[body.orderStatus];
+    let messageContent: string;
+    if (
+      body.orderStatus === ORDER_STATUS_BOT.enviado &&
+      DELIVERY_METHOD.pick_up
+    ) {
+      messageContent = orderReadyToPickUp;
+    } else {
+      messageContent = statusOrderMessageList[body.orderStatus];
+    }
     if (!messageContent) {
       return body;
     }

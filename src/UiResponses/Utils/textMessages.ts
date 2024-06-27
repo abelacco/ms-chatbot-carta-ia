@@ -37,6 +37,9 @@ export const generalDecline =
 export const isOtherLocationMessage =
   'En caso de esta no sea tu ubicación, enviamos tu nueva ubicación. 😊';
 
+export const orderReadyToPickUp =
+  'Tu pedido ya esta listo para ser recogido. 😊';
+
 export const statusOrderMessageList = {
   0: nothing,
   1: justCreated,
