@@ -97,6 +97,12 @@ export class BusinessService {
     try {
       const business = await this.getBusiness(body.chatbotNumber);
       let arrayChange = false;
+      if (!business) {
+        throw new BadRequestException(
+          `Business with chatbotNumber ${body.chatbotNumber} not exist`,
+        );
+      }
+
       const newMethodArray = business.paymentMethods.map((method) => {
         if (
           method.paymentMethodName === body.paymentDetails.paymentMethodName
@@ -119,6 +125,7 @@ export class BusinessService {
 
       return actualizedBusiness;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   }

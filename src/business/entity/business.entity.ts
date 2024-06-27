@@ -58,6 +58,10 @@ export class Business extends Document {
       available: Boolean,
       accountNumber: String,
       accountName: String,
+      type: {
+        type: Number,
+        default: 0,
+      },
     },
   ])
   paymentMethods: {
@@ -65,6 +69,7 @@ export class Business extends Document {
     available: boolean;
     accountNumber: string;
     accountName: string;
+    type: number;
   }[];
 
   @Prop([

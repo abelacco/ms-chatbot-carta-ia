@@ -19,6 +19,7 @@ export class BusinessModel {
     available: boolean;
     accountNumber: string;
     accountName: string;
+    type: number;
   }[];
 
   constructor(data: any) {

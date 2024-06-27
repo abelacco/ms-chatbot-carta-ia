@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   DELIVERIES_STATUS,
   HELP_STATUS,
-  NO_VOUCHER_PAYMENT_METHODS,
   ORDER_STATUS,
   ORDER_STATUS_BOT,
+  PAYMENT_TYPE,
   STATUS_BOT,
 } from 'src/common/constants';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
@@ -339,9 +339,14 @@ export class FlowsService {
     businessInfo,
   ) {
     ctx.paymentMethod = messageEntry.content;
+    const paymentMethodSelected = businessInfo.paymentMethods.find(
+      (paymentMethod) => {
+        return paymentMethod.paymentMethodName === messageEntry.content;
+      },
+    );
     try {
       messageEntry.type = 'text';
-      if (NO_VOUCHER_PAYMENT_METHODS.includes(messageEntry.content)) {
+      if (paymentMethodSelected.type === PAYMENT_TYPE.no_voucher) {
         await this.uiResponseService.responseToVoucher({
           chatBotNumber: messageEntry.chatbotNumber,
           clientPhone: messageEntry.clientPhone,
@@ -349,12 +354,6 @@ export class FlowsService {
           action: 1,
         });
       } else {
-        const paymentMethodSelected = businessInfo.paymentMethods.find(
-          (paymentMethod) => {
-            return paymentMethod.paymentMethodName === messageEntry.content;
-          },
-        );
-
         let message = paymentMethodMessage(
           paymentMethodSelected.paymentMethodName,
           paymentMethodSelected.accountNumber,
@@ -462,9 +461,14 @@ export class FlowsService {
         );
       }
       let reminderMessage = '';
+      const paymentMethodSelected = businessInfo.paymentMethods.find(
+        (paymentMethod) => {
+          return paymentMethod.paymentMethodName === ctx.paymentMethod;
+        },
+      );
       if (
         ctx.step === STEPS.PRE_PAY &&
-        !NO_VOUCHER_PAYMENT_METHODS.includes(ctx.paymentMethod)
+        paymentMethodSelected === PAYMENT_TYPE.veoucher
       ) {
         reminderMessage = reminderVoucherMessage;
       } else if (ctx.step === STEPS.WAITING_LOCATION) {
@@ -629,7 +633,6 @@ export class FlowsService {
       )
       .replace('{menu}', JSON.stringify(menu))
       .replace('{slogan}', businessInfo.slogan);
-    console.log(mainPrompt);
     return mainPrompt;
   }
 
@@ -736,10 +739,12 @@ export class FlowsService {
         );
       }
       let reminderMessage = '';
-      if (
-        ctx.step === STEPS.PRE_PAY &&
-        !NO_VOUCHER_PAYMENT_METHODS.includes(ctx.paymentMethod)
-      ) {
+      const paymentMethodSelected = businessInfo.paymentMethods.find(
+        (paymentMethod) => {
+          return paymentMethod.paymentMethodName === ctx.paymentMethod;
+        },
+      );
+      if (ctx.step === STEPS.PRE_PAY && PAYMENT_TYPE.veoucher) {
         reminderMessage = reminderVoucherMessage;
       } else if (ctx.step === STEPS.WAITING_LOCATION) {
         reminderMessage = reminderLocationMessage;

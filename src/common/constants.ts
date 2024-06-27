@@ -79,10 +79,10 @@ export const PAYMENT_METHODS = [
   'Interbank',
 ];
 
-export const NO_VOUCHER_PAYMENT_METHODS = [
-  PAYMENT_METHODS[0],
-  PAYMENT_METHODS[1],
-];
+export const PAYMENT_TYPE = {
+  no_voucher: 0,
+  veoucher: 1,
+};
 
 export const DELIVERY_METHOD = {
   delivery: 1,

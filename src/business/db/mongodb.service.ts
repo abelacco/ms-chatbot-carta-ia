@@ -69,6 +69,10 @@ export class MongoDbService implements IBusinessDao {
 
   async findOne(term: string): Promise<Business> {
     let business: Business;
+    await this._businessModel.updateMany(
+      { 'paymentMethods.type': { $exists: false } },
+      { $set: { 'paymentMethods.$[].type': 0 } },
+    );
     try {
       if (isEmail(term)) {
         business = await this._businessModel.findOne({ email: term });

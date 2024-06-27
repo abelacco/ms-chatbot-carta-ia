@@ -1,4 +1,4 @@
-import { IsBoolean, IsString, IsIn } from 'class-validator';
+import { IsBoolean, IsString, IsIn, IsNumber } from 'class-validator';
 import { PAYMENT_METHODS } from 'src/common/constants';
 export class PaymentDetailsDto {
   @IsString()
@@ -13,4 +13,7 @@ export class PaymentDetailsDto {
 
   @IsString()
   accountName: string;
+
+  @IsNumber()
+  type: number;
 }
