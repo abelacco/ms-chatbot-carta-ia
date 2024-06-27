@@ -53,6 +53,8 @@ export const receivedMessageValidator = (
       } else {
         return 'sendInfoFlowWithOrder';
       }
+    /* case STEPS.WAITING_ADDRESS_OR_REF:
+      return 'sendCatchAdressFlow'; */
     case STEPS.ORDERED:
       if (isInteractiveMessage(entryMessage)) {
         return 'clientConfirmDelivery';

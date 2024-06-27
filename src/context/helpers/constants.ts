@@ -180,7 +180,8 @@ export const STEPS = {
   SELECT_PAY_METHOD: '1',
   PRE_PAY: '2',
   WAITING_LOCATION: '3',
-  ORDERED: '4',
+  /* WAITING_ADDRESS_OR_REF: '4', */
+  ORDERED: '5',
 };
 
 export const STATUS_APPOINTMENT = {

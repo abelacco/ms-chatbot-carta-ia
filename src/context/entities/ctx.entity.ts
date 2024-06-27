@@ -78,6 +78,9 @@ export class Ctx extends Document {
   @Prop()
   statusBot: number;
 
+  @Prop()
+  paymentType: number;
+
   @Prop({ default: '0' })
   step: string;
 

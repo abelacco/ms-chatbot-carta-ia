@@ -50,6 +50,7 @@ import { parseRestaurantHours } from './Utils/parseRestaurantHours';
 import { DeliveryService } from 'src/delivery/delivery.service';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
 import { UiResponsesService } from 'src/UiResponses/UiResponses.service';
+import { measureMemory } from 'vm';
 
 @Injectable()
 export class FlowsService {
@@ -75,8 +76,13 @@ export class FlowsService {
     const locationSplit = messageEntry.content.split(',');
     const latitude = parseFloat(locationSplit[0]);
     const longitude = parseFloat(locationSplit[1]);
-    // send to admin
+    // add latitude and longitude to ctx
+    const clientDontHasAddress = ctx.address.split(', ')[1] === 'null';
+    /* if (clientDontHasAddress) {
+      ctx.step = STEPS.WAITING_ADDRESS_OR_REF;
+    } else { */
     ctx.step = STEPS.ORDERED;
+    /* } */
     ctx.lat = latitude.toString();
     ctx.lng = longitude.toString();
     this.ctxService.updateCtx(ctx._id, ctx);
@@ -147,6 +153,15 @@ export class FlowsService {
       return;
     }
   }
+
+  /*   async sendCatchAdressFlow(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    history: string,
+    businessInfo,
+  ) {
+    console.log('llegue acá aaa');
+  } */
 
   async sendPaymentMethods(
     ctx: Ctx,
@@ -344,6 +359,7 @@ export class FlowsService {
         return paymentMethod.paymentMethodName === messageEntry.content;
       },
     );
+    ctx.paymentType = paymentMethodSelected.type;
     try {
       messageEntry.type = 'text';
       if (paymentMethodSelected.type === PAYMENT_TYPE.no_voucher) {
@@ -353,6 +369,13 @@ export class FlowsService {
           orderId: ctx.currentOrderId,
           action: 1,
         });
+        const newCtx = await this.ctxService.findOrCreateCtx({
+          clientPhone: messageEntry.clientPhone,
+          chatbotNumber: messageEntry.chatbotNumber,
+        });
+        newCtx.paymentType = paymentMethodSelected.type;
+        newCtx.paymentMethod = messageEntry.content;
+        await this.ctxService.updateCtx(newCtx._id, newCtx);
       } else {
         let message = paymentMethodMessage(
           paymentMethodSelected.paymentMethodName,
