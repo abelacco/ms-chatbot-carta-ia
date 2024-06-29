@@ -10,7 +10,7 @@ import {
   parseDateToTheFirstHour,
   parseDateToTheLastHour,
 } from '../helpers/utils';
-import { start } from 'repl';
+import { endOfDay, startOfDay } from 'date-fns';
 
 @Injectable()
 export class MongoDbService implements ICtxDao {
@@ -94,17 +94,30 @@ export class MongoDbService implements ICtxDao {
     chatbotNumber: string,
     query: GetCtxByChatbotNumberDto,
   ): Promise<Array<Ctx>> {
-    let startDate: Date;
-    let endDate: Date;
-    startDate = parseDateToTheFirstHour(query.startDate || '01-01-2000');
-    if (query.endDate) {
-      endDate = parseDateToTheLastHour(query.endDate);
+    let startDateQuery: Date;
+    let endDateQuery: Date;
+    if (!query.startDate) {
+      // Si no se proporciona startDate, tomar el día actual
+      startDateQuery = startOfDay(new Date()); // Inicio del día actual en UTC
+      endDateQuery = endOfDay(new Date()); // Fin del día actual en UTC
+    } else {
+      // Si se proporciona startDate, convertirlo a Date y ajustar
+      startDateQuery = new Date(query.startDate);
+      startDateQuery.setUTCHours(0, 0, 0, 0); // Establecer a las 00:00:00 UTC
+
+      if (query.endDate) {
+        endDateQuery = new Date(query.endDate);
+        endDateQuery.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC
+      } else {
+        endDateQuery = new Date(startDateQuery);
+        endDateQuery.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC para el mismo día
+      }
     }
     try {
       const mongoQuery: any = {
         lastMessageDate: {
-          $gte: startDate,
-          $lte: endDate || new Date(),
+          $gte: startDateQuery,
+          $lte: endDateQuery,
         },
       };
 
@@ -114,7 +127,10 @@ export class MongoDbService implements ICtxDao {
       if (query.step) {
         mongoQuery.step = query.step;
       }
-      const ctx = await this._ctxModel.find(mongoQuery);
+      const ctx = await this._ctxModel.find(mongoQuery).sort({
+        orderStatus: 1, // Orden ascendente por orderStatus
+        lastMessageDate: -1, // Orden descendente por lastMessageDate (más reciente primero)
+      });
 
       return ctx;
     } catch (error) {
