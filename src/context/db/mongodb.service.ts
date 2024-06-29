@@ -10,7 +10,7 @@ import {
   parseDateToTheFirstHour,
   parseDateToTheLastHour,
 } from '../helpers/utils';
-import { start } from 'repl';
+import { endOfDay, startOfDay } from 'date-fns';
 
 @Injectable()
 export class MongoDbService implements ICtxDao {
@@ -94,19 +94,33 @@ export class MongoDbService implements ICtxDao {
     chatbotNumber: string,
     query: GetCtxByChatbotNumberDto,
   ): Promise<Array<Ctx>> {
-    let startDate: Date;
-    let endDate: Date;
-    startDate = parseDateToTheFirstHour(query.startDate || '01-01-2000');
-    if (query.endDate) {
-      endDate = parseDateToTheLastHour(query.endDate);
+    let startDateQuery: Date | undefined;
+    let endDateQuery: Date | undefined;
+
+    // Verificar y procesar startDate y endDate si existen en query
+    if (query.startDate) {
+      startDateQuery = new Date(query.startDate);
+      startDateQuery.setUTCHours(0, 0, 0, 0); // Establecer a las 00:00:00 UTC
+
+      if (query.endDate) {
+        endDateQuery = new Date(query.endDate);
+        endDateQuery.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC
+      } else {
+        endDateQuery = new Date(startDateQuery);
+        endDateQuery.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC para el mismo día
+      }
     }
+
     try {
-      const mongoQuery: any = {
-        lastMessageDate: {
-          $gte: startDate,
-          $lte: endDate || new Date(),
-        },
-      };
+      const mongoQuery: any = {};
+
+      // Agregar condiciones de fecha al query si startDate y endDate están definidos
+      if (startDateQuery && endDateQuery) {
+        mongoQuery.lastMessageDate = {
+          $gte: startDateQuery,
+          $lte: endDateQuery,
+        };
+      }
 
       if (chatbotNumber) {
         mongoQuery.chatbotNumber = chatbotNumber;
@@ -114,7 +128,12 @@ export class MongoDbService implements ICtxDao {
       if (query.step) {
         mongoQuery.step = query.step;
       }
-      const ctx = await this._ctxModel.find(mongoQuery);
+
+      // Construir la consulta y aplicar el ordenamiento
+      const ctx = await this._ctxModel.find(mongoQuery).sort({
+        orderStatus: 1, // Orden ascendente por orderStatus
+        lastMessageDate: -1, // Orden descendente por lastMessageDate (más reciente primero)
+      });
 
       return ctx;
     } catch (error) {

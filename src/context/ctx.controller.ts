@@ -97,6 +97,7 @@ export class CtxController {
     @Query() query: GetCtxByChatbotNumberDto,
   ) {
     try {
+      console.log('orderId', orderId);
       const response = await this.ctxService.getCtxesByChatbotNumber(
         orderId,
         query,
