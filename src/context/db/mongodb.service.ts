@@ -94,14 +94,11 @@ export class MongoDbService implements ICtxDao {
     chatbotNumber: string,
     query: GetCtxByChatbotNumberDto,
   ): Promise<Array<Ctx>> {
-    let startDateQuery: Date;
-    let endDateQuery: Date;
-    if (!query.startDate) {
-      // Si no se proporciona startDate, tomar el día actual
-      startDateQuery = startOfDay(new Date()); // Inicio del día actual en UTC
-      endDateQuery = endOfDay(new Date()); // Fin del día actual en UTC
-    } else {
-      // Si se proporciona startDate, convertirlo a Date y ajustar
+    let startDateQuery: Date | undefined;
+    let endDateQuery: Date | undefined;
+
+    // Verificar y procesar startDate y endDate si existen en query
+    if (query.startDate) {
       startDateQuery = new Date(query.startDate);
       startDateQuery.setUTCHours(0, 0, 0, 0); // Establecer a las 00:00:00 UTC
 
@@ -113,13 +110,17 @@ export class MongoDbService implements ICtxDao {
         endDateQuery.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC para el mismo día
       }
     }
+
     try {
-      const mongoQuery: any = {
-        lastMessageDate: {
+      const mongoQuery: any = {};
+
+      // Agregar condiciones de fecha al query si startDate y endDate están definidos
+      if (startDateQuery && endDateQuery) {
+        mongoQuery.lastMessageDate = {
           $gte: startDateQuery,
           $lte: endDateQuery,
-        },
-      };
+        };
+      }
 
       if (chatbotNumber) {
         mongoQuery.chatbotNumber = chatbotNumber;
@@ -127,6 +128,8 @@ export class MongoDbService implements ICtxDao {
       if (query.step) {
         mongoQuery.step = query.step;
       }
+
+      // Construir la consulta y aplicar el ordenamiento
       const ctx = await this._ctxModel.find(mongoQuery).sort({
         orderStatus: 1, // Orden ascendente por orderStatus
         lastMessageDate: -1, // Orden descendente por lastMessageDate (más reciente primero)
