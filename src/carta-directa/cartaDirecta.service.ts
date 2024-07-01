@@ -116,7 +116,6 @@ export class CartaDirectaService {
       ] = `${order.configs.delivery_area_name}, ${order.whatsapp_address}`;
       ctx['deliveryCost'] = order.delivery_price;
       ctx['date'] = order.created_at;
-      console.log(ctx);
       ctx.currentOrder = order;
     }
     return ctx;

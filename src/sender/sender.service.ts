@@ -6,6 +6,7 @@ import { BusinessService } from 'src/business/business.service';
 import { WhatsappGateway } from 'src/wsp-web-gateway/wsp-web-gateway.gateway';
 import { SenderFromUiDto } from './dto/sender-from-ui.dto';
 import { HistoryService } from 'src/history/history.service';
+import { CtxService } from 'src/context/ctx.service';
 
 @Injectable()
 export class SenderService {
@@ -15,14 +16,29 @@ export class SenderService {
     private readonly businessService: BusinessService,
     private readonly authService: AuthService,
     private readonly historyService: HistoryService,
+    private readonly ctxService: CtxService,
   ) {}
 
-  async sendMessages(messageClient: any, chatbotNumber: string) {
+  async sendMessages(
+    messageClient: any,
+    chatbotNumber: string,
+    isReminder?: boolean,
+  ) {
+    const ctx = await this.ctxService.findOrCreateCtx({
+      clientPhone: messageClient.to,
+      chatbotNumber: chatbotNumber,
+    });
+    ctx.lastMessageDate = new Date();
+    if (!isReminder) {
+      ctx.remindersCount = 0;
+    }
+    await this.ctxService.updateCtx(ctx._id, ctx);
     /* if (messageClient.to === '5492616107398') {
       messageClient.to = '54261156107398';
     } else {
       messageClient.to = '54261156841080';
     } */
+
     const businessInfo = await this.businessService.getBusiness(chatbotNumber);
     const accessToken = businessInfo.accessToken;
 

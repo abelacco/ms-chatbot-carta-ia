@@ -85,7 +85,10 @@ export class UiResponsesService {
     } else if (body.orderStatus === ORDER_STATUS_BOT.sin_pedido) {
       ctx.step = STEPS.INIT;
       ctx.voucherUrl = '';
-    } else if (
+    } else if (body.orderStatus === ORDER_STATUS_BOT.enviado) {
+      ctx.step = STEPS.ORDERED;
+    }
+    if (
       body.orderStatus === ORDER_STATUS_BOT.enviado &&
       !ctx.deliveryNumber &&
       ctx.deliveryMethod === DELIVERY_METHOD.delivery
@@ -102,7 +105,7 @@ export class UiResponsesService {
     let messageContent: string;
     if (
       body.orderStatus === ORDER_STATUS_BOT.enviado &&
-      DELIVERY_METHOD.pick_up
+      ctx.deliveryMethod === DELIVERY_METHOD.pick_up
     ) {
       messageContent = orderReadyToPickUp;
     } else {

@@ -6,6 +6,7 @@ import { WspWebGatewayModule } from 'src/wsp-web-gateway/wsp-web-gateway.module'
 import { BusinessModule } from 'src/business/business.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { HistoryModule } from 'src/history/history.module';
+import { CtxModule } from 'src/context/ctx.module';
 
 @Module({
   controllers: [SenderController],
@@ -15,6 +16,7 @@ import { HistoryModule } from 'src/history/history.module';
     BusinessModule,
     AuthModule,
     HistoryModule,
+    CtxModule,
   ],
   providers: [SenderService],
   exports: [SenderService],
