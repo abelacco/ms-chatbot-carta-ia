@@ -249,6 +249,11 @@ export class FlowsService {
       'Selecciona tu metodo de pago',
     );
     await this.senderService.sendMessages(template, messageEntry.chatbotNumber);
+    this.gatewayService.server.emit('orderSound', {
+      chatbotNumber: messageEntry.chatbotNumber,
+      clientPhone: messageEntry.clientPhone,
+      orderStatus: ctx.orderStatus,
+    });
   }
 
   async invalidPayMethodFlow(
