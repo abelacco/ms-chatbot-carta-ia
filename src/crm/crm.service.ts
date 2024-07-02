@@ -5,7 +5,11 @@ import {
 } from '@nestjs/common';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { SenderService } from 'src/sender/sender.service';
-import { CreateTextTemplateDto, SendTextMessageDto } from './dto';
+import {
+  CreateButtonTemplateDto,
+  CreateTextTemplateDto,
+  SendTextMessageDto,
+} from './dto';
 import { CtxService } from 'src/context/ctx.service';
 import { BusinessService } from 'src/business/business.service';
 import axios from 'axios';
@@ -282,6 +286,86 @@ export class CrmService {
         },
       ],
     };
+
+    if (body.footer) {
+      data.components.push({
+        type: 'FOOTER',
+        text: body.footer,
+      });
+    }
+
+    try {
+      const response = await axios.post(
+        `https://graph.facebook.com/v20.0/${business.whatsappId}/message_templates`,
+        data,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${business.accessToken}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error.response.data.error);
+    }
+  }
+
+  async createButtonTemplate(body: CreateButtonTemplateDto) {
+    const business = await this.businessService.getBusiness(body.chatbotNumber);
+
+    /* Empiezan los manejos de errores */
+    if (!business) {
+      throw new NotFoundException(
+        `Bussines with chatbotNumber ${body.chatbotNumber} not exist`,
+      );
+    }
+
+    const templates = await this.getTemplates(body.chatbotNumber);
+    const templateNameAlreadyExist = templates.find(
+      (e) => e.name === body.templateName,
+    );
+    if (templateNameAlreadyExist) {
+      throw new BadRequestException(`Template name already exists.`);
+    }
+
+    const regex = /{{\d+}}/g;
+    const matches = body.bodyText.match(regex);
+    const variablesCount = matches ? matches.length : 0;
+
+    if (body.variables.length !== variablesCount) {
+      throw new BadRequestException(
+        `The array of variables needs a length of ${variablesCount}.`,
+      );
+    }
+
+    /* Terminan los manejos de errores */
+
+    const data: any = {
+      name: body.templateName,
+      language: 'es_AR',
+      category: 'MARKETING',
+      components: [
+        {
+          type: 'BODY',
+          text: body.bodyText,
+          example: {
+            body_text: [body.variables],
+          },
+        },
+        {
+          type: 'BUTTONS',
+          buttons: [],
+        },
+      ],
+    };
+
+    body.buttons.forEach((button) => {
+      data.components[1].buttons.push({
+        type: 'QUICK_REPLY',
+        text: button,
+      });
+    });
 
     if (body.footer) {
       data.components.push({

@@ -34,7 +34,7 @@ export class SchedulerService {
     this.reminderService.reminderVoucher();
   }
 
-  @Cron('*/5 * * * * *')
+  @Cron('*/45 * * * * *')
   async deliveriesWorkToday() {
     await this.deliveryCrm.deliveriesWorkToday();
   }

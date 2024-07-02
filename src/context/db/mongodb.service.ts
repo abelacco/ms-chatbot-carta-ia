@@ -246,7 +246,7 @@ export class MongoDbService implements ICtxDao {
 
   async removeAll(): Promise<void> {
     try {
-      await this._ctxModel.deleteMany({});
+      await this._ctxModel.deleteMany({ isDelivery: false });
     } catch (error) {
       if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
       else throw error;

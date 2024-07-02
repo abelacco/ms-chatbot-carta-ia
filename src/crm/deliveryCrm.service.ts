@@ -33,11 +33,14 @@ export class DeliveryCrmService {
         isTimeDifferenceGreater(deliveryCtx.lastMessageDate, new Date(), 1440)
       ) {
       } else {
-        const buttonTemplate =
+        /* const buttonTemplate =
           this.builderTemplateService.buildInteractiveButtonMessage(
             deliveryCtx.clientPhone,
             'Buenas, hoy trabajas?\nPorfavor confirma con los botones',
-            [{ id: 'confirm', title: 'Confirmar entrega' }],
+            [
+              { id: 'd', title: 'Sí, si trabajo' },
+              { id: 'coanfirm', title: 'No, no trabajo' },
+            ],
           );
         await this.senderService.sendMessages(
           buttonTemplate,
@@ -53,7 +56,7 @@ export class DeliveryCrmService {
             content: 'Buenas, hoy trabajas?\nPorfavor confirma con los botones',
           },
           'Buenas, hoy trabajas?\nPorfavor confirma con los botones',
-        );
+        ); */
       }
     }
   }
