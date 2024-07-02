@@ -63,7 +63,11 @@ export class ReminderService {
             'Muchas gracias por elegirnos 😊',
             '‎ ',
           );
-        await this.senderService.sendMessages(template, ctx.chatbotNumber);
+        await this.senderService.sendMessages(
+          template,
+          ctx.chatbotNumber,
+          true,
+        );
         await this.historyService.setAndCreateAssitantMessage(
           {
             chatbotNumber: ctx.chatbotNumber,
@@ -98,7 +102,11 @@ export class ReminderService {
           ctx.clientPhone,
           message,
         );
-        await this.senderService.sendMessages(template, ctx.chatbotNumber);
+        await this.senderService.sendMessages(
+          template,
+          ctx.chatbotNumber,
+          true,
+        );
         await this.historyService.setAndCreateAssitantMessage(
           {
             chatbotNumber: ctx.chatbotNumber,

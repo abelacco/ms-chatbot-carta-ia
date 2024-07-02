@@ -29,6 +29,8 @@ import {
   PROMPT_INFO_WITHOUT_GREETINGS,
   PROMPT_COVERAGE_WITH_GREETINGS,
   PROMPT_COVERAGE_WITHOUT_GREETINGS,
+  PROMPT_LOCATION_WITHOUT_ADRRESS,
+  PROMPT_MESSAGE_CONTAINTS_ADDRESS,
 } from './Utils/prompts';
 import { filterOrderId } from './Utils/filterOrderId';
 import { CartaDirectaService } from 'src/carta-directa/cartaDirecta.service';
@@ -78,11 +80,14 @@ export class FlowsService {
     const longitude = parseFloat(locationSplit[1]);
     // add latitude and longitude to ctx
     const clientDontHasAddress = ctx.address.split(', ')[1] === 'null';
-    /* if (clientDontHasAddress) {
+    let prompt: string;
+    if (clientDontHasAddress) {
       ctx.step = STEPS.WAITING_ADDRESS_OR_REF;
-    } else { */
-    ctx.step = STEPS.ORDERED;
-    /* } */
+      prompt = PROMPT_LOCATION_WITHOUT_ADRRESS;
+    } else {
+      ctx.step = STEPS.ORDERED;
+      prompt = PROMPT_LOCATION;
+    }
     ctx.lat = latitude.toString();
     ctx.lng = longitude.toString();
     this.ctxService.updateCtx(ctx._id, ctx);
@@ -91,7 +96,7 @@ export class FlowsService {
     const response = await this.aiService.createChat([
       {
         role: 'system',
-        content: PROMPT_LOCATION,
+        content: prompt,
       },
     ]);
     const chunks = response.split(/(?<!\d)\.\s+/g);
@@ -154,14 +159,46 @@ export class FlowsService {
     }
   }
 
-  /*   async sendCatchAdressFlow(
+  async sendCatchAdressFlow(
     ctx: Ctx,
     messageEntry: IParsedMessage,
     history: string,
     businessInfo,
   ) {
-    console.log('llegue acá aaa');
-  } */
+    const splitedAdress = ctx.address.split(', ');
+    splitedAdress[1] = ', ' + messageEntry.content;
+    const joinedAdress = splitedAdress.join('');
+    const prompt = PROMPT_MESSAGE_CONTAINTS_ADDRESS.replace(
+      '{MENSAJE}',
+      messageEntry.content,
+    );
+    const response = await this.aiService.createChat([
+      {
+        role: 'system',
+        content: prompt,
+      },
+    ]);
+    console.log(response);
+    let message: string;
+    if (response === 'SI') {
+      ctx.address = joinedAdress;
+      ctx.step = STEPS.ORDERED;
+      await this.ctxService.updateCtx(ctx._id, ctx);
+      message =
+        'Gracias por enviarnos tu dirección tu pedido esta en preparación. 😊';
+    } else {
+      message = 'Porfavor envianos una dirección valida. 😊';
+    }
+    const template = this.builderTemplate.buildTextMessage(
+      messageEntry.clientPhone,
+      message,
+    );
+    await this.senderService.sendMessages(template, messageEntry.chatbotNumber);
+    await this.historyService.setAndCreateAssitantMessage(
+      messageEntry,
+      message,
+    );
+  }
 
   async sendPaymentMethods(
     ctx: Ctx,
@@ -178,6 +215,8 @@ export class FlowsService {
     );
 
     ctx.orderStatus = 1;
+    ctx.deliveryName = '';
+    ctx.deliveryNumber = '';
     ctx.step = STEPS.SELECT_PAY_METHOD;
     ctx.voucherUrl = '';
     this.ctxService.updateCtx(ctx._id, ctx);
@@ -306,6 +345,7 @@ export class FlowsService {
       ]);
       ctx.voucherUrl = messageEntry.content;
       ctx.orderStatus = ORDER_STATUS_BOT.orden_con_pago;
+      ctx.step = STEPS.PRE_PAY;
       await this.ctxService.updateCtx(ctx._id, ctx);
       const chunks = response.split(/(?<!\d)\.\s+/g);
       messageEntry.type = 'text';
@@ -323,10 +363,6 @@ export class FlowsService {
           messageEntry.chatbotNumber,
         );
       }
-
-      // Actualizar paso
-      ctx.step = STEPS.PRE_PAY;
-      await this.ctxService.updateCtx(ctx._id, ctx);
       this.gatewayService.server.emit('newMessage');
     } catch (err) {
       console.log(`[ERROR]:`, err);
@@ -377,6 +413,8 @@ export class FlowsService {
         newCtx.paymentMethod = messageEntry.content;
         await this.ctxService.updateCtx(newCtx._id, newCtx);
       } else {
+        ctx.step = STEPS.PRE_PAY;
+        await this.ctxService.updateCtx(ctx._id, ctx);
         let message = paymentMethodMessage(
           paymentMethodSelected.paymentMethodName,
           paymentMethodSelected.accountNumber,
@@ -407,8 +445,6 @@ export class FlowsService {
           messageEntry,
           message,
         );
-        ctx.step = STEPS.PRE_PAY;
-        await this.ctxService.updateCtx(ctx._id, ctx);
       }
 
       this.gatewayService.server.emit('newMessage');

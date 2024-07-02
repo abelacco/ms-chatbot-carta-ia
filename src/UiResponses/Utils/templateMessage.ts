@@ -11,7 +11,6 @@ export function createTemplateReponseMessage(
       .replace('{orderId}', orderId)
       .replace('{deliveryName}', ctx.deliveryName)
       .replace('{deliveryNumber}', ctx.deliveryNumber);
-    console.log('Llego');
   } else {
     message = message.replace('{orderId}', orderId);
   }
