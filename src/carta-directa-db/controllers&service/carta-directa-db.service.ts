@@ -79,7 +79,7 @@ export class CartaDirectaDbService {
     /* const jsonData = xlsxToJson(body.xlsxFile, 0); */
 
     const fileBuffer = readFileSync(
-      process.cwd() + '/src/carta-directa-db/chez_diego.xlsx',
+      process.cwd() + '/src/carta-directa-db/Delivery_Areas.xlsx',
     );
     const jsonData = xlsxToJson(Buffer.from(fileBuffer).toString('base64'), 0);
 
@@ -145,7 +145,10 @@ export class CartaDirectaDbService {
     /* Recorre los items del menu */
     for (const menuItem of menuJsonData) {
       /* Hace un array de extras */
-      const itemExtraArray = menuItem.extras.split(', ');
+      let itemExtraArray: any;
+      if (menuItem.extras) {
+        itemExtraArray = menuItem.extras.split(', ');
+      }
 
       /* Verifica si la categoría existe si no la crea */
       let category = await this.categoryService.findByNameAndCompanyId(
@@ -176,21 +179,23 @@ export class CartaDirectaDbService {
       }
 
       /* Recorre el array de extras */
-      for (const itemExtra of itemExtraArray) {
-        /* Consigue la información del extra */
-        const commonExtra = extrasJsonData.find((extra: any) => {
-          return extra.nombre === itemExtra;
-        });
-        let extra = await this.extraService.findOneExtra(
-          item.id,
-          commonExtra.nombre,
-        );
-        if (!extra) {
-          extra = await this.extraService.createExtra({
-            item_id: item.id,
-            price: commonExtra.precio,
-            name: commonExtra.nombre,
+      if (itemExtraArray) {
+        for (const itemExtra of itemExtraArray) {
+          /* Consigue la información del extra */
+          const commonExtra = extrasJsonData.find((extra: any) => {
+            return extra.nombre === itemExtra;
           });
+          let extra = await this.extraService.findOneExtra(
+            item.id,
+            commonExtra.nombre,
+          );
+          if (!extra) {
+            extra = await this.extraService.createExtra({
+              item_id: item.id,
+              price: commonExtra.precio,
+              name: commonExtra.nombre,
+            });
+          }
         }
       }
     }
@@ -198,6 +203,7 @@ export class CartaDirectaDbService {
     try {
       return 'sucess';
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(error);
     }
   }
