@@ -6,11 +6,6 @@ import { ICtxDao } from './ctxDao';
 import { mongoExceptionHandler } from 'src/common/exceptions';
 import { UpdateCtxDto } from 'src/bot/dto';
 import { GetCtxByChatbotNumberDto } from '../dto/get-ctx-by-chatbotnumber.dto';
-import {
-  parseDateToTheFirstHour,
-  parseDateToTheLastHour,
-} from '../helpers/utils';
-import { endOfDay, startOfDay } from 'date-fns';
 
 @Injectable()
 export class MongoDbService implements ICtxDao {
@@ -127,6 +122,9 @@ export class MongoDbService implements ICtxDao {
       }
       if (query.step) {
         mongoQuery.step = query.step;
+      }
+      if (query.orderStatus) {
+        mongoQuery.orderStatus = query.orderStatus;
       }
 
       // Construir la consulta y aplicar el ordenamiento

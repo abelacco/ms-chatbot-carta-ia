@@ -1,4 +1,4 @@
-import { IsOptional, IsString, Matches } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Matches } from 'class-validator';
 
 export class GetCtxByChatbotNumberDto {
   @IsOptional()
@@ -18,4 +18,8 @@ export class GetCtxByChatbotNumberDto {
   @IsOptional()
   @IsString()
   step: string;
+
+  @IsOptional()
+  @IsNumber()
+  orderStatus: number;
 }

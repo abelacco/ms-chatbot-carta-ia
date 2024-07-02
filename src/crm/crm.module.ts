@@ -7,17 +7,20 @@ import { CtxModule } from 'src/context/ctx.module';
 import { BusinessModule } from 'src/business/business.module';
 import { ReminderService } from './reminder.service';
 import { HistoryModule } from 'src/history/history.module';
+import { DeliveryCrmService } from './deliveryCrm.service';
+import { DeliveryModule } from 'src/delivery/delivery.module';
 
 @Module({
   controllers: [CrmController],
-  providers: [CrmService, ReminderService],
+  providers: [CrmService, ReminderService, DeliveryCrmService],
   imports: [
     BuilderTemplatesModule,
     SenderModule,
     CtxModule,
     BusinessModule,
     HistoryModule,
+    DeliveryModule,
   ],
-  exports: [ReminderService],
+  exports: [ReminderService, DeliveryCrmService],
 })
 export class CrmModule {}

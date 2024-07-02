@@ -33,11 +33,11 @@ export class SenderService {
       ctx.remindersCount = 0;
     }
     await this.ctxService.updateCtx(ctx._id, ctx);
-    /* if (messageClient.to === '5492616107398') {
+    if (messageClient.to === '5492616107398') {
       messageClient.to = '54261156107398';
     } else {
       messageClient.to = '54261156841080';
-    } */
+    }
 
     const businessInfo = await this.businessService.getBusiness(chatbotNumber);
     const accessToken = businessInfo.accessToken;

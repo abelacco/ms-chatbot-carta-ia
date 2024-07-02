@@ -6,6 +6,6 @@ export function isTimeDifferenceGreater(
   const firstDateMs = firstDate.getTime();
   const secondDateMs = secondDate.getTime();
   const differenceInMinutes = (secondDateMs - firstDateMs) / (1000 * 60);
-  console.log(differenceInMinutes);
+  //console.log(differenceInMinutes);
   return minutesTimeDiff <= differenceInMinutes;
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { CtxService } from 'src/context/ctx.service';
+import { DeliveryCrmService } from 'src/crm/deliveryCrm.service';
 import { ReminderService } from 'src/crm/reminder.service';
 
 @Injectable()
@@ -8,6 +9,7 @@ export class SchedulerService {
   constructor(
     private readonly ctxService: CtxService,
     private readonly reminderService: ReminderService,
+    private readonly deliveryCrm: DeliveryCrmService,
   ) {}
   @Cron('0 0 * * * *')
   async resetCtxAtFourAm() {
@@ -30,5 +32,10 @@ export class SchedulerService {
   async reminderStep() {
     this.reminderService.reminderPaymentMethod();
     this.reminderService.reminderVoucher();
+  }
+
+  @Cron('*/5 * * * * *')
+  async deliveriesWorkToday() {
+    await this.deliveryCrm.deliveriesWorkToday();
   }
 }

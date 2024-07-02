@@ -92,4 +92,13 @@ export class MongoDbService implements IDeliveryDao {
       else throw error;
     }
   }
+
+  async findAll() {
+    try {
+      return await this._deliveryModel.find();
+    } catch (error) {
+      if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
+      else throw error;
+    }
+  }
 }

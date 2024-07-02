@@ -168,6 +168,15 @@ export class DeliveryService {
     }
   }
 
+  async findAll() {
+    try {
+      const deliverys = await this._db.findAll();
+      return deliverys;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async assignDelivery(body: AssignDeliveryDto) {
     try {
       /* Find ctx y delivery */

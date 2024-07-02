@@ -21,4 +21,6 @@ export interface IDeliveryDao {
   update(deleteDelivery: UpdateDeliveryDto): Promise<Delivery>;
 
   findOne(findOneDelivery: FindOneDeliveryDto): Promise<Delivery>;
+
+  findAll(): Promise<Array<Delivery>>;
 }

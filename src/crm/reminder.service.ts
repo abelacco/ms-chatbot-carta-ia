@@ -26,6 +26,7 @@ export class ReminderService {
       startDate: undefined,
       endDate: undefined,
       step: STEPS.SELECT_PAY_METHOD,
+      orderStatus: undefined,
     });
     for (const ctx of ctxes) {
       if (
@@ -87,6 +88,7 @@ export class ReminderService {
       startDate: undefined,
       endDate: undefined,
       step: STEPS.PRE_PAY,
+      orderStatus: undefined,
     });
     for (const ctx of ctxes) {
       if (

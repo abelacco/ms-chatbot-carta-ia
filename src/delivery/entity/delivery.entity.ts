@@ -15,6 +15,9 @@ export class Delivery extends Document {
   @Prop()
   status: number;
 
+  @Prop({ default: true })
+  isActive: boolean;
+
   @Prop()
   timeToRestaurant: number;
 
