@@ -364,6 +364,11 @@ export class FlowsService {
         );
       }
       this.gatewayService.server.emit('newMessage');
+      this.gatewayService.server.emit('orderSound', {
+        chatbotNumber: messageEntry.chatbotNumber,
+        clientPhone: messageEntry.clientPhone,
+        orderStatus: ctx.orderStatus,
+      });
     } catch (err) {
       console.log(`[ERROR]:`, err);
       return;
@@ -412,6 +417,11 @@ export class FlowsService {
         newCtx.paymentType = paymentMethodSelected.type;
         newCtx.paymentMethod = messageEntry.content;
         await this.ctxService.updateCtx(newCtx._id, newCtx);
+        this.gatewayService.server.emit('orderSound', {
+          chatbotNumber: messageEntry.chatbotNumber,
+          clientPhone: messageEntry.clientPhone,
+          orderStatus: newCtx.orderStatus,
+        });
       } else {
         ctx.step = STEPS.PRE_PAY;
         await this.ctxService.updateCtx(ctx._id, ctx);
@@ -761,6 +771,11 @@ export class FlowsService {
     );
 
     this.gatewayService.server.emit('newMessage');
+    this.gatewayService.server.emit('orderSound', {
+      chatbotNumber: clientCtx.chatbotNumber,
+      clientPhone: clientCtx.clientPhone,
+      orderStatus: clientCtx.orderStatus,
+    });
   }
 
   sendInfoFlowWithOrder = async (
