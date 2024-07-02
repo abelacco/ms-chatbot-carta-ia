@@ -98,6 +98,9 @@ export class Ctx extends Document {
 
   @Prop()
   codeLinkPay: string;
+
+  @Prop()
+  seen: boolean;
 }
 
 export const CtxSchema = SchemaFactory.createForClass(Ctx);
