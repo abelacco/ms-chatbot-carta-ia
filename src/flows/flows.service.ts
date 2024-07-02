@@ -215,6 +215,8 @@ export class FlowsService {
     );
 
     ctx.orderStatus = 1;
+    ctx.deliveryName = '';
+    ctx.deliveryNumber = '';
     ctx.step = STEPS.SELECT_PAY_METHOD;
     ctx.voucherUrl = '';
     this.ctxService.updateCtx(ctx._id, ctx);
