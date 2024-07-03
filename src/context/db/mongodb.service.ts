@@ -159,6 +159,9 @@ export class MongoDbService implements ICtxDao {
       voucherUrl: '',
       statusBot: 1,
       isManual: false,
+      deliveryMethod: null,
+      paymentType: null,
+      remindersCount: 0,
     };
 
     try {

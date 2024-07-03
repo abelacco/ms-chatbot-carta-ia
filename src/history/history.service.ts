@@ -5,6 +5,7 @@ import { MongoDbService } from './db/mongodb.service';
 import { IParsedMessage } from 'src/builder-templates/interface';
 import { History } from './entities/history.entity';
 import { GeneralServicesService } from 'src/general-services/general-services.service';
+import { CtxService } from 'src/context/ctx.service';
 
 @Injectable()
 export class HistoryService {
@@ -13,6 +14,7 @@ export class HistoryService {
   constructor(
     private readonly _mongoDbService: MongoDbService,
     private readonly generalService: GeneralServicesService,
+    private readonly ctxService: CtxService,
   ) {
     this._db = this._mongoDbService;
   }
@@ -45,6 +47,12 @@ export class HistoryService {
   // Obtienes el historial de mensaje desde el mas reciente al mas antiguo
   async findAll(clientPhone: string, chatbotNumber: string) {
     try {
+      const ctx = await this.ctxService.findOrCreateCtx({
+        clientPhone: clientPhone,
+        chatbotNumber: chatbotNumber,
+      });
+      ctx.seen = true;
+      await this.ctxService.updateCtx(ctx._id, ctx);
       return await this._db.findAll(clientPhone, chatbotNumber);
     } catch (error) {
       throw error;
@@ -72,7 +80,7 @@ export class HistoryService {
         : '';
       const newMessage = this.setModel(messageEntry, 'user');
       await this.create(newMessage);
-      const history = await this.findAll(
+      const history = await this._db.findAll(
         newMessage.clientPhone,
         newMessage.chatbotNumber,
       );
