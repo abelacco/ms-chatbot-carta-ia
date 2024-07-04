@@ -14,11 +14,7 @@ import { isTimeDifferenceGreater } from './utils/utils';
 @Injectable()
 export class DeliveryCrmService {
   constructor(
-    private readonly builderTemplateService: BuilderTemplatesService,
-    private readonly senderService: SenderService,
     private readonly ctxService: CtxService,
-    private readonly businessService: BusinessService,
-    private readonly historyService: HistoryService,
     private readonly deliveryService: DeliveryService,
   ) {}
 

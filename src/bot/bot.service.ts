@@ -50,7 +50,8 @@ export class BotService {
       Logger.log(`NO CLIENT MESSAGE`, 'BOT SERVICE');
       return 'OK';
     }
-
+    console.log(parsedMessage);
+    console.log(parsedMessage);
     this.gatewayService.server.emit('newMessage');
     //Busca mensaje por número de cliente
     const ctx = await this.ctxService.findOrCreateCtx(parsedMessage);
@@ -180,7 +181,7 @@ export class BotService {
       case WSP_MESSAGE_TYPES.BUTTON:
         parsedMessage.content = {
           title: message.button.text,
-          payload: message.button.payload,
+          id: message.button.payload,
         };
 
         break;

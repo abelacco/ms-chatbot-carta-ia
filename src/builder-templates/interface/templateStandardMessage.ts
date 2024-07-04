@@ -8,9 +8,28 @@ export interface TemplateHeaderImageParameter {
     link: string;
   };
 }
+export interface TemplatePayloadParameter {
+  type: 'payload';
+  payload: string;
+}
+export interface TemplateHeaderButtonParameter {
+  type: 'button';
+  sub_type: string;
+  index: string;
+  parameters: {
+    type: 'string';
+    payload: string;
+  }[];
+}
 export interface TemplateComponent {
-  type: 'header' | 'body';
-  parameters: TemplateTextParameter[] | TemplateHeaderImageParameter[];
+  type: 'header' | 'body' | 'button' | 'payload';
+  sub_type?: 'quick_reply';
+  index?: string;
+  parameters:
+    | TemplateTextParameter[]
+    | TemplateHeaderImageParameter[]
+    | TemplateHeaderButtonParameter[]
+    | TemplatePayloadParameter[];
 }
 export interface TemplateMessage {
   messaging_product: 'whatsapp';

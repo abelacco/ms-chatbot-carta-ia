@@ -151,6 +151,7 @@ export class BuilderTemplatesService {
     languageCode: string,
     headerImageUrl: string | undefined,
     bodyTexts: any[],
+    buttons?: any[],
   ): TemplateMessage {
     const components: TemplateComponent[] = [];
 
@@ -177,6 +178,22 @@ export class BuilderTemplatesService {
       components.push({
         type: 'body',
         parameters: bodyParameters,
+      });
+    }
+
+    if (buttons) {
+      buttons.forEach((button, index) => {
+        components.push({
+          type: 'button',
+          sub_type: 'quick_reply',
+          index: index.toString(),
+          parameters: [
+            {
+              type: 'payload',
+              payload: button,
+            },
+          ],
+        });
       });
     }
 

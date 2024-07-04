@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import { BusinessService } from 'src/business/business.service';
 import axios from 'axios';
 import fs from 'fs';
 import { CreateImageTemplateDto } from './dto/createImageTemplate.dto';
+import { SendButtonMessageDto } from './dto/sendButtonMessage.dto';
 
 @Injectable()
 export class CrmService {
@@ -24,6 +27,94 @@ export class CrmService {
     private readonly ctxService: CtxService,
     private readonly businessService: BusinessService,
   ) {}
+
+  async sendButtonMessage(body: SendButtonMessageDto) {
+    const business = await this.businessService.getBusiness(body.chatbotNumber);
+
+    const templatesInfo = await this.getTemplates(
+      body.chatbotNumber,
+      body.templateName,
+    );
+
+    const selectedTemplate = templatesInfo[0];
+    if (!selectedTemplate) {
+      throw new NotFoundException(
+        `Template with name ${body.templateName} not exist`,
+      );
+    }
+
+    let template: any;
+    try {
+      const response = await axios.get(
+        `https://graph.facebook.com/v20.0/${selectedTemplate.id}?access_token=${business.accessToken}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${business.accessToken}`,
+          },
+        },
+      );
+      template = response.data;
+    } catch (error) {
+      console.log(error.response.data);
+      if (error.response.data.error.code === 100) {
+        throw new NotFoundException(error.response.data);
+      }
+    }
+
+    /* validate errors */
+    const headerIsntText = template.components.find((e) => {
+      return e.type === 'HEADER' && e.type !== 'TEXT';
+    });
+    if (headerIsntText) {
+      throw new BadRequestException(
+        `Template ${selectedTemplate.id} is a image template`,
+      );
+    }
+
+    const isAButtonTemplate = template.components.find((e) => {
+      return e.type === 'BUTTONS';
+    });
+
+    if (!isAButtonTemplate) {
+      throw new BadRequestException(
+        `Template ${selectedTemplate.id} isn't a button template`,
+      );
+    }
+
+    const templateBody = template.components.find((e) => {
+      return e.type === 'BODY';
+    });
+
+    const templateVariablesCount = templateBody.example.body_text[0].length;
+    if (templateVariablesCount !== body.bodyVariables.length) {
+      throw new BadRequestException(
+        `The template body variables have to be ${templateVariablesCount}`,
+      );
+    }
+
+    const templateName = template.name;
+    const languageCode = 'es_AR';
+    const bodyTexts = body.bodyVariables;
+
+    const templateMessage = this.builderTemplateService.buildTemplateMessage(
+      body.clientPhone,
+      templateName,
+      languageCode,
+      undefined,
+      bodyTexts,
+      body.buttonsPayload,
+    );
+    let response: any;
+    if (body.clientPhone !== body.chatbotNumber) {
+      response = await this.senderService.sendMessages(
+        templateMessage,
+        body.chatbotNumber,
+      );
+    }
+
+    return response;
+  }
 
   async sendTextMessage(body: SendTextMessageDto) {
     const business = await this.businessService.getBusiness(body.chatbotNumber);
@@ -54,6 +145,15 @@ export class CrmService {
     if (headerIsntText) {
       throw new BadRequestException(
         `Template ${body.templateId} is a image template`,
+      );
+    }
+
+    const isAButtonTemplate = template.components.find((e) => {
+      return e.type === 'BUTTONS';
+    });
+    if (isAButtonTemplate) {
+      throw new BadRequestException(
+        `Template ${body.templateId} is a button template`,
       );
     }
 
@@ -97,18 +197,21 @@ export class CrmService {
     };
   }
 
-  async getTemplates(chatbotNumber: string) {
+  async getTemplates(chatbotNumber: string, templateName?: string) {
     const business = await this.businessService.getBusiness(chatbotNumber);
+    let url = `https://graph.facebook.com/v20.0/${business.whatsappId}/message_templates`;
+
+    if (templateName) {
+      url = url + '?name=' + templateName;
+    }
+
     try {
-      const response = await axios.get(
-        `https://graph.facebook.com/v20.0/${business.whatsappId}/message_templates`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${business.accessToken}`,
-          },
+      const response = await axios.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${business.accessToken}`,
         },
-      );
+      });
       return response.data.data;
     } catch (error) {
       console.log(error.response);
