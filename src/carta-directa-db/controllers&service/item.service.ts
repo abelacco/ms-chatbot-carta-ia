@@ -88,7 +88,7 @@ export class ItemService {
       updated_at: new Date(),
       available: 1,
       has_variants: 0,
-      vat: 21.0,
+      vat: 0,
       deleted_at: null,
       enable_system_variants: 0,
       discounted_price: 0,
