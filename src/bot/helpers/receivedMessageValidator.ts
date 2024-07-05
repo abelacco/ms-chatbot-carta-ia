@@ -28,6 +28,9 @@ export const receivedMessageValidator = (
     return 'sendHelpFlow';
   }
 
+  if (entryMessage.type === 'text' && entryMessage.content === 'mapache') {
+    return 'resetChatFlow';
+  }
   /* Conversation steps switch */
   switch (currentStep) {
     case STEPS.INIT:

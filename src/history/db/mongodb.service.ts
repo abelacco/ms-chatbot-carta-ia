@@ -37,9 +37,18 @@ export class MongoDbService implements IHistoryDao {
     }
   }
 
-  async removeAll(): Promise<void> {
+  /* If there is a request to delete everything, only delete the test chatbot numbers.  */
+  async remove(clientPhone?: string): Promise<void> {
     try {
-      await this._historyModel.deleteMany({});
+      /* test chatbot numbers */
+      const numbersToDelete = ['51983714492', '15556163586'];
+      const query: any = {};
+      if (clientPhone) {
+        query.clientPhone = clientPhone;
+      } else {
+        query.chatbotNumber = { $in: numbersToDelete };
+      }
+      await this._historyModel.deleteMany(query);
     } catch (error) {
       if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
       else throw error;

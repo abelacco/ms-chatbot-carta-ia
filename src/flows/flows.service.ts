@@ -893,4 +893,22 @@ export class FlowsService {
       messageEntry.chatbotNumber,
     );
   }
+
+  async resetChatFlow(
+    ctx: Ctx,
+    messageEntry: IParsedMessage,
+    historyParsed: string,
+    businessInfo,
+  ) {
+    const templateMessage = this.builderTemplate.buildTextMessage(
+      messageEntry.clientPhone,
+      'Ctx y historial borrados',
+    );
+    await this.senderService.sendMessages(
+      templateMessage,
+      messageEntry.chatbotNumber,
+    );
+    await this.ctxService.remove(messageEntry.clientPhone);
+    await this.historyService.remove(messageEntry.clientPhone);
+  }
 }

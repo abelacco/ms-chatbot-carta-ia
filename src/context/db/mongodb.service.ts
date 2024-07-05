@@ -95,17 +95,18 @@ export class MongoDbService implements ICtxDao {
     // Verificar y procesar startDate y endDate si existen en query
     if (query.startDate) {
       startDateQuery = new Date(query.startDate);
-      startDateQuery.setUTCHours(0, 0, 0, 0); // Establecer a las 00:00:00 UTC
+      startDateQuery.setUTCHours(5, 0, 0, 0); // Establecer a las 05:00:00 UTC
 
       if (query.endDate) {
         endDateQuery = new Date(query.endDate);
-        endDateQuery.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC
+        endDateQuery.setDate(endDateQuery.getDate() + 1);
+        endDateQuery.setUTCHours(4, 59, 59, 999); // Establecer a las 04:59:59.999 UTC
       } else {
         endDateQuery = new Date(startDateQuery);
-        endDateQuery.setUTCHours(23, 59, 59, 999); // Establecer a las 23:59:59.999 UTC para el mismo día
+        endDateQuery.setDate(endDateQuery.getDate() + 1);
+        endDateQuery.setUTCHours(4, 59, 59, 999); // Establecer a las 04:59:59.999 UTC para el mismo día
       }
     }
-
     try {
       const mongoQuery: any = {};
 
@@ -247,15 +248,23 @@ export class MongoDbService implements ICtxDao {
     }
   }
 
-  async removeAll(): Promise<void> {
+  /* If there is a request to delete everything, only delete the test chatbot numbers.  */
+  async remove(clientPhone?: string): Promise<void> {
     try {
-      await this._ctxModel.deleteMany({ isDelivery: false });
+      /* test chatbot numbers */
+      const numbersToDelete = ['51983714492', '15556163586'];
+      const query: any = {};
+      if (clientPhone) {
+        query.clientPhone = clientPhone;
+      } else {
+        query.chatbotNumber = { $in: numbersToDelete };
+      }
+      await this._ctxModel.deleteMany(query);
     } catch (error) {
       if (error instanceof mongo.MongoError) mongoExceptionHandler(error);
       else throw error;
     }
   }
-
   // async findByName(name: string): Promise<Doctor> {
   //   try {
   //     const findDoctor: Doctor = await this._messageModel.findOne({ name });

@@ -139,9 +139,9 @@ export class HistoryService {
     return conversationString;
   }
 
-  async removeAll() {
+  async remove(clientPhone?: string) {
     try {
-      await this._db.removeAll();
+      await this._db.remove(clientPhone);
     } catch (error) {
       throw error;
     }

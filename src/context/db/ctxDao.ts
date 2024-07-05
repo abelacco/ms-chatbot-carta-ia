@@ -25,7 +25,7 @@ export interface ICtxDao {
   // findMessageByterm(term: string): Promise<Ctx>;
 
   // remove(id: string): Promise<Doctor>;
-  removeAll();
+  remove(clientPhone?: string): Promise<void>;
   resetAllCtx(): Promise<void>;
 
   getCtxesByChatbotNumber(
