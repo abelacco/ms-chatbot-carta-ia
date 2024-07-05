@@ -49,7 +49,7 @@ export class HistoryController {
   @Delete('delete-history')
   async deleteHistory() {
     try {
-      const response = await this.historyService.removeAll();
+      const response = await this.historyService.remove();
       return ApiResponse.success('Delete history successfully', response);
     } catch (error) {
       return ApiResponse.error(

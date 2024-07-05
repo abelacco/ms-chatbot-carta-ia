@@ -81,13 +81,10 @@ export class CtxController {
   @Delete('delete-ctx')
   async deleteCtx() {
     try {
-      const response = await this.ctxService.removeAll();
-      return ApiResponse.success('Delete all ctx successfully', response);
+      const response = await this.ctxService.remove();
+      return ApiResponse.success('Delete ctxes successfully', response);
     } catch (error) {
-      return ApiResponse.error(
-        'An error ocurred while deleting all ctx',
-        error,
-      );
+      return ApiResponse.error('An error ocurred while deleting ctxes', error);
     }
   }
 
