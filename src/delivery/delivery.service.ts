@@ -25,6 +25,8 @@ import {
 } from 'src/common/constants';
 import { BusinessService } from 'src/business/business.service';
 import { HistoryService } from 'src/history/history.service';
+import { CrmService } from 'src/crm/crm.service';
+import { DeliveryCrmService } from 'src/crm/deliveryCrm.service';
 
 @Injectable()
 export class DeliveryService {
@@ -36,6 +38,7 @@ export class DeliveryService {
     private readonly builderTemplate: BuilderTemplatesService,
     private readonly senderService: SenderService,
     private readonly businessService: BusinessService,
+    private readonly deliveryCrmService: DeliveryCrmService,
     private readonly historyService: HistoryService,
   ) {
     this._db = this._mongoDbService;
@@ -267,5 +270,10 @@ export class DeliveryService {
       console.log(error);
       throw error;
     }
+  }
+
+  async deliveriesWorkToday() {
+    const deliveries = await this.findAll();
+    await this.deliveryCrmService.deliveriesWorkToday(deliveries);
   }
 }

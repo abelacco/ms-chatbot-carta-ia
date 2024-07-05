@@ -1,25 +1,13 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
-import { SenderService } from 'src/sender/sender.service';
+import { Injectable } from '@nestjs/common';
 import { CtxService } from 'src/context/ctx.service';
-import { BusinessService } from 'src/business/business.service';
-import { HistoryService } from 'src/history/history.service';
-import { DeliveryService } from 'src/delivery/delivery.service';
 import { isTimeDifferenceGreater } from './utils/utils';
+import { Delivery } from 'src/delivery/entity';
 
 @Injectable()
 export class DeliveryCrmService {
-  constructor(
-    private readonly ctxService: CtxService,
-    private readonly deliveryService: DeliveryService,
-  ) {}
+  constructor(private readonly ctxService: CtxService) {}
 
-  async deliveriesWorkToday() {
-    const deliveries = await this.deliveryService.findAll();
+  async deliveriesWorkToday(deliveries: Delivery[]) {
     for (const delivery of deliveries) {
       const deliveryCtx = await this.ctxService.findOrCreateCtx({
         clientPhone: delivery.deliveryNumber,

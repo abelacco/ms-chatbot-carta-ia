@@ -8,7 +8,6 @@ import { BusinessModule } from 'src/business/business.module';
 import { ReminderService } from './reminder.service';
 import { HistoryModule } from 'src/history/history.module';
 import { DeliveryCrmService } from './deliveryCrm.service';
-import { DeliveryModule } from 'src/delivery/delivery.module';
 
 @Module({
   controllers: [CrmController],
@@ -19,7 +18,6 @@ import { DeliveryModule } from 'src/delivery/delivery.module';
     CtxModule,
     BusinessModule,
     HistoryModule,
-    DeliveryModule,
   ],
   exports: [ReminderService, DeliveryCrmService],
 })
