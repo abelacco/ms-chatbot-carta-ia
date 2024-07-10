@@ -1,14 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ItemEntity } from '../entities';
-import { IsNull, Repository } from 'typeorm';
+import { Brackets, IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryService } from './category.service';
 import { FindItemsByCategoryIdDto } from '../dto';
 import { CreateItemDto } from '../dto/create-item.dto';
+import { ResponseDB } from '../interface';
 
 @Injectable()
 export class ItemService {
@@ -17,6 +14,51 @@ export class ItemService {
     private readonly itemRepository: Repository<ItemEntity>,
     private readonly categoryService: CategoryService,
   ) {}
+
+  async searchItems(items: string[]): Promise<ResponseDB> {
+    const queryBuilder = this.itemRepository
+      .createQueryBuilder('item')
+      .leftJoinAndSelect('item.category', 'category')
+      .leftJoinAndSelect('category.company', 'company');
+
+    // items.forEach((item, index) => {
+    //   queryBuilder
+    //     .orWhere('item.name LIKE :query' + index, {
+    //       ['query' + index]: `%${item}%`,
+    //     })
+    //     .orWhere('item.description LIKE :query' + index, {
+    //       ['query' + index]: `%${item}%`,
+    //     });
+    // });
+    items.forEach((item, index) => {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('item.name LIKE :query' + index, {
+            ['query' + index]: `%${item}%`,
+          }).orWhere('item.description LIKE :query' + index, {
+            ['query' + index]: `%${item}%`,
+          });
+        }),
+      );
+    });
+
+    queryBuilder.select([
+      'item.id',
+      'item.name',
+      'item.description',
+      'item.price',
+      'category.id',
+      'category.name',
+      'company.id',
+      'company.name',
+      'company.address',
+      'company.phone',
+    ]);
+
+    const result = await queryBuilder.getRawMany();
+    const total = await queryBuilder.getCount();
+    return { result, total };
+  }
 
   async findItemsByCategory(body: FindItemsByCategoryIdDto) {
     const foundedCategory =

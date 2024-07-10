@@ -11,7 +11,6 @@ import { SimpleDeliveryAreasEntity } from '../entities/simple-delivery-areas.ent
 import { UserEntity } from '../entities/user.entity';
 import { CoverageFromXlsxToDbDto } from '../dto';
 import { xlsxToJson } from '../helpers/readXlsx';
-import { readFile } from 'xlsx';
 import { readFileSync } from 'fs';
 import { CategoryService } from './category.service';
 import { ItemService } from './item.service';
