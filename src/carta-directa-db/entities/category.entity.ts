@@ -17,6 +17,9 @@ export class CategoryEntity {
   @Column({ type: 'varchar', length: 191 })
   name: string;
 
+  @Column({ type: 'varchar' })
+  description: string;
+
   @Column({ type: 'bigint' })
   restorant_id: number;
 
