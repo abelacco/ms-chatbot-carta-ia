@@ -72,12 +72,17 @@ export class MongoDbService implements IHistoryDao {
   async findLastMessage(
     clientPhone: string,
     chatbotNumber: string,
+    lastMessageByClient?: boolean,
   ): Promise<History> {
+    const query: any = {
+      chatbotNumber: chatbotNumber,
+      clientPhone: clientPhone,
+    };
+    if (lastMessageByClient) {
+      query.role = 'user';
+    }
     const lastMessage = await this._historyModel
-      .findOne({
-        chatbotNumber: chatbotNumber,
-        clientPhone: clientPhone,
-      })
+      .findOne(query)
       .sort({ createdAt: -1 });
     return lastMessage;
   }

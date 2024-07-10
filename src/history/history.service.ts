@@ -151,7 +151,15 @@ export class HistoryService {
     return await this._db.findLastLocationMessage(clientPhone, chatbotNumber);
   }
 
-  async findLastMessage(clientPhone: string, chatbotNumber: string) {
-    return await this._db.findLastMessage(clientPhone, chatbotNumber);
+  async findLastMessage(
+    clientPhone: string,
+    chatbotNumber: string,
+    lastMessageByClient?: boolean,
+  ) {
+    return await this._db.findLastMessage(
+      clientPhone,
+      chatbotNumber,
+      lastMessageByClient,
+    );
   }
 }

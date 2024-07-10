@@ -88,3 +88,8 @@ export const DELIVERY_METHOD = {
   delivery: 1,
   pick_up: 2,
 };
+
+export const DEFAULT_TEMPLATES_NAMES = {
+  DELIVERIES_WORKS: 'deliveries_works',
+  WELCOME_DELIVERIES: 'deliveries_welcome',
+};

@@ -35,8 +35,20 @@ export class SchedulerService {
     this.reminderService.reminderVoucher();
   }
 
-  @Cron('*/45 * * * * *')
+  @Cron('0 0 * * * *')
   async deliveriesWorkToday() {
-    await this.deliveryService.deliveriesWorkToday();
+    const date = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'UTC',
+      hour: '2-digit',
+      hour12: false,
+    };
+    const fortmat = new Intl.DateTimeFormat('en-US', options);
+    const GMTHour = fortmat.format(date);
+    const peruHour = parseInt(GMTHour) - 5;
+
+    if (peruHour === 8) {
+      await this.deliveryService.deliveriesWorkToday();
+    }
   }
 }

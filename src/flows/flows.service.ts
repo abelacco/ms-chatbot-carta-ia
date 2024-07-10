@@ -733,6 +733,60 @@ export class FlowsService {
     await this.senderService.sendMessages(template, messageEntry.chatbotNumber);
   }
 
+  async deliveryDoesntWorkFlow(
+    ctxDelivery: Ctx,
+    parsedMessage: IParsedMessage,
+    delivery: Delivery,
+  ) {
+    await this.deliveryService.update({
+      ...delivery,
+      chatbotNumber: parsedMessage.chatbotNumber,
+      deliveryNumber: delivery.deliveryNumber,
+      status: delivery.status,
+      timeToRestaurant: delivery.timeToRestaurant,
+      note: delivery.note,
+      isActive: false,
+      currentOrderId: delivery.currentOrderId,
+      newDeliveryNumber: delivery.deliveryNumber,
+    });
+    const message = 'Gracias por confirmar que hoy no trabajas. 😊';
+    await this.historyService.setAndCreateAssitantMessage(
+      parsedMessage,
+      message,
+    );
+    await this.senderService.sendMessages(
+      this.builderTemplate.buildTextMessage(parsedMessage.clientPhone, message),
+      parsedMessage.chatbotNumber,
+    );
+  }
+
+  async deliveryWorksFlow(
+    ctxDelivery: Ctx,
+    parsedMessage: IParsedMessage,
+    delivery: Delivery,
+  ) {
+    await this.deliveryService.update({
+      ...delivery,
+      chatbotNumber: parsedMessage.chatbotNumber,
+      deliveryNumber: delivery.deliveryNumber,
+      status: delivery.status,
+      timeToRestaurant: delivery.timeToRestaurant,
+      note: delivery.note,
+      isActive: true,
+      currentOrderId: delivery.currentOrderId,
+      newDeliveryNumber: delivery.deliveryNumber,
+    });
+    const message = 'Gracias por confirmar que hoy trabajas. 😊';
+    await this.historyService.setAndCreateAssitantMessage(
+      parsedMessage,
+      message,
+    );
+    await this.senderService.sendMessages(
+      this.builderTemplate.buildTextMessage(parsedMessage.clientPhone, message),
+      parsedMessage.chatbotNumber,
+    );
+  }
+
   async deliveryConfirmOrder(
     ctxDelivery: Ctx,
     parsedMessage: IParsedMessage,

@@ -8,10 +8,16 @@ import { BusinessModule } from 'src/business/business.module';
 import { ReminderService } from './reminder.service';
 import { HistoryModule } from 'src/history/history.module';
 import { DeliveryCrmService } from './deliveryCrm.service';
+import { DefaultTemplatesService } from './defaultTemplates.service';
 
 @Module({
   controllers: [CrmController],
-  providers: [CrmService, ReminderService, DeliveryCrmService],
+  providers: [
+    CrmService,
+    ReminderService,
+    DeliveryCrmService,
+    DefaultTemplatesService,
+  ],
   imports: [
     BuilderTemplatesModule,
     SenderModule,
@@ -19,6 +25,6 @@ import { DeliveryCrmService } from './deliveryCrm.service';
     BusinessModule,
     HistoryModule,
   ],
-  exports: [ReminderService, DeliveryCrmService],
+  exports: [ReminderService, DeliveryCrmService, CrmService],
 })
 export class CrmModule {}

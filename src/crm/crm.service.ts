@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,7 +13,6 @@ import {
 import { CtxService } from 'src/context/ctx.service';
 import { BusinessService } from 'src/business/business.service';
 import axios from 'axios';
-import fs from 'fs';
 import { CreateImageTemplateDto } from './dto/createImageTemplate.dto';
 import { SendButtonMessageDto } from './dto/sendButtonMessage.dto';
 
@@ -36,12 +33,12 @@ export class CrmService {
       body.templateName,
     );
 
-    const selectedTemplate = templatesInfo[0];
-    if (!selectedTemplate) {
+    if (templatesInfo.length === 0) {
       throw new NotFoundException(
         `Template with name ${body.templateName} not exist`,
       );
     }
+    const selectedTemplate = templatesInfo[0];
 
     let template: any;
     try {
@@ -119,10 +116,22 @@ export class CrmService {
   async sendTextMessage(body: SendTextMessageDto) {
     const business = await this.businessService.getBusiness(body.chatbotNumber);
 
+    const templatesInfo = await this.getTemplates(
+      body.chatbotNumber,
+      body.templateName,
+    );
+
+    if (templatesInfo.length === 0) {
+      throw new NotFoundException(
+        `Template with name ${body.templateName} not exist`,
+      );
+    }
+    const selectedTemplate = templatesInfo[0];
+
     let template: any;
     try {
       const response = await axios.get(
-        `https://graph.facebook.com/v20.0/${body.templateId}?access_token=${business.accessToken}`,
+        `https://graph.facebook.com/v20.0/${selectedTemplate.id}?access_token=${business.accessToken}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -144,7 +153,7 @@ export class CrmService {
     });
     if (headerIsntText) {
       throw new BadRequestException(
-        `Template ${body.templateId} is a image template`,
+        `Template ${body.templateName} is a image template`,
       );
     }
 
@@ -153,7 +162,7 @@ export class CrmService {
     });
     if (isAButtonTemplate) {
       throw new BadRequestException(
-        `Template ${body.templateId} is a button template`,
+        `Template ${body.templateName} is a button template`,
       );
     }
 
@@ -172,26 +181,19 @@ export class CrmService {
     const languageCode = 'es_AR';
     const bodyTexts = body.bodyVariables;
 
-    const Ctxes = await this.ctxService.getCtxesByChatbotNumber(
-      body.chatbotNumber,
+    const templateMessage = this.builderTemplateService.buildTemplateMessage(
+      body.clientPhone,
+      templateName,
+      languageCode,
+      undefined,
+      bodyTexts,
     );
-
-    Ctxes.forEach(async (element) => {
-      const templateMessage = this.builderTemplateService.buildTemplateMessage(
-        element.clientPhone,
-        templateName,
-        languageCode,
-        undefined,
-        bodyTexts,
+    if (body.clientPhone !== body.chatbotNumber) {
+      await this.senderService.sendMessages(
+        templateMessage,
+        body.chatbotNumber,
       );
-      if (element.clientPhone !== body.chatbotNumber) {
-        await this.senderService.sendMessages(
-          templateMessage,
-          body.chatbotNumber,
-        );
-      }
-    });
-
+    }
     return {
       message: 'Funciono',
     };

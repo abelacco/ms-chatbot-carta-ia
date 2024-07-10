@@ -19,14 +19,13 @@ import { CtxService } from 'src/context/ctx.service';
 import { BuilderTemplatesService } from 'src/builder-templates/builder-templates.service';
 import { SenderService } from 'src/sender/sender.service';
 import {
+  DEFAULT_TEMPLATES_NAMES,
   DELIVERIES_STATUS,
-  ORDER_STATUS_BOT,
-  STATUS_BOT,
 } from 'src/common/constants';
 import { BusinessService } from 'src/business/business.service';
 import { HistoryService } from 'src/history/history.service';
-import { CrmService } from 'src/crm/crm.service';
 import { DeliveryCrmService } from 'src/crm/deliveryCrm.service';
+import { CrmService } from 'src/crm/crm.service';
 
 @Injectable()
 export class DeliveryService {
@@ -40,12 +39,13 @@ export class DeliveryService {
     private readonly businessService: BusinessService,
     private readonly deliveryCrmService: DeliveryCrmService,
     private readonly historyService: HistoryService,
+    private readonly crmService: CrmService,
   ) {
     this._db = this._mongoDbService;
   }
 
   async createDelivery(body: CreateDeliveryDto) {
-    body.deliveryNumber = '51' + body.deliveryNumber;
+    //body.deliveryNumber = '51' + body.deliveryNumber;
     try {
       const business = await this.businessService.getBusiness(
         body.chatbotNumber,
@@ -75,13 +75,27 @@ export class DeliveryService {
         deliveryCtx,
       );
 
-      /* Message to delivery */
       const messageTemplate = createTemplateCreateDelivery(business, delivery);
-      const wspTemplate = this.builderTemplate.buildTextMessage(
-        body.deliveryNumber,
-        messageTemplate,
+      /* Message to delivery */
+      const templateExist = await this.crmService.getTemplates(
+        body.chatbotNumber,
+        DEFAULT_TEMPLATES_NAMES.WELCOME_DELIVERIES,
       );
-      await this.senderService.sendMessages(wspTemplate, body.chatbotNumber);
+
+      if (templateExist.length > 0) {
+        await this.crmService.sendTextMessage({
+          chatbotNumber: body.chatbotNumber,
+          templateName: DEFAULT_TEMPLATES_NAMES.WELCOME_DELIVERIES,
+          clientPhone: body.deliveryNumber,
+          bodyVariables: [body.name, business.businessName],
+        });
+      } else {
+        const wspTemplate = this.builderTemplate.buildTextMessage(
+          body.deliveryNumber,
+          messageTemplate,
+        );
+        await this.senderService.sendMessages(wspTemplate, body.chatbotNumber);
+      }
 
       await this.historyService.setAndCreateAssitantMessage(
         {
@@ -215,6 +229,7 @@ export class DeliveryService {
         timeToRestaurant: body.timeToRestaurant,
         newDeliveryNumber: '',
         name: body.deliveryName,
+        isActive: delivery.isActive,
       });
 
       ctx.deliveryNumber = delivery.deliveryNumber;

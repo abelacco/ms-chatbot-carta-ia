@@ -74,7 +74,27 @@ export const receivedMessageDeliveryValidator = (
   entryMessage: IParsedMessage,
   delivery: Delivery,
 ) => {
-  if (isInteractiveMessage(entryMessage)) {
+  if (
+    isInteractiveMessage(entryMessage) &&
+    entryMessage.content === 'No, no trabajo'
+  ) {
+    return 'deliveryDoesntWorkFlow';
+  } else if (
+    isInteractiveMessage(entryMessage) &&
+    entryMessage.content === 'Sí, si trabajo'
+  ) {
+    return 'deliveryWorksFlow';
+  } else if (
+    isButtonMessage(entryMessage) &&
+    entryMessage.content === 'Sí, si trabajo'
+  ) {
+    return 'deliveryWorksFlow';
+  } else if (
+    isButtonMessage(entryMessage) &&
+    entryMessage.content === 'No, no trabajo'
+  ) {
+    return 'deliveryDoesntWorkFlow';
+  } else if (isInteractiveMessage(entryMessage)) {
     return 'deliveryConfirmOrder';
   } else {
     undefined;

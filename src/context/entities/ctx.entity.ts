@@ -99,6 +99,9 @@ export class Ctx extends Document {
   @Prop()
   codeLinkPay: string;
 
+  @Prop({ default: '' })
+  messageSequence: string;
+
   @Prop()
   seen: boolean;
 }

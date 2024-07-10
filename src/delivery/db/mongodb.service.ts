@@ -65,6 +65,7 @@ export class MongoDbService implements IDeliveryDao {
         deliveryNumber: body.deliveryNumber,
       });
 
+      console.log(body.isActive);
       delivery.deliveryNumber =
         body.newDeliveryNumber || delivery.deliveryNumber;
       delivery.name = body.name || delivery.name;
@@ -72,6 +73,11 @@ export class MongoDbService implements IDeliveryDao {
       delivery.timeToRestaurant = body.timeToRestaurant;
       delivery.status = body.status;
       delivery.currentOrderId = body.currentOrderId;
+      if (body.isActive === false) {
+        delivery.isActive = false;
+      } else {
+        delivery.isActive = body.isActive || delivery.isActive;
+      }
 
       await delivery.save();
       return delivery;

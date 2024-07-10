@@ -7,10 +7,15 @@ import {
 } from './dto';
 import { CreateImageTemplateDto } from './dto/createImageTemplate.dto';
 import { SendButtonMessageDto } from './dto/sendButtonMessage.dto';
+import { CreateAllDefaultTemplatesDto } from './dto/createAllDefaultTemplates.dto';
+import { DefaultTemplatesService } from './defaultTemplates.service';
 
 @Controller('crm')
 export class CrmController {
-  constructor(private readonly crmService: CrmService) {}
+  constructor(
+    private readonly crmService: CrmService,
+    private readonly defaultTemplatesService: DefaultTemplatesService,
+  ) {}
 
   @Post('promotion')
   async sendTextMessage(@Body() body: SendTextMessageDto) {
@@ -45,6 +50,13 @@ export class CrmController {
   @Get('get-templates/:chatbotNumber')
   async getTemplates(@Param('chatbotNumber') chatbotNumber: string) {
     const response = await this.crmService.getTemplates(chatbotNumber);
+    return response;
+  }
+
+  @Post('create-all-default-templates')
+  async crateAllDefaultTempaltes(@Body() body: CreateAllDefaultTemplatesDto) {
+    const response =
+      await this.defaultTemplatesService.createAllDefaultTemplates(body);
     return response;
   }
 }

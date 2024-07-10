@@ -50,11 +50,10 @@ export class BotService {
       Logger.log(`NO CLIENT MESSAGE`, 'BOT SERVICE');
       return 'OK';
     }
-    console.log(parsedMessage);
-    console.log(parsedMessage);
+
     this.gatewayService.server.emit('newMessage');
     //Busca mensaje por número de cliente
-    const ctx = await this.ctxService.findOrCreateCtx(parsedMessage);
+    let ctx = await this.ctxService.findOrCreateCtx(parsedMessage);
     if (!ctx.clientname) {
       ctx.clientname = parsedMessage.clientName;
       await this.ctxService.updateCtx(ctx._id, ctx);
@@ -74,6 +73,16 @@ export class BotService {
     const history = await this.historyService.createAndGetHistoryParsed(
       parsedMessage,
     );
+
+    if (parsedMessage.type === 'text') {
+      ctx = await this.waitingNewMessages(ctx, parsedMessage);
+      if (!ctx) {
+        return;
+      }
+      parsedMessage.content = ctx.messageSequence;
+      ctx.messageSequence = '';
+      await this.ctxService.updateCtx(ctx._id, ctx);
+    }
 
     /* Verifica si el numero es de un delivery */
     const delivery = await this.deliveryService.findOne({
@@ -202,6 +211,30 @@ export class BotService {
     return parsedMessage;
   }
 
+  async waitingNewMessages(ctx: Ctx, parsedMessage: IParsedMessage) {
+    if (ctx.messageSequence !== '') {
+      ctx.messageSequence = ctx.messageSequence + ', ' + parsedMessage.content;
+    } else {
+      ctx.messageSequence = ctx.messageSequence + parsedMessage.content;
+    }
+    await this.ctxService.updateCtx(ctx._id, ctx);
+    const messageDelayMillisecond = parseInt(
+      process.env.MESSAGE_DELAY_MILLISECONDS,
+    );
+    await new Promise((resolve) =>
+      setTimeout(resolve, messageDelayMillisecond),
+    );
+    const actualCtx = await this.ctxService.findOrCreateCtx({
+      clientPhone: parsedMessage.clientPhone,
+      chatbotNumber: parsedMessage.chatbotNumber,
+    });
+
+    if (ctx.messageSequence === actualCtx.messageSequence) {
+      return ctx;
+    } else {
+      return null;
+    }
+  }
   /* async analyzeMessage(ctx: Ctx, historyParsed: any) {
     console.log('HISTORY PARSED', historyParsed);
     const prompt =
