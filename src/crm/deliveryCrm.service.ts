@@ -30,7 +30,7 @@ export class DeliveryCrmService {
         chatbotNumber: delivery.chatbotNumber,
       });
       if (isTimeDifferenceGreater(lastMessage.createdAt, new Date(), 1440)) {
-        /* await this.crmService.sendButtonMessage({
+        await this.crmService.sendButtonMessage({
           chatbotNumber: deliveryCtx.chatbotNumber,
           clientPhone: deliveryCtx.clientPhone,
           templateName: 'deliveries_works',
@@ -47,9 +47,8 @@ export class DeliveryCrmService {
           },
           'Buenas, hoy trabajas?\nPorfavor confirma con los botones',
         );
-         */
       } else {
-        /*  const buttonTemplate =
+        const buttonTemplate =
           this.builderTemplateService.buildInteractiveButtonMessage(
             deliveryCtx.clientPhone,
             'Buenas, hoy trabajas?\nPorfavor confirma con los botones',
@@ -72,7 +71,7 @@ export class DeliveryCrmService {
             content: 'Buenas, hoy trabajas?\nPorfavor confirma con los botones',
           },
           'Buenas, hoy trabajas?\nPorfavor confirma con los botones',
-        ); */
+        );
       }
     }
   }
