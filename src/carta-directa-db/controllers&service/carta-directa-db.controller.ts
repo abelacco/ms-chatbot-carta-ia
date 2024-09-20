@@ -107,4 +107,23 @@ export class CartaDirectaDbController {
       );
     }
   }
+
+  @Post('webhook-carta-directa')
+  async webhookCartaDirecta(@Body() body: any) {
+    try {
+      const response = await this.cartaDirectaDbService.webhookCartaDirecta(
+        body,
+      );
+      return ApiResponse.success(
+        'Webhook carta directa successfully',
+        response,
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        'An error ocurred while webhook carta directa',
+        error,
+      );
+    }
+
+  }
 }

@@ -16,6 +16,9 @@ import { readFileSync } from 'fs';
 import { CategoryService } from './category.service';
 import { ItemService } from './item.service';
 import { ExtraService } from './extras.service';
+import { ICompany } from '../interfaces/companies.interfaces';
+import { parse } from 'path';
+import { parseCompany } from '../utils/parseCompany';
 
 @Injectable()
 export class CartaDirectaDbService {
@@ -207,4 +210,21 @@ export class CartaDirectaDbService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  async webhookCartaDirecta(body: any) {
+    try {
+      const allCompanies = await this.findAllCompanies();
+      console.log('Companies: ', allCompanies);
+  
+      // Usar .map() para parsear todos los elementos
+      const parsedCompanies = allCompanies.map(company => parseCompany(company));
+      console.log('Parsed Companies: ', parsedCompanies);
+  
+      return parsedCompanies; // Devuelve las compañías parseadas
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
+  
 }

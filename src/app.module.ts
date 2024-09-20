@@ -58,3 +58,5 @@ import { RouterModule } from '@nestjs/core';
   providers: [AppService, SchedulerService],
 })
 export class AppModule {}
+
+console.log('.env: ', process.env.MONGODB);
