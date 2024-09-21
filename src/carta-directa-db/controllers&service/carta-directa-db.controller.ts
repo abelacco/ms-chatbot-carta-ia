@@ -124,6 +124,5 @@ export class CartaDirectaDbController {
         error,
       );
     }
-
   }
 }

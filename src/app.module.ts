@@ -26,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { OrderModule } from './order/order.module';
 import { CrmModule } from './crm/crm.module';
 import { RouterModule } from '@nestjs/core';
+import { CartaDirectaDataModule } from './general-services/carta-directa/carta-directa-data.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { RouterModule } from '@nestjs/core';
     ScheduleModule.forRoot(),
     OrderModule,
     CrmModule,
+    CartaDirectaDataModule,
   ],
   controllers: [AppController, BusinessController],
   providers: [AppService, SchedulerService],

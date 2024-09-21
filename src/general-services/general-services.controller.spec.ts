@@ -11,7 +11,9 @@ describe('GeneralServicesController', () => {
       providers: [GeneralServicesService],
     }).compile();
 
-    controller = module.get<GeneralServicesController>(GeneralServicesController);
+    controller = module.get<GeneralServicesController>(
+      GeneralServicesController,
+    );
   });
 
   it('should be defined', () => {

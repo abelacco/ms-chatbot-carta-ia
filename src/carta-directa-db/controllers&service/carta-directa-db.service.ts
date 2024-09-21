@@ -215,16 +215,17 @@ export class CartaDirectaDbService {
     try {
       const allCompanies = await this.findAllCompanies();
       console.log('Companies: ', allCompanies);
-  
+
       // Usar .map() para parsear todos los elementos
-      const parsedCompanies = allCompanies.map(company => parseCompany(company));
+      const parsedCompanies = allCompanies.map((company) =>
+        parseCompany(company),
+      );
       console.log('Parsed Companies: ', parsedCompanies);
-  
+
       return parsedCompanies; // Devuelve las compañías parseadas
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(error);
     }
   }
-  
 }
