@@ -206,4 +206,12 @@ export class CartaDirectaDbService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  async getDeliveryAreas(companyId: number) {
+    return await this.deliveryAreasRepository.find({
+      where: {
+        restaurant_id: companyId,
+      },
+    });
+  }
 }

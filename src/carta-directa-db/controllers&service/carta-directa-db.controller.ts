@@ -107,4 +107,14 @@ export class CartaDirectaDbController {
       );
     }
   }
+
+  @Get('getAreas/:id')
+  async getAreas(@Param('id') id: number) {
+    try {
+      const response = await this.cartaDirectaDbService.getDeliveryAreas(id);
+      return ApiResponse.success('Find areas successfully', response);
+    } catch (error) {
+      return ApiResponse.error('An error ocurred while finding areas', error);
+    }
+  }
 }
